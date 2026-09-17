@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Pal — Tamagotchi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#8ecae6; --sky-bot:#c8f0ff;
+    --card:#ffffff; --ink:#2b2140; --ink-soft:#6b6280;
+    --pink:#ff6fa5; --mint:#3ddc97; --sun:#ffd166; --lav:#9d8cff;
+    --bar-track:#eee7f7; --shadow:rgba(43,33,64,.18);
+    --lcd:#c7d9c0; --lcd-dark:#26362b;
+  }
+  [data-time="night"]{
+    --sky-top:#151a3d; --sky-bot:#2c2f6b;
+    --card:#211f3b; --ink:#f1edff; --ink-soft:#b9b3d9;
+    --bar-track:#332f57; --shadow:rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-family:'Nunito',sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));
+    transition:background 1.2s ease, color .4s ease;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px 14px;
+    overflow-x:hidden;
+  }
+  .stars{position:fixed; inset:0; pointer-events:none; opacity:0; transition:opacity 1s;}
+  [data-time="night"] .stars{opacity:1;}
+  .star{position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; animation:twinkle 3s infinite ease-in-out;}
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:1}}
+
+  .app{ width:100%; max-width:420px; }
+
+  h1.brand{
+    font-family:'Press Start 2P', monospace; font-weight:400;
+    font-size:1rem; text-align:center; margin:0 0 6px;
+    letter-spacing:1px;
+  }
+  .sub{ text-align:center; color:var(--ink-soft); font-size:.85rem; margin:0 0 18px; }
+
+  .card{
+    background:var(--card);
+    border-radius:28px;
+    padding:22px 20px 26px;
+    box-shadow:0 18px 40px var(--shadow);
+    transition:background .4s ease;
+  }
+
+  /* ---------- Species select ---------- */
+  .species-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;
+  }
+  .species-card{
+    border:3px solid transparent;
+    border-radius:20px;
+    padding:14px 10px 12px;
+    text-align:center;
+    cursor:pointer;
+    background:var(--bar-track);
+    transition:transform .15s ease, border-color .15s ease;
+    user-select:none;
+  }
+  .species-card:hover{ transform:translateY(-3px); }
+  .species-card.selected{ border-color:var(--pink); }
+  .species-emoji{
+    width:52px; height:52px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; margin:0 auto 8px;
+  }
+  .species-name{ font-weight:800; font-size:.95rem; }
+  .species-tag{ font-size:.72rem; color:var(--ink-soft); margin-top:2px; }
+
+  .name-input{
+    width:100%; margin-top:16px; padding:12px 14px;
+    border-radius:14px; border:2px solid var(--bar-track);
+    font-family:'Nunito',sans-serif; font-size:.95rem;
+    background:var(--bar-track); color:var(--ink);
+  }
+  .name-input:focus{ outline:2px solid var(--pink); }
+
+  .big-btn{
+    width:100%; margin-top:16px; padding:14px;
+    border:none; border-radius:16px;
+    font-weight:800; font-size:1.02rem;
+    color:#fff; background:var(--pink);
+    cursor:pointer; transition:transform .12s ease, filter .12s ease;
+  }
+  .big-btn:hover{ filter:brightness(1.06); }
+  .big-btn:active{ transform:scale(.97); }
+  .big-btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  /* ---------- Main pet screen ---------- */
+  .topbar{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
+  .pet-name{ font-weight:800; font-size:1.2rem; }
+  .pet-stage{
+    font-size:.68rem; color:#fff; background:var(--lav);
+    padding:4px 10px; border-radius:20px; font-weight:700; white-space:nowrap;
+  }
+  .age-line{ color:var(--ink-soft); font-size:.78rem; margin-bottom:14px;}
+
+  /* ---- retro device shell ---- */
+  .device-shell{
+    width:216px; margin:0 auto 16px;
+    padding:16px 14px 20px;
+    border-radius:46px 46px 30px 30px;
+    box-shadow:0 14px 26px var(--shadow), inset 0 -8px 14px rgba(0,0,0,.12);
+    position:relative;
+    transition:background .4s ease;
+  }
+  .speaker-dots{ display:flex; justify-content:center; gap:6px; margin-bottom:8px; }
+  .speaker-dots span{ width:5px; height:5px; border-radius:50%; background:rgba(0,0,0,.22); }
+
+  .lcd-screen{
+    background:var(--lcd);
+    border-radius:14px;
+    margin:0 auto 12px;
+    width:172px; height:158px;
+    position:relative;
+    box-shadow:inset 0 3px 10px rgba(0,0,0,.3);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  [data-time="night"] .lcd-screen{ background:var(--lcd-dark); }
+  .lcd-screen::before{
+    content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0px, rgba(0,0,0,.07) 1px, transparent 1px, transparent 3px);
+  }
+  .pixel-grid{
+    display:grid; grid-template-columns:repeat(13,9px); grid-template-rows:repeat(13,9px);
+    position:relative; z-index:1;
+    transition:transform .3s steps(1); /* สำหรับแอนิเมชันเดิน */
+  }
+  .pixel-cell{ width:9px; height:9px; }
+
+  .lcd-zzz{
+    position:absolute; top:6px; right:8px; z-index:3;
+    font-family:'Press Start 2P', monospace; font-size:.6rem; color:rgba(0,0,0,.45);
+  }
+  [data-time="night"] .lcd-zzz{ color:rgba(255,255,255,.55); }
+
+  .lcd-alert{
+    position:absolute; top:6px; left:8px; z-index:3;
+    font-size:.9rem; opacity:0; transition:opacity .2s;
+  }
+  .lcd-alert.show{ opacity:1; animation:blink 1s steps(1) infinite; }
+  
+  .lcd-sick{
+    position:absolute; top:28px; left:8px; z-index:3;
+    font-size:.9rem; opacity:0; transition:opacity .2s;
+  }
+  .lcd-sick.show{ opacity:1; animation:blink 1.5s steps(1) infinite; }
+
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .device-buttons{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; justify-content:center; }
+  .dev-btn{
+    width:34px; height:34px; border-radius:50%; border:none;
+    background:rgba(255,255,255,.55);
+    box-shadow:0 3px 0 rgba(0,0,0,.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.85rem; margin:0 auto;
+  }
+
+  .bars{ display:flex; flex-direction:column; gap:9px; margin-bottom:16px; }
+  .bar-row{ display:flex; align-items:center; gap:8px; }
+  .bar-icon{ width:22px; text-align:center; font-size:1rem; }
+  .bar-track{
+    flex:1; height:12px; background:var(--bar-track); border-radius:10px; overflow:hidden;
+  }
+  .bar-fill{ height:100%; border-radius:10px; transition:width .5s ease, background .4s ease; }
+  .bar-pct{ width:32px; text-align:right; font-size:.72rem; color:var(--ink-soft); }
+
+  .actions{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .action-btn{
+    border:none; border-radius:14px; padding:10px 4px 8px;
+    background:var(--bar-track); color:var(--ink);
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:.68rem;
+    cursor:pointer; transition:transform .1s ease, background .2s ease;
+  }
+  .action-btn span.ic{ font-size:1.25rem; }
+  .action-btn:hover{ background:#e4dcf6; }
+  .action-btn:active{ transform:scale(.94); }
+  .action-btn.active-toggle{ background:var(--lav); color:#fff; }
+  .action-btn:disabled{ opacity:.35; cursor:not-allowed; }
+
+  .log{
+    margin-top:14px; font-size:.78rem; color:var(--ink-soft);
+    min-height:18px; text-align:center; transition:opacity .3s;
+  }
+
+  .footer-row{ display:flex; justify-content:center; margin-top:10px; gap:0; }
+  .link-btn{
+    background:none; border:none; color:var(--ink-soft); font-size:.72rem;
+    text-decoration:underline; cursor:pointer; font-family:'Nunito',sans-serif;
+  }
+
+  /* generic overlay/modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(20,15,35,.55);
+    display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background:var(--card); border-radius:24px; padding:22px 20px; max-width:380px; width:100%;
+    max-height:80vh; overflow-y:auto;
+  }
+  .modal h2{ font-family:'Press Start 2P', monospace; font-weight:400; margin:0 0 12px; font-size:.85rem; }
+  .tree-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed var(--bar-track); font-size:.85rem;}
+  .tree-emoji{ font-size:1.3rem; width:30px; text-align:center;}
+  .tree-current{ font-weight:800; color:var(--pink); }
+  .modal-close{ margin-top:14px; }
+
+  .gameover-emoji{ font-size:3rem; text-align:center; margin-bottom:8px; }
+  .gameover-text{ text-align:center; color:var(--ink-soft); font-size:.9rem; margin-bottom:6px; }
+
+  /* mini-game */
+  .game-track{ position:relative; height:38px; background:var(--bar-track); border-radius:20px; margin:14px 0 6px; overflow:hidden; cursor:pointer; }
+  .game-zone{ position:absolute; top:0; bottom:0; left:44%; width:12%; background:var(--mint); opacity:.55; }
+  .game-marker{ position:absolute; top:3px; bottom:3px; width:14px; border-radius:7px; background:var(--pink); left:0%; }
+  .game-round-info{ text-align:center; font-size:.8rem; margin:6px 0 10px; color:var(--ink-soft); min-height:16px; }
+
+  @media (max-width:380px){
+    .species-emoji{ width:44px; height:44px; font-size:22px;}
+    .device-shell{ width:192px; }
+    .lcd-screen{ width:152px; height:140px; }
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <h1 class="brand">POCKET PAL</h1>
+  <p class="sub">เพื่อนตัวจิ๋วสไตล์ทามาก็อตโบราณ ที่โตไปตามการดูแลของคุณ แม้ปิดหน้าจอไปก็ยังโตต่อ</p>
+
+  <!-- SPECIES SELECT SCREEN -->
+  <div class="card" id="screen-select">
+    <div style="font-weight:800;font-size:1.05rem;">เลือกไข่ตัวแรกของคุณ</div>
+    <div class="species-grid" id="speciesGrid"></div>
+    <input class="name-input" id="petNameInput" maxlength="14" placeholder="ตั้งชื่อให้เพื่อนตัวนี้ (ไม่บังคับ)">
+    <button class="big-btn" id="hatchBtn" disabled>ฟักไข่ 🐣</button>
+  </div>
+
+  <!-- MAIN PET SCREEN -->
+  <div class="card" id="screen-main" style="display:none;">
+    <div class="topbar">
+      <div class="pet-name" id="petNameLabel">—</div>
+      <div class="pet-stage" id="petStageLabel">Baby</div>
+    </div>
+    <div class="age-line" id="ageLine">อายุ: —</div>
+
+    <div class="device-shell" id="deviceShell">
+      <div class="speaker-dots"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="lcd-screen" id="lcdScreen">
+        <div class="lcd-alert" id="lcdAlert">❗</div>
+        <div class="lcd-sick" id="lcdSick">🤒</div>
+        <div class="lcd-zzz" id="lcdZzz" style="display:none;">Zzz</div>
+        <div class="pixel-grid" id="pixelGrid"></div>
+      </div>
+      <div class="device-buttons">
+        <button class="dev-btn">A</button><button class="dev-btn">B</button><button class="dev-btn">C</button>
+      </div>
+    </div>
+
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-icon">🍖</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-hunger" style="background:var(--sun);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-hunger">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">💗</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-happy" style="background:var(--pink);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-happy">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">⚡</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-energy" style="background:var(--lav);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-energy">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">🫧</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-hygiene" style="background:#5fd4f0;width:100%;"></div></div>
+        <div class="bar-pct" id="pct-hygiene">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">❤️</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-health" style="background:var(--mint);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-health">100%</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" id="btnFeed"><span class="ic">🍖</span>ให้อาหาร</button>
+      <button class="action-btn" id="btnPlay"><span class="ic">🎾</span>เล่นด้วยกัน</button>
+      <button class="action-btn" id="btnPet"><span class="ic">🤍</span>ลูบหัว</button>
+      <button class="action-btn" id="btnBath"><span class="ic">🫧</span>อาบน้ำ</button>
+      <button class="action-btn" id="btnHeal"><span class="ic">💊</span>รักษา</button>
+      <button class="action-btn" id="btnRest"><span class="ic">💤</span>พักผ่อน</button>
+    </div>
+
+    <div class="log" id="logLine">&nbsp;</div>
+
+    <div class="footer-row">
+      <button class="link-btn" id="treeBtn">ดูสายพันธุ์การโต 🌳</button>
+      <span style="color:var(--ink-soft);">&nbsp;·&nbsp;</span>
+      <button class="link-btn" id="resetBtn">เริ่มใหม่</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="card" id="screen-over" style="display:none;">
+    <div class="gameover-emoji">💔</div>
+    <div class="gameover-text" id="overText">เพื่อนของคุณจากไปแล้ว...</div>
+    <button class="big-btn" id="restartBtn">ฟักไข่ตัวใหม่</button>
+  </div>
+</div>
+
+<!-- Evolution tree modal -->
+<div class="overlay" id="treeOverlay">
+  <div class="modal">
+    <h2>EVOLUTION TREE</h2>
+    <div id="treeBody"></div>
+    <button class="big-btn modal-close" id="treeCloseBtn">ปิด</button>
+  </div>
+</div>
+
+<!-- Mini-game modal -->
+<div class="overlay" id="minigameOverlay">
+  <div class="modal">
+    <h2>MINI GAME</h2>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin:0;">แตะปุ่ม (หรือแตะที่แถบ) ตอนตัวชี้อยู่ในโซนสีเขียวให้ได้มากที่สุด — 3 รอบ</p>
+    <div class="game-track" id="gameTrack">
+      <div class="game-zone"></div>
+      <div class="game-marker" id="gameMarker"></div>
+    </div>
+    <div class="game-round-info" id="gameRoundInfo">รอบ 1 / 3</div>
+    <button class="big-btn" id="gameTapBtn">แตะ!</button>
+    <button class="link-btn" id="gameSkipBtn" style="display:block;margin:10px auto 0;">ข้ามมินิเกม</button>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+const SPECIES = [
+  { id:'flare',  name:'Flare',  emoji:'🔥', color:'#ff9457', tag:'ตัวไฟซ่า' },
+  { id:'aqua',   name:'Aqua',   emoji:'💧', color:'#5fd4f0', tag:'ตัวน้ำใจเย็น' },
+  { id:'sprout', name:'Sprout', emoji:'🌱', color:'#7be07a', tag:'ตัวใบสงบ' },
+  { id:'volt',   name:'Volt',   emoji:'⚡', color:'#ffe066', tag:'ตัวไฟฟ้าคึกคัก' },
+  { id:'shade',  name:'Shade',  emoji:'🌙', color:'#c39bff', tag:'ตัวเงาลึกลับ' },
+  { id:'nova',   name:'Nova',   emoji:'⭐', color:'#ff9ecf', tag:'ตัวดาวเปล่งประกาย' },
+];
+
+const BRANCHES = {
+  joy:     { label:'สายสุขใจ',    badge:'✨', suffix:'the Radiant', desc:'มีความสุขสูงสม่ำเสมอ' },
+  vigor:   { label:'สายพลัง',      badge:'💪', suffix:'the Titan',   desc:'ได้เล่นสนุกบ่อยๆ' },
+  glutton: { label:'สายจุ๊บจุ๊บ',  badge:'🍖', suffix:'the Hearty',  desc:'ได้กินอาหารสม่ำเสมอ' },
+  feral:   { label:'สายป่าเถื่อน', badge:'💀', suffix:'the Feral',   desc:'โตมาแบบขาดการดูแล' },
+};
+
+// อายุ (นาทีจริง) ที่ใช้เปลี่ยนสเตจ
+const STAGE_MIN = { baby:0, child:90, teen:360, adult:1440 };
+const STAGE_ORDER = ['baby','child','teen','adult'];
+const STAGE_LABEL = { baby:'Baby', child:'Child', teen:'Teen', adult:'Adult' };
+const STAGE_SCALE = { baby:0.86, child:0.98, teen:1.1, adult:1.22 };
+
+const DECAY = { hunger:1.0, happy:0.8, energy:0.65, hygiene:0.5 };        // ต่อนาที ปกติ
+const REST_DECAY = { hunger:0.5, happy:0.4, energyGain:2.6, hygiene:0.2 }; // ต่อนาที ระหว่างพักผ่อน
+const SAVE_KEY = 'pocketpal_save_v2';
+
+let state = null;
+let alertPlayed = false;
+let frameCycle = 0; // สำหรับแอนิเมชัน
+
+/* ============ UTIL ============ */
+const clamp = (v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const $ = id=>document.getElementById(id);
+function speciesById(id){ return SPECIES.find(s=>s.id===id); }
+
+function setLog(msg){
+  const el = $('logLine');
+  el.textContent = msg;
+  el.style.opacity = 1;
+}
+
+/* ============ SOUND (tiny retro beeps, no audio files) ============ */
+let audioCtx = null;
+function beep(freq=440, dur=0.09, type='square'){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.value = 0.05;
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+    osc.stop(audioCtx.currentTime+dur+0.02);
+  }catch(e){ /* audio not available, ignore */ }
+}
+
+/* ============ TIME OF DAY (real, for ambience) ============ */
+function applyTimeOfDay(){
+  const h = new Date().getHours();
+  const isNight = (h >= 19 || h < 6);
+  document.body.setAttribute('data-time', isNight ? 'night' : 'day');
+}
+function buildStars(){
+  const box = $('stars');
+  for(let i=0;i<40;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*70+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    box.appendChild(s);
+  }
+}
+
+/* ============ SAVE / LOAD ============ */
+function saveGame(){
+  if(!state) return;
+  localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+}
+function loadGame(){
+  const raw = localStorage.getItem(SAVE_KEY);
+  if(!raw) return null;
+  try { return JSON.parse(raw); } catch(e){ return null; }
+}
+function wipeGame(){
+  localStorage.removeItem(SAVE_KEY);
+  state = null;
+}
+
+/* ============ HATCH NEW PET ============ */
+function hatchPet(speciesId, name){
+  const now = Date.now();
+  state = {
+    species: speciesId,
+    name: name || speciesById(speciesId).name,
+    hatchTime: now,
+    lastUpdate: now,
+    hunger: 90, happy: 90, energy: 90, hygiene: 100, health: 100,
+    isSick: false,
+    resting: false,
+    stage: 'baby',
+    branch: null,
+    counters: { feed:0, play:0, pet:0, rest:0, neglectMin:0 },
+    happySum: 0, happySamples: 0,
+    alive: true,
+  };
+  saveGame();
+  beep(760,.12);
+  showScreen('main');
+  renderAll();
+}
+
+/* ============ CORE SIMULATION ============ */
+function advance(minutes){
+  if(minutes<=0 || !state.alive) return;
+
+  // จัดการข้อมูล save เก่าที่ไม่มีค่า hygiene / isSick
+  if(state.hygiene === undefined) state.hygiene = 100;
+  if(state.isSick === undefined) state.isSick = false;
+
+  if(state.resting){
+    state.hunger = clamp(state.hunger - REST_DECAY.hunger*minutes);
+    state.happy  = clamp(state.happy  - REST_DECAY.happy*minutes);
+    state.hygiene= clamp(state.hygiene - REST_DECAY.hygiene*minutes);
+    state.energy = clamp(state.energy + REST_DECAY.energyGain*minutes);
+    if(state.energy>=100) state.resting=false;
+  } else {
+    state.hunger = clamp(state.hunger - DECAY.hunger*minutes);
+    state.happy  = clamp(state.happy  - DECAY.happy*minutes);
+    state.hygiene= clamp(state.hygiene - DECAY.hygiene*minutes);
+    state.energy = clamp(state.energy - DECAY.energy*minutes);
+  }
+
+  // ระบบป่วย (คำนวณความน่าจะเป็นตามระยะเวลา)
+  if(!state.isSick) {
+    const pRate = state.hygiene < 30 ? 0.02 : 0.0005; 
+    const prob = 1 - Math.pow(1 - pRate, minutes);
+    if(Math.random() < prob) {
+      state.isSick = true;
+      if(state.hygiene < 30) setLog(`🤒 ${state.name} ป่วยเพราะตัวสกปรกมาก!`);
+    }
+  }
+
+  let bad = (state.hunger<15?1:0)+(state.happy<15?1:0)+(state.energy<10?1:0);
+  if(state.isSick) bad += 2; // ถ้าป่วยเลือดจะลดเร็วขึ้นมาก
+
+  if(bad>0){
+    state.health = clamp(state.health - bad*2*minutes);
+    state.counters.neglectMin += minutes;
+  } else {
+    state.health = clamp(state.health + 1*minutes);
+  }
+
+  state.happySum += state.happy*minutes;
+  state.happySamples += minutes;
+
+  if(state.health<=0){
+    state.alive = false;
+  }
+}
+
+function ageMinutes(){
+  return (Date.now() - state.hatchTime) / 60000;
+}
+
+function pickBranch(){
+  const c = state.counters;
+  const avgHappy = state.happySamples>0 ? (state.happySum/state.happySamples) : 50;
+  const scores = {
+    joy: avgHappy,
+    vigor: c.play*6,
+    glutton: c.feed*6,
+    feral: c.neglectMin*3,
+  };
+  let best = 'joy', bestScore = -1;
+  for(const k of ['joy','vigor','glutton','feral']){
+    if(scores[k] > bestScore){ bestScore = scores[k]; best = k; }
+  }
+  return best;
+}
+
+function checkEvolution(){
+  const age = ageMinutes();
+  let target = 'baby';
+  for(const s of STAGE_ORDER){ if(age >= STAGE_MIN[s]) target = s; }
+
+  if(target !== state.stage){
+    const fromIdx = STAGE_ORDER.indexOf(state.stage);
+    const toIdx = STAGE_ORDER.indexOf(target);
+    if(toIdx > fromIdx){
+      state.stage = target;
+      beep(880,.15);
+      if(target==='teen' && !state.branch){
+        state.branch = pickBranch();
+        setLog(`✨ ${state.name} เข้าสู่วัยรุ่น และเลือกเส้นทาง "${BRANCHES[state.branch].label}"!`);
+      } else {
+        setLog(`🎉 ${state.name} เติบโตเป็น ${STAGE_LABEL[target]} แล้ว!`);
+      }
+    }
+  }
+}
+
+/* ============ ACTIONS ============ */
+function doFeed(){
+  if(!state.alive) return;
+  state.hunger = clamp(state.hunger + 22);
+  state.happy = clamp(state.happy + 4);
+  state.counters.feed++;
+  beep(520,.08);
+  setLog(`🍖 ${state.name} กินอาหารอย่างมีความสุข`);
+  saveAndRender();
+}
+function doPet(){
+  if(!state.alive) return;
+  state.happy = clamp(state.happy + 8);
+  state.counters.pet++;
+  beep(660,.07);
+  setLog(`🤍 ${state.name} รู้สึกอบอุ่นใจ`);
+  saveAndRender();
+}
+function doBath(){
+  if(!state.alive) return;
+  state.hygiene = 100;
+  beep(700,.1);
+  setLog(`🫧 อาบน้ำให้ ${state.name} จนหอมฉุยสะอาดเอี่ยม!`);
+  saveAndRender();
+}
+function doHeal(){
+  if(!state.alive) return;
+  if(state.isSick) {
+    state.isSick = false;
+    beep(800,.15);
+    setLog(`💊 ป้อนยาให้ ${state.name} หายป่วยแล้ว!`);
+  } else {
+    setLog(`ฉีดยากันไว้... แต่ ${state.name} ไม่ได้ป่วยนะ`);
+  }
+  saveAndRender();
+}
+function doRest(){
+  if(!state.alive) return;
+  state.resting = !state.resting;
+  state.counters.rest++;
+  beep(state.resting?300:340,.09);
+  setLog(state.resting ? `💤 ${state.name} กำลังพักผ่อน...` : `${state.name} ตื่นแล้ว!`);
+  saveAndRender();
+}
+
+function tryStartPlay(){
+  if(!state.alive) return;
+  if(state.resting){ setLog('เพื่อนกำลังนอนอยู่ รอให้ตื่นก่อนนะ 💤'); return; }
+  if(state.energy < 10){ setLog('เพื่อนเหนื่อยเกินกว่าจะเล่น ให้พักผ่อนก่อนนะ'); return; }
+  if(state.isSick){ setLog('เพื่อนกำลังป่วยหนักเกินกว่าจะเล่นได้นะ 🤒'); return; }
+  openMinigame();
+}
+function applyPlayResult(score){
+  if(!state.alive) return;
+  const happyGain = 6 + score*3;
+  state.happy = clamp(state.happy + happyGain);
+  state.energy = clamp(state.energy - 12);
+  state.hunger = clamp(state.hunger - 4);
+  state.hygiene = clamp(state.hygiene - 8);
+  state.counters.play++;
+  setLog(`🎾 เล่นมินิเกมกับ ${state.name}! ได้คะแนน ${score}/9`);
+  saveAndRender();
+}
+
+function saveAndRender(){
+  checkEvolution();
+  if(!state.alive){ saveGame(); beep(180,.3,'sawtooth'); showScreen('over'); return; }
+  saveGame();
+  renderAll();
+}
+
+/* ============ PIXEL SPRITE ENGINE ============ */
+let pixelCells = [];
+function ensurePixelGrid(){
+  const grid = $('pixelGrid');
+  if(grid.childElementCount===169) return;
+  grid.innerHTML='';
+  pixelCells = [];
+  for(let i=0;i<169;i++){
+    const c = document.createElement('div');
+    c.className='pixel-cell';
+    grid.appendChild(c);
+    pixelCells.push(c);
+  }
+}
+function buildBodyMatrix(radius){
+  const m = [];
+  for(let y=0;y<13;y++){
+    const row=[];
+    for(let x=0;x<13;x++){
+      const dx=x-6, dy=y-6;
+      row.push((dx*dx+dy*dy<=radius*radius)?1:0);
+    }
+    m.push(row);
+  }
+  return m;
+}
+function setPx(m,x,y,v){ if(y>=0&&y<13&&x>=0&&x<13) m[y][x]=v; }
+
+function computeMood(){
+  if(state.resting) return 'sleeping';
+  if(state.isSick) return 'sad'; // หน้าเศร้าเมื่อป่วย
+  if(state.happy<20 || state.hunger<20) return 'sad';
+  if(state.happy>70 && state.hunger>50) return 'happy';
+  return 'neutral';
+}
+
+function buildSprite(stage, branch, mood){
+  let radius;
+  if(stage==='baby') radius=3.2;
+  else if(stage==='child') radius=3.7;
+  else if(stage==='teen') radius=4.1;
+  else radius = (branch==='glutton') ? 5.0 : 4.5;
+
+  const m = buildBodyMatrix(radius);
+  const top = 6-Math.ceil(radius);
+  const bottom = 6+Math.ceil(radius);
+
+  if(stage!=='baby'){ setPx(m,4,top,1); setPx(m,8,top,1); }
+  if(stage==='teen' || stage==='adult'){
+    setPx(m,4,Math.min(bottom+1,12),1);
+    setPx(m,8,Math.min(bottom+1,12),1);
+  }
+
+  if(stage==='adult'){
+    if(branch==='joy'){
+      setPx(m,Math.max(6-Math.ceil(radius)-1,0),4,1);
+      setPx(m,Math.max(6-Math.ceil(radius)-2,0),3,1);
+      setPx(m,Math.min(6+Math.ceil(radius)+1,12),4,1);
+      setPx(m,Math.min(6+Math.ceil(radius)+2,12),3,1);
+    } else if(branch==='vigor'){
+      setPx(m,6,Math.max(top-1,0),1);
+      setPx(m,6,Math.max(top-2,0),1);
+      setPx(m,5,Math.max(top-1,0),1);
+      setPx(m,7,Math.max(top-1,0),1);
+    } else if(branch==='glutton'){
+      for(let x=4;x<=8;x++){ if(x!==6) setPx(m,x,7,0); }
+    } else if(branch==='feral'){
+      setPx(m,3,3,1); setPx(m,9,3,1);
+      setPx(m,2,7,1); setPx(m,10,7,1);
+      setPx(m,5,Math.max(top-1,0),1); setPx(m,7,Math.max(top-1,0),1);
+    }
+  }
+
+  // face
+  if(mood==='sleeping'){
+    setPx(m,4,5,0); setPx(m,5,5,0); setPx(m,7,5,0); setPx(m,8,5,0);
+    setPx(m,6,7,0);
+  } else {
+    setPx(m,5,5,0); setPx(m,7,5,0);
+    if(mood==='happy'){ setPx(m,5,7,0); setPx(m,6,8,0); setPx(m,7,7,0); }
+    else if(mood==='sad'){ setPx(m,5,8,0); setPx(m,6,7,0); setPx(m,7,8,0); }
+    else { setPx(m,6,7,0); }
+  }
+  return m;
+}
+function shade(hex, percent){
+  const f = parseInt(hex.slice(1),16);
+  const t = percent<0?0:255, p = Math.abs(percent)/100;
+  const R=f>>16, G=(f>>8)&0x00FF, B=f&0x0000FF;
+  const rr = Math.round((t-R)*p)+R, gg = Math.round((t-G)*p)+G, bb = Math.round((t-B)*p)+B;
+  return '#'+(0x1000000+rr*0x10000+gg*0x100+bb).toString(16).slice(1);
+}
+
+function renderSprite(){
+  ensurePixelGrid();
+  const sp = speciesById(state.species);
+  const mood = computeMood();
+  const matrix = buildSprite(state.stage, state.branch, mood);
+  const onColor = (state.stage==='adult' && state.branch==='feral') ? shade(sp.color,-30) : sp.color;
+  
+  // Animation Logic: ยุบตัว/ยืดตัว ทุกๆ 1 วินาที (ไม่ทำงานตอนนอน)
+  const animFrame = state.resting ? 0 : (frameCycle % 2);
+  const yOffset = animFrame === 1 ? 1 : 0; 
+
+  for(let y=0;y<13;y++){
+    for(let x=0;x<13;x++){
+      let sourceY = y - yOffset;
+      let val = 0;
+      if(sourceY >= 0 && sourceY < 13) val = matrix[sourceY][x];
+      pixelCells[y*13+x].style.background = val ? onColor : 'transparent';
+    }
+  }
+
+  // เดินส่ายไปมา ซ้าย-ขวา
+  const walkPhase = Math.floor(frameCycle / 2) % 4; // 0, 1, 2, 3
+  const walkOffsets = [0, 1, 0, -1];
+  const walkPos = state.resting ? 0 : walkOffsets[walkPhase];
+
+  $('pixelGrid').style.transform = `scale(${STAGE_SCALE[state.stage]}) translateX(${walkPos * 3}px)`;
+  $('lcdZzz').style.display = state.resting ? 'block' : 'none';
+}
+
+/* ============ RENDER ============ */
+function renderAll(){
+  if(!state) return;
+  const sp = speciesById(state.species);
+
+  $('petNameLabel').textContent = state.name;
+  $('petStageLabel').textContent = STAGE_LABEL[state.stage] + (state.branch ? ' · ' + BRANCHES[state.branch].badge : '');
+
+  const age = ageMinutes();
+  const d = Math.floor(age/1440), h = Math.floor((age%1440)/60), m = Math.floor(age%60);
+  $('ageLine').textContent = d>0 ? `อายุ: ${d} วัน ${h} ชม.` : `อายุ: ${h} ชม. ${m} นาที`;
+
+  setBar('hunger', state.hunger);
+  setBar('happy', state.happy);
+  setBar('energy', state.energy);
+  setBar('health', state.health);
+  setBar('hygiene', state.hygiene);
+
+  $('deviceShell').style.background = sp.color;
+  renderSprite();
+
+  const isAlert = state.hunger<20 || state.happy<20 || (state.energy<15 && !state.resting);
+  const alertEl = $('lcdAlert');
+  alertEl.classList.toggle('show', isAlert);
+  
+  $('lcdSick').classList.toggle('show', state.isSick);
+
+  if(isAlert && !alertPlayed){ beep(200,.12,'triangle'); alertPlayed = true; }
+  else if(!isAlert){ alertPlayed = false; }
+
+  $('btnPlay').disabled = state.resting;
+  $('btnRest').classList.toggle('active-toggle', state.resting);
+}
+
+function setBar(key, value){
+  const pct = Math.round(clamp(value));
+  $('bar-'+key).style.width = pct+'%';
+  $('pct-'+key).textContent = pct+'%';
+  $('bar-'+key).style.filter = (pct<20) ? 'grayscale(.15) brightness(.85)' : 'none';
+}
+
+/* ============ SCREENS ============ */
+function showScreen(name){
+  $('screen-select').style.display = name==='select' ? 'block' : 'none';
+  $('screen-main').style.display   = name==='main'   ? 'block' : 'none';
+  $('screen-over').style.display   = name==='over'   ? 'block' : 'none';
+  if(name==='over'){
+    $('overText').textContent = `${state.name} จากไปด้วยการดูแลที่ขาดตกไปหน่อย... แต่ยังมีไข่ใหม่รออยู่เสมอ 🥚`;
+  }
+}
+
+/* ============ SPECIES SELECT UI ============ */
+let selectedSpecies = null;
+function buildSpeciesGrid(){
+  const grid = $('speciesGrid');
+  grid.innerHTML = '';
+  SPECIES.forEach(sp=>{
+    const card = document.createElement('div');
+    card.className='species-card';
+    card.innerHTML = `
+      <div class="species-emoji" style="background:${sp.color}">${sp.emoji}</div>
+      <div class="species-name">${sp.name}</div>
+      <div class="species-tag">${sp.tag}</div>
+    `;
+    card.addEventListener('click', ()=>{
+      grid.querySelectorAll('.species-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedSpecies = sp.id;
+      $('hatchBtn').disabled = false;
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ============ EVOLUTION TREE MODAL ============ */
+function treeRow(emoji, title, sub, current){
+  return `<div class="tree-row">
+    <div class="tree-emoji">${emoji}</div>
+    <div>
+      <div class="${current?'tree-current':''}">${title}</div>
+      <div style="color:var(--ink-soft);font-size:.75rem;">${sub}</div>
+    </div>
+  </div>`;
+}
+function openTree(){
+  const body = $('treeBody');
+  const sp = speciesById(state.species);
+  let rows = '';
+  rows += treeRow(sp.emoji, `Baby ${sp.name}`, '0 นาที', state.stage==='baby');
+  rows += treeRow(sp.emoji, `Child ${sp.name}`, `${STAGE_MIN.child} นาที+`, state.stage==='child');
+  rows += treeRow(sp.emoji, `Teen ${sp.name}`, `${STAGE_MIN.teen} นาที+ · เลือกเส้นทางตามการดูแล`, state.stage==='teen');
+
+  let adultRows = '';
+  Object.keys(BRANCHES).forEach(key=>{
+    const b = BRANCHES[key];
+    const isCurrent = state.stage==='adult' && state.branch===key;
+    const isChosen = state.branch===key;
+    adultRows += `
+      <div class="tree-row">
+        <div class="tree-emoji">${b.badge}</div>
+        <div>
+          <div class="${isCurrent?'tree-current':''}">${sp.name} ${b.suffix} — ${b.label}</div>
+          <div style="color:var(--ink-soft);font-size:.75rem;">${b.desc}${isChosen && state.stage!=='adult' ? ' (เส้นทางที่กำลังมุ่งไป)' : ''}</div>
+        </div>
+      </div>`;
+  });
+
+  body.innerHTML = rows + `<div style="margin:8px 0 4px;font-weight:800;">Adult (${STAGE_MIN.adult} นาที+)</div>` + adultRows;
+  $('treeOverlay').classList.add('show');
+}
+
+/* ============ MINI-GAME (timing tap) ============ */
+let mgState = null;
+function openMinigame(){
+  mgState = { round:1, totalScore:0, running:true, startTime: performance.now(), speed: 1.4, rafId:null };
+  $('minigameOverlay').classList.add('show');
+  $('gameRoundInfo').textContent = `รอบ ${mgState.round} / 3`;
+  runMarkerLoop();
+}
+function markerPercent(elapsedSec, speed){
+  return (Math.sin(elapsedSec*speed)+1)/2*100;
+}
+function runMarkerLoop(){
+  function frame(now){
+    if(!mgState || !mgState.running) return;
+    const elapsed = (now - mgState.startTime)/1000;
+    const pos = markerPercent(elapsed, mgState.speed);
+    $('gameMarker').style.left = `calc(${pos}% - 7px)`;
+    mgState.rafId = requestAnimationFrame(frame);
+  }
+  mgState.rafId = requestAnimationFrame(frame);
+}
+function tapMinigame(){
+  if(!mgState || !mgState.running) return;
+  const elapsed = (performance.now() - mgState.startTime)/1000;
+  const pos = markerPercent(elapsed, mgState.speed);
+  const dist = Math.abs(pos-50);
+  let pts=0, msg='';
+  if(dist<=3){ pts=3; msg='เพอร์เฟกต์! 🌟'; }
+  else if(dist<=10){ pts=2; msg='ดีมาก! 👍'; }
+  else if(dist<=20){ pts=1; msg='พอใช้ 🙂'; }
+  else { pts=0; msg='พลาด! 😅'; }
+  mgState.totalScore += pts;
+  beep(pts>=2?880:220, .08);
+  $('gameRoundInfo').textContent = msg;
+
+  mgState.round++;
+  if(mgState.round>3){
+    mgState.running=false;
+    cancelAnimationFrame(mgState.rafId);
+    setTimeout(()=>{
+      $('minigameOverlay').classList.remove('show');
+      applyPlayResult(mgState.totalScore);
+      mgState = null;
+    }, 550);
+  } else {
+    mgState.speed += 0.5;
+    mgState.startTime = performance.now();
+    setTimeout(()=>{ if(mgState && mgState.running) $('gameRoundInfo').textContent = `รอบ ${mgState.round} / 3`; }, 500);
+  }
+}
+function skipMinigame(){
+  if(!mgState) return;
+  const remaining = 3 - mgState.round + 1;
+  mgState.totalScore += remaining; // 1 pt participation per remaining round
+  mgState.running = false;
+  if(mgState.rafId) cancelAnimationFrame(mgState.rafId);
+  $('minigameOverlay').classList.remove('show');
+  applyPlayResult(mgState.totalScore);
+  mgState = null;
+}
+
+/* ============ MAIN LOOP ============ */
+function tick(){
+  if(!state || !state.alive) return;
+  const now = Date.now();
+  const minutes = (now - state.lastUpdate)/60000;
+  state.lastUpdate = now;
+  advance(minutes);
+  checkEvolution();
+  applyTimeOfDay();
+  frameCycle++;
+  if(!state.alive){ saveGame(); beep(180,.3,'sawtooth'); showScreen('over'); return; }
+  saveGame();
+  renderAll();
+}
+
+function boot(){
+  applyTimeOfDay();
+  buildStars();
+  buildSpeciesGrid();
+
+  const loaded = loadGame();
+  if(loaded){
+    state = loaded;
+    const now = Date.now();
+    const offlineMinutes = (now - state.lastUpdate)/60000;
+    state.lastUpdate = now;
+    advance(offlineMinutes);
+    checkEvolution();
+    if(!state.alive){ showScreen('over'); }
+    else { showScreen('main'); renderAll(); }
+  } else {
+    showScreen('select');
+  }
+
+  setInterval(tick, 1000);
+}
+
+/* ============ EVENTS ============ */
+$('hatchBtn').addEventListener('click', ()=>{
+  if(!selectedSpecies) return;
+  const name = $('petNameInput').value.trim();
+  hatchPet(selectedSpecies, name);
+});
+$('btnFeed').addEventListener('click', doFeed);
+$('btnPlay').addEventListener('click', tryStartPlay);
+$('btnPet').addEventListener('click', doPet);
+$('btnBath').addEventListener('click', doBath);
+$('btnHeal').addEventListener('click', doHeal);
+$('btnRest').addEventListener('click', doRest);
+$('treeBtn').addEventListener('click', openTree);
+$('treeCloseBtn').addEventListener('click', ()=> $('treeOverlay').classList.remove('show'));
+$('gameTapBtn').addEventListener('click', tapMinigame);
+$('gameTrack').addEventListener('click', tapMinigame);
+$('gameSkipBtn').addEventListener('click', skipMinigame);
+$('resetBtn').addEventListener('click', ()=>{
+  if(confirm('เริ่มเกมใหม่? เพื่อนตัวปัจจุบันจะถูกลบ')){
+    wipeGame();
+    selectedSpecies = null;
+    $('hatchBtn').disabled = true;
+    $('petNameInput').value='';
+    document.querySelectorAll('.species-card').forEach(c=>c.classList.remove('selected'));
+    showScreen('select');
+  }
+});
+$('restartBtn').addEventListener('click', ()=>{
+  wipeGame();
+  selectedSpecies = null;
+  $('hatchBtn').disabled = true;
+  $('petNameInput').value='';
+  document.querySelectorAll('.species-card').forEach(c=>c.classList.remove('selected'));
+  showScreen('select');
+});
+
+boot();
+</script>
+</body>
+</html>
