@@ -2,1914 +2,996 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Harvest Hollow 3.0 Deluxe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Pal — Tamagotchi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;overflow:hidden;background:#140f0b;touch-action:none}
-body{font-family:"Trebuchet MS","Segoe UI",sans-serif;color:#3a2a1a;display:flex;align-items:center;justify-content:center;user-select:none}
-#wrap{position:relative;width:960px;height:576px;box-shadow:0 0 0 5px #6b4a2b,0 0 40px #000;border-radius:5px;overflow:hidden;transform-origin:center center;flex:none}
-canvas{display:block;image-rendering:pixelated;background:#6cbf4b;width:960px;height:576px}
-.hud{position:absolute;top:6px;left:6px;background:rgba(255,246,222,.93);border:3px solid #8a5a2b;border-radius:10px;padding:5px 9px;font-size:12.5px;line-height:1.4;min-width:206px;pointer-events:none}
-.hud b{color:#7a4a1a}
-.bar{height:8px;background:#c9b48f;border-radius:5px;overflow:hidden;margin-top:2px}
-.bar>i{display:block;height:100%;transition:width .2s}
-.money{position:absolute;top:6px;right:6px;background:rgba(255,246,222,.93);border:3px solid #8a5a2b;border-radius:10px;padding:5px 11px;font-size:14px;font-weight:bold;color:#a8760f;pointer-events:none}
-.side{position:absolute;right:6px;top:56px;display:flex;flex-direction:column;gap:4px;z-index:6}
-.side button{background:#ffe9bd;border:3px solid #8a5a2b;border-radius:9px;font-size:15px;width:38px;height:32px;cursor:pointer}
-.side button:active{background:#ffcf7a}
-#hotbar{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(255,246,222,.94);border:3px solid #8a5a2b;border-radius:10px;padding:4px;z-index:6}
-.slot{width:44px;height:44px;background:#e9d5ac;border:2px solid #b08a5a;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center;font-size:21px;cursor:pointer}
-.slot.sel{border-color:#ff9b21;background:#fff3d2;box-shadow:0 0 8px #ffb84d}
-.slot .q{position:absolute;right:2px;bottom:0;font-size:10px;font-weight:bold;text-shadow:0 0 3px #fff}
-.slot .k{position:absolute;left:3px;top:-1px;font-size:8px;color:#8a6a3a}
-.slot .lv{position:absolute;left:2px;bottom:0;font-size:8px;font-weight:bold;color:#b5651d}
-#modal{position:absolute;inset:0;background:rgba(20,12,6,.6);display:none;align-items:center;justify-content:center;z-index:30}
-.panel{background:#fff6de;border:5px solid #8a5a2b;border-radius:14px;padding:12px 14px;width:700px;max-height:500px;overflow:auto;box-shadow:0 8px 30px #000}
-.panel h2{font-size:18px;color:#7a4a1a;margin-bottom:7px;border-bottom:2px dashed #cbab7a;padding-bottom:4px}
-.panel h3{font-size:13.5px;color:#8a5a2b;margin:8px 0 4px}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
-.row{display:flex;align-items:center;gap:7px;padding:4px 6px;border:2px solid #d8bd90;border-radius:8px;background:#fffaf0;margin-bottom:3px;font-size:12.5px}
-.row .nm{flex:1}
-.row button,.mini{background:#8fd07a;border:2px solid #4e8a3a;border-radius:7px;padding:3px 9px;cursor:pointer;font-size:11.5px;font-weight:bold}
-.row button:active{background:#a7e691}
-.row button:disabled{background:#ccc;border-color:#999;cursor:not-allowed}
-.close{float:right;background:#ef8a7a;border:2px solid #a44;border-radius:7px;padding:2px 10px;cursor:pointer;font-weight:bold}
-.tabs{display:flex;gap:4px;margin-bottom:7px;flex-wrap:wrap}
-.tb{background:#ffe9bd;border:3px solid #8a5a2b;border-radius:9px;padding:3px 10px;font-size:12px;cursor:pointer}
-.tb.on{background:#ffcf7a}
-.tag{font-size:10.5px;color:#8a6a3a}
-.done{background:#e6f7e0!important;border-color:#8fd07a!important}
-#title,#dayend{position:absolute;inset:0;background:linear-gradient(#2b4a2b,#13201a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:40;color:#ffe9bd;text-align:center;padding:14px}
-#title h1{font-size:40px;text-shadow:3px 3px 0 #4a2a10}
-#title p{font-size:12.5px;opacity:.85;max-width:640px;line-height:1.6}
-.big{background:#ffcf7a;border:4px solid #8a5a2b;border-radius:12px;padding:8px 26px;font-size:16px;font-weight:bold;cursor:pointer;color:#5a3a12}
-#dayend{display:none;background:rgba(10,8,20,.94)}
-#dayend .box{background:#fff6de;color:#3a2a1a;border:5px solid #8a5a2b;border-radius:14px;padding:16px;width:500px;max-height:450px;overflow:auto}
-#toast{position:absolute;top:62px;left:50%;transform:translateX(-50%);z-index:25;display:flex;flex-direction:column;gap:3px;align-items:center;pointer-events:none;width:80%}
-.tst{background:rgba(40,26,14,.92);color:#ffe9bd;padding:5px 13px;border-radius:14px;font-size:12.5px;animation:fade 2.8s forwards;text-align:center}
-@keyframes fade{0%{opacity:0;transform:translateY(8px)}10%{opacity:1;transform:none}72%{opacity:1}100%{opacity:0}}
-/* ---- mobile controls ---- */
-#mob{position:absolute;inset:0;z-index:20;display:none;pointer-events:none}
-#stick{position:absolute;left:14px;bottom:60px;width:118px;height:118px;border-radius:50%;background:rgba(255,246,222,.28);border:3px solid rgba(138,90,43,.65);pointer-events:auto;touch-action:none}
-#knob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(255,207,122,.9);border:3px solid #8a5a2b}
-#btns{position:absolute;right:12px;bottom:56px;width:150px;height:150px;pointer-events:none}
-#btns button{position:absolute;pointer-events:auto;border:3px solid #8a5a2b;border-radius:50%;background:rgba(255,233,189,.92);font-size:22px;cursor:pointer}
-#bA{right:0;bottom:46px;width:74px;height:74px;font-size:28px}
-#bB{right:78px;bottom:6px;width:56px;height:56px}
-#bPrev{right:80px;bottom:74px;width:46px;height:46px;font-size:17px}
-#bNext{right:6px;bottom:0px;width:46px;height:46px;font-size:17px}
+  :root{
+    --sky-top:#8ecae6; --sky-bot:#c8f0ff;
+    --card:#ffffff; --ink:#2b2140; --ink-soft:#6b6280;
+    --pink:#ff6fa5; --mint:#3ddc97; --sun:#ffd166; --lav:#9d8cff;
+    --bar-track:#eee7f7; --shadow:rgba(43,33,64,.18);
+    --lcd:#c7d9c0; --lcd-dark:#26362b;
+  }
+  [data-time="night"]{
+    --sky-top:#151a3d; --sky-bot:#2c2f6b;
+    --card:#211f3b; --ink:#f1edff; --ink-soft:#b9b3d9;
+    --bar-track:#332f57; --shadow:rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-family:'Nunito',sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));
+    transition:background 1.2s ease, color .4s ease;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px 14px;
+    overflow-x:hidden;
+  }
+  .stars{position:fixed; inset:0; pointer-events:none; opacity:0; transition:opacity 1s;}
+  [data-time="night"] .stars{opacity:1;}
+  .star{position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; animation:twinkle 3s infinite ease-in-out;}
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:1}}
+
+  .app{ width:100%; max-width:420px; }
+
+  h1.brand{
+    font-family:'Press Start 2P', monospace; font-weight:400;
+    font-size:1rem; text-align:center; margin:0 0 6px;
+    letter-spacing:1px;
+  }
+  .sub{ text-align:center; color:var(--ink-soft); font-size:.85rem; margin:0 0 18px; }
+
+  .card{
+    background:var(--card);
+    border-radius:28px;
+    padding:22px 20px 26px;
+    box-shadow:0 18px 40px var(--shadow);
+    transition:background .4s ease;
+  }
+
+  /* ---------- Species select ---------- */
+  .species-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;
+  }
+  .species-card{
+    border:3px solid transparent;
+    border-radius:20px;
+    padding:14px 10px 12px;
+    text-align:center;
+    cursor:pointer;
+    background:var(--bar-track);
+    transition:transform .15s ease, border-color .15s ease;
+    user-select:none;
+  }
+  .species-card:hover{ transform:translateY(-3px); }
+  .species-card.selected{ border-color:var(--pink); }
+  .species-emoji{
+    width:52px; height:52px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; margin:0 auto 8px;
+  }
+  .species-name{ font-weight:800; font-size:.95rem; }
+  .species-tag{ font-size:.72rem; color:var(--ink-soft); margin-top:2px; }
+
+  .name-input{
+    width:100%; margin-top:16px; padding:12px 14px;
+    border-radius:14px; border:2px solid var(--bar-track);
+    font-family:'Nunito',sans-serif; font-size:.95rem;
+    background:var(--bar-track); color:var(--ink);
+  }
+  .name-input:focus{ outline:2px solid var(--pink); }
+
+  .big-btn{
+    width:100%; margin-top:16px; padding:14px;
+    border:none; border-radius:16px;
+    font-weight:800; font-size:1.02rem;
+    color:#fff; background:var(--pink);
+    cursor:pointer; transition:transform .12s ease, filter .12s ease;
+  }
+  .big-btn:hover{ filter:brightness(1.06); }
+  .big-btn:active{ transform:scale(.97); }
+  .big-btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  /* ---------- Main pet screen ---------- */
+  .topbar{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
+  .pet-name{ font-weight:800; font-size:1.2rem; }
+  .pet-stage{
+    font-size:.68rem; color:#fff; background:var(--lav);
+    padding:4px 10px; border-radius:20px; font-weight:700; white-space:nowrap;
+  }
+  .age-line{ color:var(--ink-soft); font-size:.78rem; margin-bottom:14px;}
+
+  /* ---- retro device shell ---- */
+  .device-shell{
+    width:216px; margin:0 auto 16px;
+    padding:16px 14px 20px;
+    border-radius:46px 46px 30px 30px;
+    box-shadow:0 14px 26px var(--shadow), inset 0 -8px 14px rgba(0,0,0,.12);
+    position:relative;
+    transition:background .4s ease;
+  }
+  .speaker-dots{ display:flex; justify-content:center; gap:6px; margin-bottom:8px; }
+  .speaker-dots span{ width:5px; height:5px; border-radius:50%; background:rgba(0,0,0,.22); }
+
+  .lcd-screen{
+    background:var(--lcd);
+    border-radius:14px;
+    margin:0 auto 12px;
+    width:172px; height:158px;
+    position:relative;
+    box-shadow:inset 0 3px 10px rgba(0,0,0,.3);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  [data-time="night"] .lcd-screen{ background:var(--lcd-dark); }
+  .lcd-screen::before{
+    content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0px, rgba(0,0,0,.07) 1px, transparent 1px, transparent 3px);
+  }
+  .pixel-grid{
+    display:grid; grid-template-columns:repeat(13,9px); grid-template-rows:repeat(13,9px);
+    position:relative; z-index:1;
+    transition:transform .3s steps(1); /* สำหรับแอนิเมชันเดิน */
+  }
+  .pixel-cell{ width:9px; height:9px; }
+
+  .lcd-zzz{
+    position:absolute; top:6px; right:8px; z-index:3;
+    font-family:'Press Start 2P', monospace; font-size:.6rem; color:rgba(0,0,0,.45);
+  }
+  [data-time="night"] .lcd-zzz{ color:rgba(255,255,255,.55); }
+
+  .lcd-alert{
+    position:absolute; top:6px; left:8px; z-index:3;
+    font-size:.9rem; opacity:0; transition:opacity .2s;
+  }
+  .lcd-alert.show{ opacity:1; animation:blink 1s steps(1) infinite; }
+  
+  .lcd-sick{
+    position:absolute; top:28px; left:8px; z-index:3;
+    font-size:.9rem; opacity:0; transition:opacity .2s;
+  }
+  .lcd-sick.show{ opacity:1; animation:blink 1.5s steps(1) infinite; }
+
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .device-buttons{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; justify-content:center; }
+  .dev-btn{
+    width:34px; height:34px; border-radius:50%; border:none;
+    background:rgba(255,255,255,.55);
+    box-shadow:0 3px 0 rgba(0,0,0,.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.85rem; margin:0 auto;
+  }
+
+  .bars{ display:flex; flex-direction:column; gap:9px; margin-bottom:16px; }
+  .bar-row{ display:flex; align-items:center; gap:8px; }
+  .bar-icon{ width:22px; text-align:center; font-size:1rem; }
+  .bar-track{
+    flex:1; height:12px; background:var(--bar-track); border-radius:10px; overflow:hidden;
+  }
+  .bar-fill{ height:100%; border-radius:10px; transition:width .5s ease, background .4s ease; }
+  .bar-pct{ width:32px; text-align:right; font-size:.72rem; color:var(--ink-soft); }
+
+  .actions{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .action-btn{
+    border:none; border-radius:14px; padding:10px 4px 8px;
+    background:var(--bar-track); color:var(--ink);
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:.68rem;
+    cursor:pointer; transition:transform .1s ease, background .2s ease;
+  }
+  .action-btn span.ic{ font-size:1.25rem; }
+  .action-btn:hover{ background:#e4dcf6; }
+  .action-btn:active{ transform:scale(.94); }
+  .action-btn.active-toggle{ background:var(--lav); color:#fff; }
+  .action-btn:disabled{ opacity:.35; cursor:not-allowed; }
+
+  .log{
+    margin-top:14px; font-size:.78rem; color:var(--ink-soft);
+    min-height:18px; text-align:center; transition:opacity .3s;
+  }
+
+  .footer-row{ display:flex; justify-content:center; margin-top:10px; gap:0; }
+  .link-btn{
+    background:none; border:none; color:var(--ink-soft); font-size:.72rem;
+    text-decoration:underline; cursor:pointer; font-family:'Nunito',sans-serif;
+  }
+
+  /* generic overlay/modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(20,15,35,.55);
+    display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background:var(--card); border-radius:24px; padding:22px 20px; max-width:380px; width:100%;
+    max-height:80vh; overflow-y:auto;
+  }
+  .modal h2{ font-family:'Press Start 2P', monospace; font-weight:400; margin:0 0 12px; font-size:.85rem; }
+  .tree-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed var(--bar-track); font-size:.85rem;}
+  .tree-emoji{ font-size:1.3rem; width:30px; text-align:center;}
+  .tree-current{ font-weight:800; color:var(--pink); }
+  .modal-close{ margin-top:14px; }
+
+  .gameover-emoji{ font-size:3rem; text-align:center; margin-bottom:8px; }
+  .gameover-text{ text-align:center; color:var(--ink-soft); font-size:.9rem; margin-bottom:6px; }
+
+  /* mini-game */
+  .game-track{ position:relative; height:38px; background:var(--bar-track); border-radius:20px; margin:14px 0 6px; overflow:hidden; cursor:pointer; }
+  .game-zone{ position:absolute; top:0; bottom:0; left:44%; width:12%; background:var(--mint); opacity:.55; }
+  .game-marker{ position:absolute; top:3px; bottom:3px; width:14px; border-radius:7px; background:var(--pink); left:0%; }
+  .game-round-info{ text-align:center; font-size:.8rem; margin:6px 0 10px; color:var(--ink-soft); min-height:16px; }
+
+  @media (max-width:380px){
+    .species-emoji{ width:44px; height:44px; font-size:22px;}
+    .device-shell{ width:192px; }
+    .lcd-screen{ width:152px; height:140px; }
+  }
 </style>
 </head>
 <body>
-<div id="wrap">
-<canvas id="cv" width="960" height="576"></canvas>
-<div class="hud">
- <div><b id="hDate">-</b> <span id="hTime"></span> <span id="hW"></span></div>
- <div>⚡<span id="hE"></span><div class="bar"><i id="bE" style="background:#7ed957"></i></div></div>
- <div>❤️<span id="hH"></span><div class="bar"><i id="bH" style="background:#ff6b6b"></i></div></div>
- <div id="hExtra" class="tag"></div>
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <h1 class="brand">POCKET PAL</h1>
+  <p class="sub">เพื่อนตัวจิ๋วสไตล์ทามาก็อตโบราณ ที่โตไปตามการดูแลของคุณ แม้ปิดหน้าจอไปก็ยังโตต่อ</p>
+
+  <!-- SPECIES SELECT SCREEN -->
+  <div class="card" id="screen-select">
+    <div style="font-weight:800;font-size:1.05rem;">เลือกไข่ตัวแรกของคุณ</div>
+    <div class="species-grid" id="speciesGrid"></div>
+    <input class="name-input" id="petNameInput" maxlength="14" placeholder="ตั้งชื่อให้เพื่อนตัวนี้ (ไม่บังคับ)">
+    <button class="big-btn" id="hatchBtn" disabled>ฟักไข่ 🐣</button>
+  </div>
+
+  <!-- MAIN PET SCREEN -->
+  <div class="card" id="screen-main" style="display:none;">
+    <div class="topbar">
+      <div class="pet-name" id="petNameLabel">—</div>
+      <div class="pet-stage" id="petStageLabel">Baby</div>
+    </div>
+    <div class="age-line" id="ageLine">อายุ: —</div>
+
+    <div class="device-shell" id="deviceShell">
+      <div class="speaker-dots"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="lcd-screen" id="lcdScreen">
+        <div class="lcd-alert" id="lcdAlert">❗</div>
+        <div class="lcd-sick" id="lcdSick">🤒</div>
+        <div class="lcd-zzz" id="lcdZzz" style="display:none;">Zzz</div>
+        <div class="pixel-grid" id="pixelGrid"></div>
+      </div>
+      <div class="device-buttons">
+        <button class="dev-btn">A</button><button class="dev-btn">B</button><button class="dev-btn">C</button>
+      </div>
+    </div>
+
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-icon">🍖</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-hunger" style="background:var(--sun);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-hunger">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">💗</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-happy" style="background:var(--pink);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-happy">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">⚡</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-energy" style="background:var(--lav);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-energy">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">🫧</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-hygiene" style="background:#5fd4f0;width:100%;"></div></div>
+        <div class="bar-pct" id="pct-hygiene">100%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-icon">❤️</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-health" style="background:var(--mint);width:100%;"></div></div>
+        <div class="bar-pct" id="pct-health">100%</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" id="btnFeed"><span class="ic">🍖</span>ให้อาหาร</button>
+      <button class="action-btn" id="btnPlay"><span class="ic">🎾</span>เล่นด้วยกัน</button>
+      <button class="action-btn" id="btnPet"><span class="ic">🤍</span>ลูบหัว</button>
+      <button class="action-btn" id="btnBath"><span class="ic">🫧</span>อาบน้ำ</button>
+      <button class="action-btn" id="btnHeal"><span class="ic">💊</span>รักษา</button>
+      <button class="action-btn" id="btnRest"><span class="ic">💤</span>พักผ่อน</button>
+    </div>
+
+    <div class="log" id="logLine">&nbsp;</div>
+
+    <div class="footer-row">
+      <button class="link-btn" id="treeBtn">ดูสายพันธุ์การโต 🌳</button>
+      <span style="color:var(--ink-soft);">&nbsp;·&nbsp;</span>
+      <button class="link-btn" id="resetBtn">เริ่มใหม่</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="card" id="screen-over" style="display:none;">
+    <div class="gameover-emoji">💔</div>
+    <div class="gameover-text" id="overText">เพื่อนของคุณจากไปแล้ว...</div>
+    <button class="big-btn" id="restartBtn">ฟักไข่ตัวใหม่</button>
+  </div>
 </div>
-<div class="money">💰 <span id="hMoney">0</span></div>
-<div class="side">
- <button onclick="UI.inventory()" title="กระเป๋า">🎒</button>
- <button onclick="UI.craft()" title="คราฟต์">🔨</button>
- <button onclick="UI.skills()" title="ทักษะ">⭐</button>
- <button onclick="UI.journal()" title="สมุดบันทึก">📔</button>
- <button onclick="UI.map()" title="แผนที่">🗺️</button>
- <button onclick="toggleMobile()" title="จอยมือถือ">📱</button>
- <button onclick="saveGame(1)" title="บันทึก">💾</button>
- <button onclick="UI.help()" title="วิธีเล่น">❓</button>
+
+<!-- Evolution tree modal -->
+<div class="overlay" id="treeOverlay">
+  <div class="modal">
+    <h2>EVOLUTION TREE</h2>
+    <div id="treeBody"></div>
+    <button class="big-btn modal-close" id="treeCloseBtn">ปิด</button>
+  </div>
 </div>
-<div id="hotbar"></div>
-<div id="toast"></div>
-<div id="mob">
- <div id="stick"><div id="knob"></div></div>
- <div id="btns">
-  <button id="bA">✋</button><button id="bB">🎒</button>
-  <button id="bPrev">◀</button><button id="bNext">▶</button>
- </div>
+
+<!-- Mini-game modal -->
+<div class="overlay" id="minigameOverlay">
+  <div class="modal">
+    <h2>MINI GAME</h2>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin:0;">แตะปุ่ม (หรือแตะที่แถบ) ตอนตัวชี้อยู่ในโซนสีเขียวให้ได้มากที่สุด — 3 รอบ</p>
+    <div class="game-track" id="gameTrack">
+      <div class="game-zone"></div>
+      <div class="game-marker" id="gameMarker"></div>
+    </div>
+    <div class="game-round-info" id="gameRoundInfo">รอบ 1 / 3</div>
+    <button class="big-btn" id="gameTapBtn">แตะ!</button>
+    <button class="link-btn" id="gameSkipBtn" style="display:block;margin:10px auto 0;">ข้ามมินิเกม</button>
+  </div>
 </div>
-<div id="modal"><div class="panel" id="panel"></div></div>
-<div id="dayend"><div class="box" id="deBox"></div></div>
-<div id="title">
- <h1>🌻 Harvest Hollow 3.0</h1>
- <p>ฟาร์มซิมแบบ point &amp; click เต็มรูปแบบ — 9 แผนที่ · พืช 13 ชนิด · เหมือง 100 ชั้นพร้อมบอส · อาวุธ/เกราะ ·
- พิพิธภัณฑ์สะสมของ · เทศกาล 4 ฤดู · NPC 8 คนมีตารางเวลาและวันเกิด · แต่งงาน มีลูก · สัตว์เลี้ยง ม้า ·
- เครื่องแปรรูป 8 ชนิด · ความสำเร็จ 18 รายการ · 🌟 ระบบเลือกความสามารถพิเศษ Lv.5/10 ทุกทักษะ ·
- 🛒 พ่อค้าเร่ลึกลับสุ่มมาที่เมือง</p>
- <button class="big" onclick="startGame(false)">🌱 เริ่มเกมใหม่</button>
- <button class="big" id="btnLoad" style="display:none" onclick="startGame(true)">💾 เล่นต่อ</button>
- <p style="font-size:11.5px">คอมพ์: คลิกซ้าย · 1-9 เลือกช่อง · WASD เดิน &nbsp;|&nbsp; มือถือ: กดปุ่ม 📱 เปิดจอยสติ๊ก</p>
-</div>
-</div>
+
 <script>
-/* ==================================================================
-   Harvest Hollow 3.0 Deluxe — original single-file farming sim
-   ================================================================== */
-const TS=48,GW=20,GH=12,W=960,H=576;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1));
-const pick=a=>a[Math.floor(Math.random()*a.length)];
-const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
-const chance=p=>Math.random()<p;
-function hash(x,y){let h=x*374761393+y*668265263;h=(h^(h>>13))*1274126177;return((h^(h>>16))>>>0)/4294967296;}
-/* ---------------- AUDIO ---------------- */
-let AC=null;
-function ac(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();return AC;}
-function snd(f,d,t='square',v=.05,sl=0){try{const a=ac(),o=a.createOscillator(),g=a.createGain();o.type=t;
- o.frequency.setValueAtTime(f,a.currentTime);
- if(sl)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+sl),a.currentTime+d);
- g.gain.setValueAtTime(v,a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+d);
- o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d);}catch(e){}}
-function noise(d=.18,v=.07,hz=1200){try{const a=ac(),b=a.createBuffer(1,a.sampleRate*d,a.sampleRate),c=b.getChannelData(0);
- for(let i=0;i<c.length;i++)c[i]=(Math.random()*2-1)*(1-i/c.length);
- const s=a.createBufferSource();s.buffer=b;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=hz;
- const g=a.createGain();g.gain.value=v;s.connect(f);f.connect(g);g.connect(a.destination);s.start();}catch(e){}}
-const SFX={
-till:()=>{noise(.2,.08,900);snd(160,.12,'sine',.04,-60)},
-water:()=>{snd(900,.28,'sine',.05,-620);noise(.2,.03,3000)},
-plant:()=>{snd(520,.1,'triangle',.05);setTimeout(()=>snd(780,.12,'triangle',.05),70)},
-harvest:()=>{[660,880,1170].forEach((f,i)=>setTimeout(()=>snd(f,.11,'triangle',.05),i*60))},
-chop:()=>{noise(.22,.1,600);snd(120,.14,'square',.04,-50)},
-mine:()=>{noise(.18,.1,1800);snd(240,.1,'square',.04,-120)},
-coin:()=>{[1050,1400].forEach((f,i)=>setTimeout(()=>snd(f,.1,'square',.045),i*70))},
-lvl:()=>{[520,660,780,1040].forEach((f,i)=>setTimeout(()=>snd(f,.16,'triangle',.06),i*95))},
-wed:()=>{[523,659,784,1046,784,1046,1318].forEach((f,i)=>setTimeout(()=>snd(f,.3,'triangle',.06),i*180))},
-mach:()=>{snd(300,.14,'sawtooth',.04,120);setTimeout(()=>noise(.15,.04,700),90)},
-sword:()=>{noise(.1,.06,3000);snd(520,.09,'sawtooth',.04,-300)},
-boss:()=>{[110,98,87,82].forEach((f,i)=>setTimeout(()=>snd(f,.5,'sawtooth',.07,-20),i*260))},
-err:()=>snd(180,.16,'sawtooth',.04,-60),
-pop:()=>snd(680,.07,'square',.04),
-hit:()=>{noise(.12,.09,900);snd(90,.15,'sawtooth',.05,-40)}};
-/* ---------------- CROPS ---------------- */
-const SEASONS=['spring','summer','fall','winter'];
-const SE_TH={spring:'ฤดูใบไม้ผลิ',summer:'ฤดูร้อน',fall:'ฤดูใบไม้ร่วง',winter:'ฤดูหนาว'};
-const CROPS={
-parsnip:{n:'พาร์สนิป',e:'🥕',days:4,re:0,sell:35,seed:20,s:['spring'],c:'#f3e3a4',f:'#e8c86a'},
-potato:{n:'มันฝรั่ง',e:'🥔',days:6,re:0,sell:80,seed:50,s:['spring'],c:'#caa06a',f:'#b98d55'},
-cauliflower:{n:'กะหล่ำ',e:'🥦',days:11,re:0,sell:175,seed:80,s:['spring'],c:'#f2f6e2',f:'#eef3d8'},
-strawberry:{n:'สตรอว์เบอร์รี',e:'🍓',days:8,re:4,sell:120,seed:100,s:['spring'],c:'#ff5d6c',f:'#e03a4c'},
-tomato:{n:'มะเขือเทศ',e:'🍅',days:11,re:4,sell:60,seed:50,s:['summer'],c:'#ef4b3a',f:'#d13525'},
-blueberry:{n:'บลูเบอร์รี',e:'🫐',days:13,re:4,sell:80,seed:80,s:['summer'],c:'#5c7bd8',f:'#3f5bbd'},
-melon:{n:'เมล่อน',e:'🍈',days:12,re:0,sell:250,seed:80,s:['summer'],c:'#a8d86a',f:'#8cc44e'},
-wheat:{n:'ข้าวสาลี',e:'🌾',days:4,re:0,sell:25,seed:10,s:['summer','fall'],c:'#e3c96a',f:'#d4b44e'},
-corn:{n:'ข้าวโพด',e:'🌽',days:14,re:4,sell:50,seed:150,s:['summer','fall'],c:'#f6d64b',f:'#e8c22f'},
-pumpkin:{n:'ฟักทอง',e:'🎃',days:13,re:0,sell:320,seed:100,s:['fall'],c:'#f28a1c',f:'#d97310'},
-eggplant:{n:'มะเขือม่วง',e:'🍆',days:5,re:5,sell:60,seed:20,s:['fall'],c:'#8a4bb8',f:'#6f379a'},
-cranberry:{n:'แครนเบอร์รี',e:'🍒',days:7,re:5,sell:75,seed:240,s:['fall'],c:'#d62e3f',f:'#b01d2e'},
-winterroot:{n:'รากหิมะ',e:'🥔',days:8,re:0,sell:150,seed:120,s:['winter'],c:'#dcd6c6',f:'#bfb8a4'}};
-const FRUITS=['strawberry','blueberry','melon','tomato','cranberry'];
-/* ---------------- ITEMS ---------------- */
-const ITEMS={};
-const I=(id,n,e,p,o={})=>ITEMS[id]=Object.assign({id,n,e,p},o);
-I('hoe','จอบ','⛏️',0,{type:'tool',tool:'hoe'});I('can','บัวรดน้ำ','🚿',0,{type:'tool',tool:'can'});
-I('axe','ขวาน','🪓',0,{type:'tool',tool:'axe'});I('pick','อีเต้อ','🔨',0,{type:'tool',tool:'pick'});
-I('rod','คันเบ็ด','🎣',0,{type:'tool',tool:'rod'});I('pail','ถังรีดนม','🥛',0,{type:'tool',tool:'pail'});
-I('shears','กรรไกร','✂️',0,{type:'tool',tool:'shears'});
-/* weapons */
-I('sword','ดาบสนิม','🗡️',60,{type:'tool',tool:'sword',dmg:6});
-I('steelsword','ดาบเหล็กกล้า','⚔️',900,{type:'tool',tool:'sword',dmg:15});
-I('obsidianblade','ดาบออบซิเดียน','🔪',4500,{type:'tool',tool:'sword',dmg:28});
-I('galaxysword','ดาบกาแล็กซี','🌟',20000,{type:'tool',tool:'sword',dmg:48});
-/* armor */
-I('leathervest','เสื้อหนัง','🦺',600,{type:'armor',def:2});
-I('ironarmor','เกราะเหล็ก','🛡️',3000,{type:'armor',def:6});
-I('obsidianarmor','เกราะออบซิเดียน','🥋',12000,{type:'armor',def:12});
-I('leatherboots','รองเท้าหนัง','🥾',500,{type:'boots',spd:.35});
-I('speedboots','รองเท้าลมกรด','👟',3500,{type:'boots',spd:.9});
-for(const k in CROPS){const c=CROPS[k];I(k,c.n,c.e,c.sell,{type:'crop'});I(k+'_seed','เมล็ด'+c.n,'🌱'+c.e,c.seed,{type:'seed',crop:k});}
-I('wood','ไม้','🪵',8);I('hardwood','ไม้เนื้อแข็ง','🟫',80);I('stone','หิน','🪨',5);
-I('fiber','ใยพืช','🍃',3);I('hay','หญ้าแห้ง','🌿',25);I('sap','ยางไม้','🧴',4);
-I('coal','ถ่านหิน','⚫',60);I('copper','แร่ทองแดง','🟠',75);I('iron','แร่เหล็ก','⚙️',150);
-I('gold','แร่ทองคำ','🟡',320);I('iridium','แร่อิริเดียม','🟣',1000);I('geode','ก้อนหินลึกลับ','🪨',60);
-I('copperbar','แท่งทองแดง','🟧',180);I('ironbar','แท่งเหล็ก','⬜',360);I('goldbar','แท่งทองคำ','🟨',720);
-I('iridiumbar','แท่งอิริเดียม','🟪',2400);
-const MINERALS=['quartz','amethyst','topaz','emerald','ruby','jade','diamond','prismatic'];
-I('quartz','ควอตซ์','🔮',60);I('amethyst','อเมทิสต์','💜',200);I('topaz','โทแพซ','🔶',160);
-I('emerald','มรกต','💚',450);I('ruby','ทับทิม','❤️',500);I('jade','หยก','🟩',350);
-I('diamond','เพชร','💎',900);I('prismatic','ผลึกปริซึม','🌈',5000);
-const ARTIFACTS=['ancientdoll','dinoegg','ancientcoin','fossil','rustyspoon','goldmask','amphora','elvenshoe','ancientseed'];
-I('ancientdoll','ตุ๊กตาโบราณ','🪆',200);I('dinoegg','ไข่ไดโนเสาร์','🥚',700);I('ancientcoin','เหรียญโบราณ','🪙',250);
-I('fossil','ฟอสซิล','🦴',300);I('rustyspoon','ช้อนสนิม','🥄',60);I('goldmask','หน้ากากทองคำ','🎭',900);
-I('amphora','ไหโบราณ','🏺',400);I('elvenshoe','รองเท้าเอลฟ์','👞',280);I('ancientseed','เมล็ดโบราณ','🌰',350);
-I('egg','ไข่','🥚',60);I('bigegg','ไข่ใบใหญ่','🥚',110);I('milk','นมสด','🥛',130);
-I('bigmilk','นมคุณภาพ','🍼',200);I('wool','ขนแกะ','🧶',180);I('truffle','เห็ดทรัฟเฟิล','🍄',900);
-I('mushroom','เห็ดป่า','🍄',60);I('berry','ผลไม้ป่า','🫐',45);I('leek','ต้นหอมป่า','🌿',60);
-I('flower','ดอกไม้ป่า','🌸',50);I('coconut','มะพร้าว','🥥',100);I('shell','เปลือกหอย','🐚',60);
-I('coral','ปะการัง','🪸',120);I('seaweed','สาหร่าย','🌿',40);I('snowyam','มันหิมะ','🍠',150);
-I('crocus','ดอกคร็อกคัส','💮',120);I('slimeball','ก้อนสไลม์','🟢',30);I('batwing','ปีกค้างคาว','🦇',50);
-I('bone','เศษกระดูก','🦴',70);I('essence','แก่นความมืด','🌑',180);I('goldslime','สไลม์ทองคำ','🟡',800);
-I('honey','น้ำผึ้ง','🍯',260);I('sprinkler','สปริงเกลอร์','💦',300,{type:'place'});
-I('qsprinkler','สปริงเกลอร์คุณภาพ','🌀',700,{type:'place'});I('iprinkler','สปริงเกลอร์อิริเดียม','🔱',2500,{type:'place'});
-I('scarecrow','หุ่นไล่กา','🎭',150,{type:'place'});I('fert','ปุ๋ยเร่งโต','🧪',100,{type:'fert'});
-I('qfert','ปุ๋ยคุณภาพ','⚗️',260,{type:'fert'});I('torch','คบไฟ','🔥',60,{type:'place'});
-I('chest_item','หีบเก็บของ','🧰',0,{type:'place'});
-I('smallpotion','ยาฟื้นฟู','🧴',150,{type:'potion',hp:50});
-I('largepotion','ยาฟื้นฟูใหญ่','🍶',400,{type:'potion',hp:130});
-I('energydrink','น้ำชูกำลัง','🥤',300,{type:'potion',en:120});
-I('bomb','ระเบิด','💣',250,{type:'bomb'});
-I('bouquet','ช่อดอกไม้','💐',800,{type:'gift'});I('ring','แหวนหอยมุก','💍',5000,{type:'gift'});
-I('cheese','ชีส','🧀',460,{type:'art'});I('mayo','มายองเนส','🥫',190,{type:'art'});
-I('bigmayo','มายองเนสพิเศษ','🥫',285,{type:'art'});I('cloth','ผ้าทอ','🧵',470,{type:'art'});
-I('beer','เบียร์ข้าวสาลี','🍺',200,{type:'art'});I('mead','น้ำผึ้งหมัก','🍯',400,{type:'art'});
-I('truffleoil','น้ำมันทรัฟเฟิล','🫗',1400,{type:'art'});
-for(const k in CROPS){const c=CROPS[k];if(k==='wheat')continue;
- if(FRUITS.includes(k)){I(k+'_wine','ไวน์'+c.n,'🍷',c.sell*3,{type:'art'});I(k+'_jam','แยม'+c.n,'🍯',c.sell*2+50,{type:'art'});}
- else{I(k+'_juice','น้ำ'+c.n,'🧃',Math.round(c.sell*2.25),{type:'art'});I(k+'_pickle',c.n+'ดอง','🫙',c.sell*2+50,{type:'art'});}}
-/* fish */
-const FISH=[
-{id:'carp',n:'ปลาคาร์ป',e:'🐟',p:45,d:.30},{id:'bass',n:'ปลากะพง',e:'🐠',p:90,d:.45},
-{id:'trout',n:'ปลาเทราต์',e:'🐡',p:130,d:.55},{id:'catfish',n:'ปลาดุกยักษ์',e:'🐋',p:230,d:.70},
-{id:'pike',n:'ปลาไพก์',e:'🦈',p:180,d:.65},{id:'eel',n:'ปลาไหล',e:'🐍',p:160,d:.60},
-{id:'sardine',n:'ปลาซาร์ดีน',e:'🐟',p:60,d:.35},{id:'tuna',n:'ปลาทูน่า',e:'🐟',p:280,d:.68},
-{id:'octopus',n:'ปลาหมึกยักษ์',e:'🐙',p:420,d:.80},{id:'lobster',n:'กุ้งมังกร',e:'🦞',p:320,d:.72},
-{id:'crab',n:'ปู',e:'🦀',p:180,d:.58},{id:'pufferfish',n:'ปลาปักเป้า',e:'🐡',p:360,d:.78},
-{id:'rainbowtrout',n:'เทราต์สายรุ้ง',e:'🌈',p:240,d:.66},{id:'sturgeon',n:'ปลาสเตอร์เจียน',e:'🐋',p:520,d:.85},
-{id:'icefish',n:'ปลาน้ำแข็ง',e:'🧊',p:280,d:.70},{id:'legend',n:'ปลาในตำนาน',e:'🐉',p:2500,d:.96},
-{id:'boot',n:'รองเท้าเก่า',e:'🥾',p:5,d:.15},{id:'trash',n:'กระป๋องสนิม',e:'🥫',p:2,d:.12}];
-FISH.forEach(f=>I(f.id,f.n,f.e,f.p,{type:'fish'}));
-const FISHLOC={
- forest:['carp','bass','trout','eel','catfish','pike','boot','trash'],
- beach:['sardine','tuna','octopus','lobster','crab','pufferfish','boot','trash'],
- mountain:['rainbowtrout','sturgeon','icefish','carp','trout','boot'],
- mine:['icefish','eel','carp','trash'],town:['carp','bass','boot','trash']};
-/* foods */
-const FOODS={
-friedegg:{n:'ไข่ดาว',e:'🍳',p:90,en:60,hp:20,rec:{egg:1}},
-salad:{n:'สลัดป่า',e:'🥗',p:120,en:80,hp:25,rec:{leek:1,mushroom:1}},
-farmstew:{n:'สตูว์ฟาร์ม',e:'🍲',p:220,en:120,hp:45,rec:{potato:1,parsnip:1,milk:1}},
-fishdish:{n:'ปลาย่าง',e:'🍖',p:260,en:140,hp:50,rec:{carp:1,fiber:2}},
-sashimi:{n:'ซาชิมิ',e:'🍣',p:420,en:150,hp:60,rec:{tuna:1,seaweed:1},buff:{luck:.05}},
-pie:{n:'พายฟักทอง',e:'🥧',p:500,en:220,hp:90,rec:{pumpkin:1,milk:1,egg:1}},
-cookie:{n:'คุกกี้',e:'🍪',p:140,en:90,hp:30,rec:{wheat:2,egg:1}},
-pizza:{n:'พิซซ่าชีส',e:'🍕',p:600,en:250,hp:100,rec:{cheese:1,wheat:2,tomato:1}},
-seafoodsoup:{n:'ซุปทะเล',e:'🍜',p:680,en:260,hp:110,rec:{lobster:1,crab:1,seaweed:1},buff:{spd:.6}},
-minerscoffee:{n:'กาแฟนักขุด',e:'☕',p:350,en:130,hp:20,rec:{berry:2,honey:1},buff:{spd:.9}},
-luckystew:{n:'สตูว์นำโชค',e:'🍛',p:900,en:200,hp:80,rec:{truffle:1,cheese:1,mushroom:2},buff:{luck:.12}},
-heartycake:{n:'เค้กหัวใจ',e:'🍰',p:820,en:280,hp:150,rec:{wheat:3,egg:2,bigmilk:1,honey:1},buff:{def:4}}};
-for(const k in FOODS){const f=FOODS[k];I(k,f.n,f.e,f.p,{type:'food',en:f.en,hp:f.hp,buff:f.buff});}
-/* machines */
-const MACHINES={
-furnace:{n:'เตาถลุงแร่',e:'🔥',days:1,recipe:{copper:'copperbar',iron:'ironbar',gold:'goldbar',iridium:'iridiumbar'},fuel:'coal',rec:{stone:20,copper:1},lv:{mining:1},hint:'แร่ + ถ่านหิน → แท่งโลหะ'},
-keg:{n:'ถังหมัก',e:'🛢️',days:4,fn:'keg',rec:{wood:30,copperbar:1,ironbar:1},lv:{farming:3},hint:'ผลไม้→ไวน์(×3) · ผัก→น้ำผลไม้ · ข้าวสาลี→เบียร์ · น้ำผึ้ง→น้ำผึ้งหมัก'},
-jar:{n:'โหลดอง',e:'🫙',days:2,fn:'jar',rec:{wood:50,stone:40,coal:8},lv:{farming:2},hint:'ผลไม้→แยม · ผัก→ของดอง (×2+50)'},
-cheesepress:{n:'เครื่องทำชีส',e:'🧀',days:1,recipe:{milk:'cheese',bigmilk:'cheese'},rec:{wood:45,stone:45,copperbar:1},lv:{farming:3},hint:'นม → ชีส'},
-mayomaker:{n:'เครื่องทำมายอง',e:'🥫',days:1,recipe:{egg:'mayo',bigegg:'bigmayo'},rec:{wood:15,stone:15,copperbar:1},lv:{farming:1},hint:'ไข่ → มายองเนส'},
-loom:{n:'กี่ทอผ้า',e:'🧵',days:2,recipe:{wool:'cloth'},rec:{wood:60,fiber:30},lv:{foraging:3},hint:'ขนแกะ → ผ้าทอ'},
-oilmaker:{n:'เครื่องสกัดน้ำมัน',e:'🫗',days:2,recipe:{truffle:'truffleoil'},rec:{hardwood:20,goldbar:1},lv:{foraging:5},hint:'ทรัฟเฟิล → น้ำมันทรัฟเฟิล'},
-seedmaker:{n:'เครื่องทำเมล็ด',e:'🌰',days:1,fn:'seed',rec:{wood:25,coal:10,goldbar:1},lv:{farming:5},hint:'พืชผล → เมล็ดพันธุ์ 2 เมล็ด'},
-beehive:{n:'รังผึ้ง',e:'🐝',days:4,fn:'bee',rec:{wood:40,fiber:20,coal:8},lv:{farming:2},hint:'วางไว้เฉยๆ 4 วัน → น้ำผึ้ง (ใส่ดอกไม้ก็ได้)'}};
-for(const k in MACHINES)I(k,MACHINES[k].n,MACHINES[k].e,0,{type:'place',machine:true});
-function machineOut(mid,id){const M=MACHINES[mid];if(!M)return null;
- if(M.recipe)return M.recipe[id]||null;
- if(M.fn==='keg'){if(id==='honey')return 'mead';if(!CROPS[id])return null;if(id==='wheat')return 'beer';return FRUITS.includes(id)?id+'_wine':id+'_juice';}
- if(M.fn==='jar'){if(!CROPS[id]||id==='wheat')return null;return FRUITS.includes(id)?id+'_jam':id+'_pickle';}
- if(M.fn==='seed'){return CROPS[id]?id+'_seed':null;}
- if(M.fn==='bee'){return (id==='flower'||id==='crocus')?'honey':null;}
- return null;}
-function machineDays(mid,id){if(mid==='keg'&&FRUITS.includes(id))return 6;return MACHINES[mid].days;}
-/* crafting */
-const CRAFT={
-sprinkler:{rec:{stone:10,copper:2},lv:{mining:1}},
-qsprinkler:{rec:{iron:3,gold:1},lv:{mining:4}},
-iprinkler:{rec:{iridiumbar:1,goldbar:2,diamond:1},lv:{mining:8}},
-scarecrow:{rec:{wood:20,fiber:10,coal:1},lv:{farming:1}},
-fert:{rec:{stone:2,fiber:2},lv:{}},
-qfert:{rec:{stone:4,fiber:4,sap:2},lv:{farming:4}},
-torch:{rec:{wood:2,coal:1},lv:{}},
-hay:{rec:{wheat:1},lv:{}},
-chest_item:{rec:{wood:30},lv:{}},
-bomb:{rec:{coal:4,iron:2},lv:{mining:3}},
-smallpotion:{rec:{mushroom:2,fiber:3},lv:{foraging:2}},
-largepotion:{rec:{smallpotion:2,honey:1},lv:{foraging:5}},
-energydrink:{rec:{berry:4,honey:1,quartz:1},lv:{foraging:4}}};
-for(const k in MACHINES)CRAFT[k]={rec:MACHINES[k].rec,lv:MACHINES[k].lv,machine:true};
-/* ---------------- NPCs ---------------- */
-const NPCDEF=[
-{id:'mira',n:'มิร่า',c:'#e0679a',job:'ร้านดอกไม้',mar:1,bd:{s:0,d:12},
- like:['flower','crocus','pie','cookie','strawberry_wine','honey','heartycake'],
- say:['สวนของเธอสวยมากเลยนะ!','ฉันชอบเดินเล่นที่ชายหาดตอนเย็น','ดอกไม้ป่าในฤดูใบไม้ผลิสวยที่สุดเลย'],
- mr:['อรุณสวัสดิ์ที่รักของฉัน 💕','ฉันรดน้ำต้นไม้ให้แล้วนะ','วันนี้เหนื่อยไหม? พักบ้างนะ'],
- sc:[[6,'town',6,6],[10,'town',5,7],[13,'beach',6,4],[18,'saloon',4,5],[22,'town',6,6]]},
-{id:'nin',n:'นิล',c:'#6a5acd',job:'นักธรณีวิทยา',mar:1,bd:{s:2,d:4},
- like:['quartz','amethyst','diamond','geode','prismatic','minerscoffee','iron'],
- say:['ในเหมืองชั้นลึกมีแร่หายากนะ','เธอเคยเจอผลึกปริซึมไหม? ฉันตามหามานาน','ระเบิดช่วยขุดหินได้เร็วมาก'],
- mr:['เจอแร่อะไรใหม่ๆ บ้างไหม?','ฉันเก็บหินสวยๆ มาให้เธอด้วยนะ','ระวังตัวในเหมืองด้วยนะที่รัก'],
- sc:[[6,'mountain',5,7],[11,'mountain',6,4],[16,'town',12,6],[19,'saloon',8,5],[23,'mountain',5,7]]},
-{id:'tin',n:'ติน',c:'#d4783a',job:'นักผจญภัย',mar:1,bd:{s:1,d:20},
- like:['essence','bone','goldslime','beer','fishdish','steelsword','largepotion'],
- say:['ชั้น 20 ของเหมืองมีบอสอยู่นะ ระวังด้วย!','อาวุธดีๆ ช่วยชีวิตได้จริง','ฉันฝึกดาบทุกเช้าเลย'],
- mr:['ไปลุยเหมืองด้วยกันไหม?','ฉันลับดาบให้เธอแล้วนะ','บ้านอบอุ่นกว่าถ้ำเยอะเลย'],
- sc:[[6,'town',15,6],[10,'mountain',16,9],[15,'town',13,7],[18,'saloon',10,6],[23,'town',15,6]]},
-{id:'kan',n:'กันต์',c:'#3aa38a',job:'เชฟร้านเหล้า',mar:1,bd:{s:3,d:6},
- like:['truffle','luckystew','seafoodsoup','cheese','tuna','melon','sashimi'],
- say:['วัตถุดิบสดใหม่คือหัวใจของอาหาร','ลองเอาทรัฟเฟิลมาให้ฉันสิ','ฉันคิดสูตรใหม่ได้แล้วล่ะ'],
- mr:['ทำอาหารเช้าไว้ให้แล้วนะ','วันนี้อยากกินอะไรเป็นพิเศษไหม?','เธอคือวัตถุดิบที่ดีที่สุดในชีวิตฉัน'],
- sc:[[6,'saloon',6,6],[12,'town',9,7],[16,'saloon',5,6],[22,'saloon',6,6]]},
-{id:'boon',n:'ลุงบุญ',c:'#5b8ad6',job:'ชาวประมง',bd:{s:1,d:2},
- like:['carp','trout','eel','sturgeon','farmstew','beer','crab'],
- say:['ตกปลาที่ทะเลสาบภูเขาได้ปลาตัวใหญ่นะ','ฝนตกพรุ่งนี้ไม่ต้องรดน้ำหรอก','ชายหาดตอนน้ำลงมีของดีเยอะ'],
- sc:[[6,'beach',12,4],[13,'beach',9,3],[18,'saloon',9,5],[22,'beach',12,4]]},
-{id:'kaew',n:'ป้าแก้ว',c:'#8ac46a',job:'เกษตรกรอาวุโส',bd:{s:0,d:24},
- like:['milk','egg','mushroom','salad','cheese','cloth','honey'],
- say:['ลูบหัวสัตว์ทุกวันแล้วมันจะรักเรา','เรือนกระจกปลูกได้ทั้งปีเลยนะ','สปริงเกลอร์ช่วยประหยัดแรงมาก'],
- sc:[[6,'town',9,8],[12,'town',7,6],[17,'town',9,8]]},
-{id:'som',n:'ช่างสม',c:'#a06a3a',job:'ช่างตีเหล็ก',bd:{s:2,d:18},
- like:['copper','iron','gold','coal','iridium','geode','ironbar'],
- say:['เอาแร่มาให้ฉันอัปเกรดเครื่องมือได้เลย','ก้อนหินลึกลับต้องทุบถึงจะรู้ว่ามีอะไร','ดาบกาแล็กซีเป็นตำนานของหมู่บ้านนี้'],
- sc:[[6,'mountain',4,6],[12,'mountain',4,5],[18,'saloon',11,6],[22,'mountain',4,6]]},
-{id:'mayor',n:'ผู้ใหญ่จรัส',c:'#c0392b',job:'ผู้ใหญ่บ้าน',bd:{s:3,d:20},
- like:['pie','wine','goldmask','ancientcoin','pumpkin','cauliflower'],
- say:['พิพิธภัณฑ์ต้องการของบริจาคนะ ไปดูสิ','เทศกาลปีนี้จะยิ่งใหญ่มาก','กระดานภารกิจมีงานใหม่ทุกวัน'],
- sc:[[6,'town',10,5],[11,'museum',9,6],[16,'town',11,7],[20,'saloon',7,6]]}];
-/* ---------------- MOBS ---------------- */
-const MOBS={
-slime:{n:'สไลม์',hp:16,dmg:6,spd:.85,c:'#5fc45f',xp:8,loot:['slimeball']},
-bat:{n:'ค้างคาว',hp:12,dmg:9,spd:1.6,c:'#8a6ad0',xp:11,loot:['batwing']},
-bone:{n:'โครงกระดูก',hp:34,dmg:13,spd:.95,c:'#e0dccc',xp:18,loot:['bone','coal']},
-golem:{n:'โกเลมหิน',hp:70,dmg:17,spd:.6,c:'#9a948c',xp:28,loot:['stone','iron','geode']},
-shadow:{n:'เงามืด',hp:55,dmg:22,spd:1.2,c:'#4a3a6a',xp:38,loot:['essence','gold']},
-king:{n:'ราชาสไลม์',hp:260,dmg:26,spd:.72,c:'#2f8f3f',xp:150,boss:1,loot:['goldslime','diamond','iridium']}};
-/* ---------------- FESTIVALS ---------------- */
-const FEST=[
-{s:0,d:13,n:'เทศกาลดอกไม้บาน',e:'🌸',loc:'town',desc:'ชาวเมืองมารวมกันเต้นรำท่ามกลางดอกไม้',gift:'crocus'},
-{s:1,d:11,n:'งานเลี้ยงชายหาด',e:'🏖️',loc:'beach',desc:'หม้อซุปรวมของทั้งหมู่บ้าน',gift:'coconut'},
-{s:2,d:16,n:'งานวัดฤดูใบไม้ร่วง',e:'🎪',loc:'town',desc:'ประกวดผลผลิตและเกมมากมาย',gift:'pumpkin'},
-{s:3,d:8,n:'ตลาดกลางคืนฤดูหนาว',e:'🏮',loc:'beach',desc:'เรือพ่อค้าลึกลับมาเทียบท่า',gift:'icefish'}];
-/* ---------------- ACHIEVEMENTS ---------------- */
-const ACH=[
-{id:'a1',n:'ก้าวแรกของเกษตรกร',d:'เก็บเกี่ยวพืชครั้งแรก',r:200,c:()=>G.stats.harvest>=1},
-{id:'a2',n:'มือเก่าแห่งไร่นา',d:'เก็บเกี่ยว 300 ชิ้น',r:3000,c:()=>G.stats.harvest>=300},
-{id:'a3',n:'นักตกปลาฝึกหัด',d:'จับปลา 20 ตัว',r:800,c:()=>G.stats.fish>=20},
-{id:'a4',n:'เจ้าสมุทร',d:'จับปลาครบ 10 ชนิด',r:4000,c:()=>Object.keys(G.caught||{}).length>=10},
-{id:'a5',n:'คนขุดแร่',d:'ลงเหมืองถึงชั้น 20',r:1500,c:()=>G.maxDepth>=20},
-{id:'a6',n:'เจาะใจพิภพ',d:'ลงเหมืองถึงชั้น 60',r:8000,c:()=>G.maxDepth>=60},
-{id:'a7',n:'นักล่ามอนสเตอร์',d:'กำจัดมอนสเตอร์ 100 ตัว',r:3000,c:()=>G.stats.kills>=100},
-{id:'a8',n:'ผู้ปราบราชาสไลม์',d:'ล้มบอสได้ 1 ครั้ง',r:5000,c:()=>G.stats.boss>=1},
-{id:'a9',n:'เศรษฐีน้อย',d:'มีรายได้สะสม 50,000',r:2000,c:()=>G.stats.earn>=50000},
-{id:'a10',n:'เจ้าสัวหุบเขา',d:'มีรายได้สะสม 500,000',r:20000,c:()=>G.stats.earn>=500000},
-{id:'a11',n:'นักสะสม',d:'บริจาคพิพิธภัณฑ์ 20 ชิ้น',r:3000,c:()=>Object.keys(G.donated||{}).length>=20},
-{id:'a12',n:'ภัณฑารักษ์',d:'บริจาคครบ 40 ชิ้น',r:12000,c:()=>Object.keys(G.donated||{}).length>=40},
-{id:'a13',n:'เพื่อนซี้',d:'มีคน 5 หัวใจ 3 คน',r:1500,c:()=>G.npcs.filter(n=>n.fr>=500).length>=3},
-{id:'a14',n:'วิวาห์แสนสุข',d:'แต่งงาน',r:5000,c:()=>!!G.spouse},
-{id:'a15',n:'ครอบครัวอบอุ่น',d:'มีลูก',r:8000,c:()=>!!G.child},
-{id:'a16',n:'ช่างฝีมือ',d:'ผลิตของแปรรูป 100 ชิ้น',r:5000,c:()=>G.stats.art>=100},
-{id:'a17',n:'เจ้าของฟาร์มตัวจริง',d:'สร้างเรือนกระจก + คอกม้า',r:6000,c:()=>G.greenhouse&&G.stable},
-{id:'a18',n:'ตำนานหุบเขา',d:'ทักษะทุกสายเลเวล 10',r:50000,c:()=>Object.values(G.skills).every(s=>s.lv>=10)}];
-/* ---------------- PROFESSION PERKS (Lv.5 / Lv.10 per skill) ---------------- */
-const ORE_IDS=['coal','copper','iron','gold','iridium','copperbar','ironbar','goldbar','iridiumbar','geode',...MINERALS];
-const FORAGE_IDS=['mushroom','berry','leek','flower','coconut','shell','coral','seaweed','snowyam','crocus'];
-const ANIMALPROD_IDS=['egg','bigegg','milk','bigmilk','wool','truffle','honey'];
-const PERKS={
- farming:{5:[{id:'rancher',n:'🐄 ปศุสัตว์ชำนาญ',d:'ผลิตภัณฑ์จากสัตว์ (ไข่ นม ขนแกะ ฯลฯ) ขายได้ +20%'},
-             {id:'tiller',n:'🌾 ชาวไร่ฝีมือ',d:'พืชผลทุกชนิดขายได้ +10%'}],
-          10:[{id:'agriculturist',n:'⏩ นักเกษตรมือทอง',d:'พืชผลโตเร็วขึ้น 10% ทุกวัน'},
-              {id:'greenthumb',n:'🍀 มือเขียว',d:'โอกาสได้ผลผลิตพิเศษเพิ่มขึ้นอีก 15%'}]},
- mining:{5:[{id:'miner',n:'⛏️ คนงานเหมือง',d:'ได้แร่เพิ่มขึ้นแน่นอน +1 ทุกครั้งที่ทุบหิน'},
-            {id:'excavator',n:'💪 นักขุดชำนาญ',d:'ใช้พลังงานขุด/ทุบลดลงอย่างเห็นได้ชัด'}],
-         10:[{id:'blacksmith',n:'⚒️ ช่างโลหะ',d:'ขายแร่ แท่งโลหะ และอัญมณีได้ +25%'},
-             {id:'prospector',n:'🔎 นักสำรวจ',d:'มีโอกาสได้แร่มีค่าโบนัสทุกครั้งที่ทุบหิน'}]},
- foraging:{5:[{id:'forester',n:'🌲 คนป่าไม้',d:'ได้ไม้เพิ่มขึ้นทุกครั้งที่ตัดต้นไม้'},
-              {id:'gatherer',n:'🍄 นักเก็บของป่า',d:'โอกาสได้ของป่าเพิ่มเป็น 2 เท่าสูงขึ้นมาก'}],
-           10:[{id:'lumberjack',n:'🪓 มือขวานทอง',d:'ใช้พลังงานตัดไม้ลดลงอย่างเห็นได้ชัด'},
-               {id:'botanist',n:'🌿 นักพฤกษศาสตร์',d:'ขายของป่าได้ +25%'}]},
- fishing:{5:[{id:'fisher',n:'🎣 นักตกปลามือฉมัง',d:'ขายปลาได้ +25%'},
-             {id:'trapper',n:'🪤 นักดักปลา',d:'แถบควบคุมตอนตกปลากว้างขึ้น จับง่ายขึ้น'}],
-          10:[{id:'angler',n:'🐉 เซียนตกปลา',d:'ขายปลาได้เพิ่มอีก +25% (รวมสูงสุด +50%)'},
-              {id:'pirate',n:'🏴‍☠️ โจรสลัด',d:'โอกาสเจอหีบสมบัติตอนตกปลาเพิ่มขึ้นมาก'}]},
- combat:{5:[{id:'fighter',n:'❤️ นักสู้ร่างเหล็ก',d:'พลังชีวิตสูงสุด +25 ทันที (ถาวร)'},
-            {id:'scout',n:'🎯 หน่วยลาดตระเวน',d:'โอกาสคริติคอลตอนโจมตี +12%'}],
-         10:[{id:'brute',n:'🗡️ จอมพลัง',d:'ดาเมจจากอาวุธทุกชนิด +15%'},
-             {id:'defender',n:'🛡️ ผู้พิทักษ์',d:'ค่าป้องกันถาวร +8'}]}};
-function perkOf(sk,tier){return G.perks[sk+''+tier];}
-function sellMult(id){const it=ITEMS[id];if(!it)return 1;let m=1;
- if(it.type==='crop'){m+=G.skills.farming.lv*.03;if(perkOf('farming',5)==='tiller')m+=.10;}
- if(it.type==='fish'){if(perkOf('fishing',5)==='fisher')m+=.25;if(perkOf('fishing',10)==='angler')m+=.25;}
- if(ORE_IDS.includes(id)&&perkOf('mining',10)==='blacksmith')m+=.25;
- if(FORAGE_IDS.includes(id)&&perkOf('foraging',10)==='botanist')m+=.25;
- if(ANIMALPROD_IDS.includes(id)&&perkOf('farming',5)==='rancher')m+=.20;
- return m;}
-function sellPrice(id){return Math.round(ITEMS[id].p*sellMult(id));}
-function checkPerkUnlock(sk){const s=G.skills[sk];if(!s)return;G.perkQueue=G.perkQueue||[];
- [5,10].forEach(tier=>{if(s.lv>=tier&&!G.perks[sk+tier]&&!G.perkQueue.some(p=>p.sk===sk&&p.tier===tier))
-  G.perkQueue.push({sk,tier});});}
-let perkChoiceOpen=false;
-function openPerkChoice(){if(!G.perkQueue||!G.perkQueue.length)return;
- const q=G.perkQueue[0],opts=PERKS[q.sk][q.tier];
- let h='<h2>🌟 เลือกความสามารถพิเศษ — '+SKN[q.sk]+' เลเวล '+q.tier+'!</h2>';
- h+='<div class="tag">เลือกได้เพียงครั้งเดียวและเปลี่ยนภายหลังไม่ได้ — เลือกให้เข้ากับสไตล์การเล่นของคุณ!</div>';
- opts.forEach(o=>h+='<div class="row"><span class="nm"><b>'+o.n+'</b><br><span class="tag">'+o.d+'</span></span>'+
-  '<button onclick="choosePerk(\''+q.sk+'\','+q.tier+',\''+o.id+'\')">เลือก</button></div>');
- perkChoiceOpen=true;openPanel(h);}
-function choosePerk(sk,tier,id){G.perks[sk+tier]=id;
- G.perkQueue=(G.perkQueue||[]).filter(p=>!(p.sk===sk&&p.tier===tier));
- if(sk==='combat'&&tier===5&&id==='fighter'){G.maxHp+=25;G.hp=Math.min(G.maxHp,G.hp+25);}
- perkChoiceOpen=false;closePanel();SFX.lvl();confetti=1.2;
- toast('✨ ได้รับความสามารถ: '+PERKS[sk][tier].find(o=>o.id===id).n+'!');updHUD();}
-/* ---------------- TRAVELING MERCHANT ---------------- */
-const MERCHANT_TILE={x:17,y:9};
-const MERCHANT_POOL=[{id:'iprinkler',price:2000,q:1},{id:'largepotion',price:320,q:3},
- {id:'energydrink',price:230,q:3},{id:'prismatic',price:4000,q:1},{id:'ancientseed',price:550,q:1},
- {id:'goldbar',price:600,q:2},{id:'diamond',price:750,q:2},{id:'bomb',price:200,q:3},
- {id:'ring',price:4300,q:1},{id:'bouquet',price:600,q:2},{id:'speedboots',price:3000,q:1},
- {id:'obsidianarmor',price:9500,q:1},{id:'qfert',price:220,q:4},{id:'iridium',price:850,q:2}];
-function merchantActive(){return!!(G.merchant&&G.merchant.day===G.day&&G.merchant.year===G.year);}
-function pickMerchantStock(){const pool=[...MERCHANT_POOL];
- for(let i=pool.length-1;i>0;i--){const j=ri(0,i);const t=pool[i];pool[i]=pool[j];pool[j]=t;}
- return pool.slice(0,ri(4,5)).map(p=>({id:p.id,price:p.price,left:p.q}));}
-/* ==================================================================
-   STATE / MAPS
-   ================================================================== */
-let G=null,P=null,parts=[],floats=[],modalOpen=false,fishing=null,running=false,confetti=0,shake=0;
-const SAVEKEY='harvest_hollow_v3';
-function blankMap(t='grass'){const m=[];for(let y=0;y<GH;y++){const r=[];for(let x=0;x<GW;x++)r.push({t,o:null,wet:false,fert:null});m.push(r);}return m;}
-function T(x,y,loc){const m=G.maps[loc||G.loc];if(!m||x<0||y<0||x>=GW||y>=GH)return null;return m[y][x];}
-const BLOCK=['tree','rock','block','building','bin','board','scarecrow','stump','torch','sprinkler','qsprinkler','iprinkler','machine','chest','stand','bar','stable','sign','statue'];
-function walk(x,y,loc){const t=T(x,y,loc);if(!t)return false;
- if(t.t==='water'||t.t==='void'||t.t==='wall'||t.t==='deep')return false;
- return !(t.o&&BLOCK.includes(t.o.k));}
-function bld(m,x,y,w,h,kind){for(let j=0;j<h;j++)for(let i=0;i<w;i++)if(m[y+j]&&m[y+j][x+i])m[y+j][x+i].o={k:'block'};m[y][x].o={k:'building',kind,w,h};}
-function genFarm(){const m=blankMap();
- for(let y=1;y<=3;y++)for(let x=1;x<=3;x++)m[y][x].t='water';
- m[4][2].t='sand';m[4][3].t='sand';
- bld(m,13,1,4,3,'house');m[4][14].o={k:'door',to:'house',px:6,py:9};
- bld(m,13,6,3,2,'coop');m[8][14].o={k:'door',to:'coopui'};
- bld(m,17,6,3,2,'barn');m[8][18].o={k:'door',to:'barnui'};
- m[2][11].o={k:'bin'};m[10][12].o={k:'petbed'};
- m[3][19].o={k:'exit',to:'town',px:1,py:6,dir:'r'};
- m[6][0].o={k:'exit',to:'forest',px:18,py:6,dir:'l'};
- for(let y=4;y<=10;y++)for(let x=2;x<=10;x++)m[y][x].plot=true;
- for(let i=0;i<10;i++){const x=ri(1,19),y=ri(1,11);if(!m[y][x].o&&m[y][x].t==='grass'&&!m[y][x].plot)m[y][x].o={k:'tree',hp:4,seed:hash(x,y)};}
- for(let i=0;i<8;i++){const x=ri(1,19),y=ri(1,11);if(!m[y][x].o&&m[y][x].t==='grass')m[y][x].o={k:'rock',hp:2,ore:'stone'};}
- for(let i=0;i<10;i++){const x=ri(1,19),y=ri(1,11);if(!m[y][x].o&&m[y][x].t==='grass')m[y][x].o={k:'weed'};}
- return m;}
-function genTown(){const m=blankMap('path');
- for(let y=0;y<GH;y++)for(let x=0;x<GW;x++)if(hash(x,y)>.74)m[y][x].t='grass';
- bld(m,3,2,4,3,'shop');m[5][4].o={k:'door',to:'shop'};
- bld(m,11,2,4,3,'museum');m[5][12].o={k:'door',to:'museum',px:9,py:9};
- bld(m,16,1,3,3,'saloon');m[4][17].o={k:'door',to:'saloon',px:7,py:8};
- bld(m,2,8,3,2,'carp');m[10][3].o={k:'door',to:'carpui'};
- bld(m,7,8,3,2,'clinic');m[10][8].o={k:'door',to:'clinicui'};
- bld(m,12,8,3,2,'guild');m[10][13].o={k:'door',to:'guildui'};
- m[7][17].o={k:'board'};m[6][9].o={k:'fountain'};m[3][8].o={k:'statue'};
- m[6][0].o={k:'exit',to:'farm',px:18,py:3,dir:'l'};
- m[6][19].o={k:'exit',to:'mountain',px:1,py:6,dir:'r'};
- m[11][10].o={k:'exit',to:'beach',px:10,py:1,dir:'d'};
- return m;}
-function genForest(){const m=blankMap();
- for(let y=6;y<=11;y++)for(let x=10;x<=18;x++)if(hash(x,y)>.13)m[y][x].t='water';
- for(let y=5;y<=11;y++)for(let x=9;x<=19;x++)if(m[y][x].t==='grass')m[y][x].t='sand';
- m[6][19].o={k:'exit',to:'farm',px:1,py:6,dir:'r'};
- for(let i=0;i<32;i++){const x=ri(0,19),y=ri(0,11);if(!m[y][x].o&&m[y][x].t==='grass'&&!(x>17&&y===6))
-  m[y][x].o={k:'tree',hp:5,seed:hash(x,y),hard:chance(.25)};}
- for(let i=0;i<9;i++){const x=ri(0,19),y=ri(0,11);if(!m[y][x].o&&m[y][x].t==='grass')m[y][x].o={k:'rock',hp:3,ore:chance(.3)?'copper':'stone'};}
- return m;}
-function genBeach(){const m=blankMap('sand');
- for(let y=7;y<GH;y++)for(let x=0;x<GW;x++)m[y][x].t='water';
- for(let x=0;x<GW;x++)if(hash(x,7)>.45)m[6][x].t='water';
- for(let y=8;y<GH;y++)for(let x=6;x<=9;x++)m[y][x].t='pier';
- m[1][10].o={k:'exit',to:'town',px:10,py:10,dir:'u'};
- for(let i=0;i<7;i++){const x=ri(0,19),y=ri(2,5);if(!m[y][x].o&&m[y][x].t==='sand')m[y][x].o={k:'forage',item:pick(['shell','coral','seaweed','coconut'])};}
- for(let i=0;i<4;i++){const x=ri(0,19),y=ri(2,5);if(!m[y][x].o&&m[y][x].t==='sand')m[y][x].o={k:'digspot'};}
- for(let i=0;i<3;i++){const x=ri(12,18),y=ri(2,5);if(!m[y][x].o)m[y][x].o={k:'rock',hp:2,ore:'stone'};}
- m[3][2].o={k:'tree',hp:4,seed:.4,palm:1};m[4][17].o={k:'tree',hp:4,seed:.7,palm:1};
- return m;}
-function genMountain(){const m=blankMap('rocky');
- for(let y=7;y<=10;y++)for(let x=8;x<=13;x++)m[y][x].t='water';
- for(let y=6;y<=11;y++)for(let x=7;x<=14;x++)if(m[y][x].t==='rocky')m[y][x].t='sand';
- bld(m,3,2,3,2,'smith');m[4][4].o={k:'door',to:'smithui'};
- bld(m,14,1,3,3,'mineent');m[4][15].o={k:'door',to:'mine',px:10,py:10};
- m[6][0].o={k:'exit',to:'town',px:18,py:6,dir:'l'};
- for(let i=0;i<10;i++){const x=ri(0,19),y=ri(0,11);if(!m[y][x].o&&m[y][x].t==='rocky')
-  m[y][x].o={k:'rock',hp:3,ore:pick(['stone','stone','copper','iron','coal','geode'])};}
- for(let i=0;i<6;i++){const x=ri(0,19),y=ri(0,11);if(!m[y][x].o&&m[y][x].t==='rocky')m[y][x].o={k:'tree',hp:5,seed:hash(x,y),hard:1};}
- for(let i=0;i<3;i++){const x=ri(0,19),y=ri(0,11);if(!m[y][x].o&&m[y][x].t==='rocky')m[y][x].o={k:'digspot'};}
- return m;}
-function genHouse(){const m=blankMap('void');
- for(let y=1;y<=9;y++)for(let x=1;x<=13;x++)m[y][x].t='floor';
- for(let x=1;x<=13;x++)m[1][x].t='wall';
- m[2][2].o={k:'bed',w:2,h:2};m[2][3].o={k:'block'};m[3][2].o={k:'block'};m[3][3].o={k:'block'};
- m[2][6].o={k:'stove'};m[2][8].o={k:'tv'};m[2][9].o={k:'block'};m[6][11].o={k:'chest',home:1,items:[]};
- m[9][6].o={k:'door',to:'farm',px:14,py:5};
- return m;}
-function genGreenhouse(){const m=blankMap('void');
- for(let y=1;y<=10;y++)for(let x=2;x<=17;x++)m[y][x].t='ghfloor';
- for(let y=2;y<=9;y++)for(let x=4;x<=15;x++)m[y][x].t='dirt';
- m[10][9].o={k:'door',to:'farm',px:7,py:3};return m;}
-function genMuseum(){const m=blankMap('void');
- for(let y=1;y<=9;y++)for(let x=2;x<=17;x++)m[y][x].t='floor';
- for(let x=2;x<=17;x++)m[1][x].t='wall';
- for(let i=0;i<5;i++){m[3][4+i*3].o={k:'stand'};m[6][4+i*3].o={k:'stand'};}
- m[9][9].o={k:'door',to:'town',px:12,py:6};return m;}
-function genSaloon(){const m=blankMap('void');
- for(let y=1;y<=9;y++)for(let x=1;x<=13;x++)m[y][x].t='wood';
- for(let x=1;x<=13;x++)m[1][x].t='wall';
- for(let x=2;x<=6;x++)m[2][x].o={k:'bar'};
- m[9][7].o={k:'door',to:'town',px:17,py:5};return m;}
-function genMine(d){const m=blankMap('mfloor');
- for(let x=0;x<GW;x++){m[0][x].t='wall';m[GH-1][x].t='wall';}
- for(let y=0;y<GH;y++){m[y][0].t='wall';m[y][GW-1].t='wall';}
- for(let i=0;i<ri(4,9);i++){const x=ri(2,17),y=ri(2,9),w=ri(1,3),h=ri(1,2);
-  for(let j=0;j<h;j++)for(let k=0;k<w;k++)if(m[y+j]&&m[y+j][x+k])m[y+j][x+k].t='wall';}
- if(d>=40)for(let i=0;i<ri(2,5);i++){const x=ri(2,16),y=ri(2,8);
-  for(let j=0;j<2;j++)for(let k=0;k<2;k++)if(m[y+j]&&m[y+j][x+k]&&m[y+j][x+k].t==='mfloor')m[y+j][x+k].t='deep';}
- for(let y=9;y<=10;y++)for(let x=9;x<=11;x++){m[y][x].t='mfloor';m[y][x].o=null;}
- m[10][10].o={k:'exitmine'};
- if(d%5===0)m[9][9].o={k:'elevator'};
- const boss=(d%20===0&&d>0);
- const n=boss?10:ri(20,32);
- for(let i=0;i<n;i++){const x=ri(1,18),y=ri(1,10),t=m[y][x];
-  if(t.t!=='mfloor'||t.o||(Math.abs(x-10)<2&&Math.abs(y-10)<2))continue;
-  let ore='stone';const r=Math.random();
-  if(r<.10+d*.004)ore='coal';
-  if(r<.09+d*.004)ore='copper';
-  if(d>=4&&r<.07+d*.004)ore='iron';
-  if(d>=15&&r<.05+d*.002)ore='gold';
-  if(d>=40&&r<.03)ore='iridium';
-  if(d>=10&&r<.015)ore='diamond';
-  if(r>.95)ore='geode';
-  t.o={k:'rock',hp:ore==='stone'?2:3,ore,mine:1};}
- if(chance(.45)){let x,y,tr=0;do{x=ri(2,17);y=ri(2,8);tr++;}while((m[y][x].t!=='mfloor'||m[y][x].o)&&tr<50);
-  if(m[y][x].t==='mfloor'&&!m[y][x].o)m[y][x].o={k:'chest',depth:d};}
- G.mobs=[];
- if(boss){G.mobs.push(mkMob('king',10,5,d));SFX.boss();}
- else if(d>=2){const cnt=Math.min(8,1+Math.floor(d/3));
-  for(let i=0;i<cnt;i++){let x,y,tr=0;do{x=ri(2,17);y=ri(2,9);tr++;}while((!walkRaw(m,x,y)||Math.abs(x-10)+Math.abs(y-10)<5)&&tr<60);
-   let ty='slime';const r=Math.random();
-   if(d>=5&&r<.35)ty='bat';
-   if(d>=15&&r<.3)ty='bone';
-   if(d>=30&&r<.25)ty='golem';
-   if(d>=50&&r<.3)ty='shadow';
-   G.mobs.push(mkMob(ty,x,y,d));}}
- G.mineRocks=n;G.mineBroken=0;G.ladderOut=false;
- return m;}
-function mkMob(t,x,y,d){const M=MOBS[t],sc=1+d*.035;
- return{t,x,y,hp:Math.round(M.hp*sc),max:Math.round(M.hp*sc),dmg:Math.round(M.dmg*(1+d*.02)),tm:rnd(0,3),hurt:0,atk:0};}
-function walkRaw(m,x,y){const t=m[y]&&m[y][x];return t&&t.t!=='wall'&&t.t!=='deep'&&!t.o;}
-/* ==================================================================
-   NEW GAME
-   ================================================================== */
-function newGame(){
- G={day:1,season:0,year:1,time:360,weather:'sunny',tomorrow:'sunny',luck:0,
-  money:800,energy:270,maxEnergy:270,hp:100,maxHp:100,loc:'farm',
-  inv:new Array(48).fill(null),sel:0,canWater:40,equip:{armor:null,boots:null},
-  toolLv:{hoe:0,can:0,axe:0,pick:0},
-  skills:{farming:{xp:0,lv:0},mining:{xp:0,lv:0},foraging:{xp:0,lv:0},fishing:{xp:0,lv:0},combat:{xp:0,lv:0}},
-  ship:[],animals:[],npcs:[],quests:[],depth:0,maxDepth:0,mobs:[],mineRocks:0,mineBroken:0,
-  greenhouse:false,stable:false,horse:null,pet:null,riding:false,coopLv:1,barnLv:1,houseLv:1,
-  dating:null,spouse:null,sp:null,marriedDays:0,child:null,
-  donated:{},caught:{},ach:{},buff:{spd:0,luck:0,def:0},festDone:{},
-  stats:{harvest:0,fish:0,mine:0,earn:0,days:0,art:0,kills:0,boss:0,chop:0},
-  petToday:{},giftToday:{},maps:{},px:8,py:6,passed:false,
-  perks:{},perkQueue:[],merchant:null};
- G.maps.farm=genFarm();G.maps.town=genTown();G.maps.forest=genForest();
- G.maps.beach=genBeach();G.maps.mountain=genMountain();G.maps.house=genHouse();
- G.maps.museum=genMuseum();G.maps.saloon=genSaloon();
- ['hoe','can','axe','pick','rod','sword','pail','shears'].forEach(t=>addItem(t,1));
- addItem('parsnip_seed',15);addItem('potato_seed',5);
- G.npcs=NPCDEF.map(d=>({id:d.id,x:8,y:6,tx:8,ty:6,loc:'town',fr:0,t:rnd(0,3),anim:0}));
- newQuests();rollWeather();spawnForage();rollLuck();
- P={x:8,y:6,dir:'down',path:[],act:null,pend:null,anim:0,inv:0,atk:0};
+/* ============ DATA ============ */
+const SPECIES = [
+  { id:'flare',  name:'Flare',  emoji:'🔥', color:'#ff9457', tag:'ตัวไฟซ่า' },
+  { id:'aqua',   name:'Aqua',   emoji:'💧', color:'#5fd4f0', tag:'ตัวน้ำใจเย็น' },
+  { id:'sprout', name:'Sprout', emoji:'🌱', color:'#7be07a', tag:'ตัวใบสงบ' },
+  { id:'volt',   name:'Volt',   emoji:'⚡', color:'#ffe066', tag:'ตัวไฟฟ้าคึกคัก' },
+  { id:'shade',  name:'Shade',  emoji:'🌙', color:'#c39bff', tag:'ตัวเงาลึกลับ' },
+  { id:'nova',   name:'Nova',   emoji:'⭐', color:'#ff9ecf', tag:'ตัวดาวเปล่งประกาย' },
+];
+
+const BRANCHES = {
+  joy:     { label:'สายสุขใจ',    badge:'✨', suffix:'the Radiant', desc:'มีความสุขสูงสม่ำเสมอ' },
+  vigor:   { label:'สายพลัง',      badge:'💪', suffix:'the Titan',   desc:'ได้เล่นสนุกบ่อยๆ' },
+  glutton: { label:'สายจุ๊บจุ๊บ',  badge:'🍖', suffix:'the Hearty',  desc:'ได้กินอาหารสม่ำเสมอ' },
+  feral:   { label:'สายป่าเถื่อน', badge:'💀', suffix:'the Feral',   desc:'โตมาแบบขาดการดูแล' },
+};
+
+// อายุ (นาทีจริง) ที่ใช้เปลี่ยนสเตจ
+const STAGE_MIN = { baby:0, child:90, teen:360, adult:1440 };
+const STAGE_ORDER = ['baby','child','teen','adult'];
+const STAGE_LABEL = { baby:'Baby', child:'Child', teen:'Teen', adult:'Adult' };
+const STAGE_SCALE = { baby:0.86, child:0.98, teen:1.1, adult:1.22 };
+
+const DECAY = { hunger:1.0, happy:0.8, energy:0.65, hygiene:0.5 };        // ต่อนาที ปกติ
+const REST_DECAY = { hunger:0.5, happy:0.4, energyGain:2.6, hygiene:0.2 }; // ต่อนาที ระหว่างพักผ่อน
+const SAVE_KEY = 'pocketpal_save_v2';
+
+let state = null;
+let alertPlayed = false;
+let frameCycle = 0; // สำหรับแอนิเมชัน
+
+/* ============ UTIL ============ */
+const clamp = (v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const $ = id=>document.getElementById(id);
+function speciesById(id){ return SPECIES.find(s=>s.id===id); }
+
+function setLog(msg){
+  const el = $('logLine');
+  el.textContent = msg;
+  el.style.opacity = 1;
 }
-function baseSpd(){let s=4.2;if(G.equip.boots)s+=ITEMS[G.equip.boots].spd;s+=G.buff.spd||0;if(G.riding)s*=1.9;return s;}
-function defense(){return (G.equip.armor?ITEMS[G.equip.armor].def:0)+(G.buff.def||0)+Math.floor(G.skills.combat.lv*.6)+(perkOf('combat',10)==='defender'?8:0);}
-function luck(){return G.luck+(G.buff.luck||0)+(G.pet?.04:0);}
-/* ---------------- INVENTORY ---------------- */
-function addItem(id,q=1){if(!ITEMS[id])return false;
- for(let i=0;i<G.inv.length;i++){const s=G.inv[i];if(s&&s.id===id&&ITEMS[id].type!=='tool'&&s.q<999){s.q+=q;return true;}}
- for(let i=0;i<G.inv.length;i++)if(!G.inv[i]){G.inv[i]={id,q};return true;}
- toast('🎒 กระเป๋าเต็ม!');SFX.err();return false;}
-function countItem(id){return G.inv.reduce((a,s)=>a+(s&&s.id===id?s.q:0),0);}
-function removeItem(id,q=1){let need=q;
- for(let i=0;i<G.inv.length;i++){const s=G.inv[i];if(s&&s.id===id){const t=Math.min(need,s.q);s.q-=t;need-=t;if(s.q<=0)G.inv[i]=null;if(!need)return true;}}
- return need<=0;}
-function held(){const s=G.inv[G.sel];return s?ITEMS[s.id]:null;}
-/* ---------------- SKILLS ---------------- */
-const SKN={farming:'เกษตร',mining:'เหมืองแร่',foraging:'เก็บของป่า',fishing:'ตกปลา',combat:'การต่อสู้'};
-function xp(sk,n){const s=G.skills[sk];s.xp+=n;const need=l=>100+l*150;
- while(s.lv<10&&s.xp>=need(s.lv)){s.xp-=need(s.lv);s.lv++;SFX.lvl();toast('⭐ '+SKN[sk]+' เลเวล '+s.lv+'!');
-  if(sk==='farming'&&s.lv%3===0){G.maxEnergy+=15;toast('💪 พลังงานสูงสุด +15');}
-  checkPerkUnlock(sk);}}
-function useEnergy(n){n=Math.max(1,Math.round(n*(1-G.skills.farming.lv*.02)));
- G.energy-=n;if(G.energy<0){G.hp-=Math.abs(G.energy)*.5;G.energy=0;}
- if(G.hp<=0)passOut();}
-function passOut(){if(G.passed)return;G.passed=true;nextDay();}
-/* ---------------- FX ---------------- */
-function particle(x,y,c,o={}){parts.push({x,y,vx:o.vx!==undefined?o.vx:rnd(-40,40),vy:o.vy!==undefined?o.vy:rnd(-90,-30),
- g:o.g||260,life:o.life||rnd(.4,.8),t:0,c,s:o.s||rnd(2,5),shape:o.shape||'sq'});}
-function burst(tx,ty,c,n=10,o={}){for(let i=0;i<n;i++)particle(tx*TS+24+rnd(-14,14),ty*TS+24+rnd(-8,8),c,o);}
-function float(tx,ty,txt,c='#fff'){floats.push({x:tx*TS+24,y:ty*TS+10,txt,c,t:0,life:1.4});}
-function toast(t){const d=document.createElement('div');d.className='tst';d.textContent=t;
- document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),2800);}
-/* ==================================================================
-   PATHFIND + CLICK
-   ================================================================== */
-function bfs(sx,sy,goals){const key=(x,y)=>y*GW+x,gs=new Set(goals.map(g=>key(g.x,g.y)));
- const prev={},seen=new Set([key(sx,sy)]);let q=[{x:sx,y:sy}],found=null;
- if(gs.has(key(sx,sy)))return[];
- while(q.length){const c=q.shift();
-  for(const d of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=c.x+d[0],ny=c.y+d[1],k=key(nx,ny);
-   if(nx<0||ny<0||nx>=GW||ny>=GH||seen.has(k)||!walk(nx,ny))continue;
-   seen.add(k);prev[k]={x:c.x,y:c.y};
-   if(gs.has(k)){found={x:nx,y:ny};q=[];break;}q.push({x:nx,y:ny});}}
- if(!found)return null;const path=[];let c=found;
- while(!(c.x===sx&&c.y===sy)){path.unshift(c);c=prev[key(c.x,c.y)];if(!c)return null;}
- return path;}
-function planMove(tx,ty,act){const goals=[];
- if(walk(tx,ty))goals.push({x:tx,y:ty});
- for(const d of[[1,0],[-1,0],[0,1],[0,-1]])if(walk(tx+d[0],ty+d[1]))goals.push({x:tx+d[0],y:ty+d[1]});
- if(!goals.length){SFX.err();return;}
- const px=Math.round(P.x),py=Math.round(P.y);
- if(Math.abs(px-tx)+Math.abs(py-ty)<=1){P.path=[];startAct(act);return;}
- const p=bfs(px,py,goals);if(p===null){toast('🚧 ไปตรงนั้นไม่ได้');SFX.err();return;}
- P.path=p;P.pend=act;}
-const ACTDUR={till:.45,water:.42,plant:.3,harvest:.32,chop:.5,mine:.5,clear:.3,pick:.3,fish:.5,pet:.5,place:.3,machine:.35,dig:.5,attack:.28,generic:.3};
-function startAct(a){const dx=a.tx-Math.round(P.x),dy=a.ty-Math.round(P.y);
- if(Math.abs(dx)>Math.abs(dy))P.dir=dx>0?'right':'left';else if(dy!==0)P.dir=dy>0?'down':'up';
- if(G.riding&&['till','water','chop','mine','plant','harvest','fish','dig'].includes(a.type))G.riding=false;
- P.act={...a,t:0,dur:ACTDUR[a.type]||.3,hit:false};}
-function facingTile(){const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[P.dir];
- return{x:Math.round(P.x)+d[0],y:Math.round(P.y)+d[1]};}
-function clickTile(tx,ty){
- if(fishing||modalOpen)return;
- if(G.loc==='town'&&merchantActive()&&tx===MERCHANT_TILE.x&&ty===MERCHANT_TILE.y){planMove(tx,ty,{type:'merchant',tx,ty});return;}
- if(G.horse&&G.loc==='farm'&&Math.round(G.horse.x)===tx&&Math.round(G.horse.y)===ty){
-  G.riding=!G.riding;SFX.pop();toast(G.riding?'🐴 ขึ้นขี่ม้า!':'🐴 ลงจากหลังม้า');return;}
- if(G.pet&&G.pet.loc===G.loc&&Math.round(G.pet.x)===tx&&Math.round(G.pet.y)===ty){
-  planMove(tx,ty,{type:'petpet',tx,ty});return;}
- const an=G.animals.find(a=>a.loc===G.loc&&Math.round(a.x)===tx&&Math.round(a.y)===ty);
- if(an){planMove(tx,ty,{type:'pet',tx,ty,id:an.id});return;}
- const np=G.npcs.find(n=>n.loc===G.loc&&Math.round(n.x)===tx&&Math.round(n.y)===ty);
- if(np){planMove(tx,ty,{type:'talk',tx,ty,id:np.id});return;}
- if(G.loc==='house'&&G.sp&&Math.round(G.sp.x)===tx&&Math.round(G.sp.y)===ty){planMove(tx,ty,{type:'talk',tx,ty,id:G.spouse});return;}
- if(G.loc==='house'&&G.child&&Math.round(G.child.x)===tx&&Math.round(G.child.y)===ty){planMove(tx,ty,{type:'child',tx,ty});return;}
- if(G.loc==='mine'){const mb=G.mobs.find(s=>Math.abs(s.x-tx)<.8&&Math.abs(s.y-ty)<.8);
-  if(mb){planMove(tx,ty,{type:'attack',tx,ty,ref:mb});return;}}
- const t=T(tx,ty);if(!t)return;const it=held(),o=t.o;
- if(it&&it.type==='bomb'&&o&&o.k==='rock'){planMove(tx,ty,{type:'bomb',tx,ty});return;}
- if(o){switch(o.k){
-  case 'machine':planMove(tx,ty,{type:'machine',tx,ty});return;
-  case 'chest':planMove(tx,ty,{type:'chest',tx,ty});return;
-  case 'stand':planMove(tx,ty,{type:'museum',tx,ty});return;
-  case 'bar':planMove(tx,ty,{type:'bar',tx,ty});return;
-  case 'elevator':planMove(tx,ty,{type:'elev',tx,ty});return;
-  case 'digspot':if(it&&it.tool==='hoe'){planMove(tx,ty,{type:'dig',tx,ty});return;}toast('⛏️ ใช้จอบขุดจุดนี้');return;
-  case 'door':case 'exit':case 'exitmine':case 'ladder':planMove(tx,ty,{type:'enter',tx,ty});return;
-  case 'bin':planMove(tx,ty,{type:'bin',tx,ty});return;
-  case 'board':planMove(tx,ty,{type:'board',tx,ty});return;
-  case 'bed':planMove(tx,ty,{type:'bed',tx,ty});return;
-  case 'stove':planMove(tx,ty,{type:'stove',tx,ty});return;
-  case 'tv':planMove(tx,ty,{type:'tv',tx,ty});return;
-  case 'petbed':toast(G.pet?'🐾 ที่นอนของ'+G.pet.name:'🐾 ที่นอนสัตว์เลี้ยง (ซื้อสัตว์เลี้ยงที่ร้านค้า)');return;
-  case 'statue':toast('🗿 อนุสาวรีย์ผู้ก่อตั้งหุบเขา');return;
-  case 'forage':planMove(tx,ty,{type:'pick',tx,ty});return;
-  case 'tree':case 'stump':if(it&&it.tool==='axe'){planMove(tx,ty,{type:'chop',tx,ty});return;}toast('🪓 ต้องใช้ขวาน');SFX.err();return;
-  case 'rock':if(it&&it.tool==='pick'){planMove(tx,ty,{type:'mine',tx,ty});return;}toast('🔨 ต้องใช้อีเต้อ');SFX.err();return;
-  case 'weed':planMove(tx,ty,{type:'clear',tx,ty});return;
-  case 'sprinkler':case 'qsprinkler':case 'iprinkler':case 'scarecrow':case 'torch':
-   if(it&&it.tool==='pick'){planMove(tx,ty,{type:'pickup',tx,ty});return;}return;
-  case 'crop':
-   if(o.ready){planMove(tx,ty,{type:'harvest',tx,ty});return;}
-   if(o.dead&&it&&it.tool==='hoe'){planMove(tx,ty,{type:'clear',tx,ty});return;}
-   if(it&&it.tool==='can'){planMove(tx,ty,{type:'water',tx,ty});return;}
-   if(it&&it.type==='fert'&&!t.fert){planMove(tx,ty,{type:'fert',tx,ty});return;}
-   toast('🌱 ยังโตไม่เต็มที่');return;}}
- if(t.t==='water'||t.t==='pier'){
-  if(it&&it.tool==='can'&&t.t==='water'){planMove(tx,ty,{type:'refill',tx,ty});return;}
-  if(it&&it.tool==='rod'){planMove(tx,ty,{type:'fish',tx,ty});return;}}
- if(it&&it.tool==='hoe'&&!o&&['grass','dirt','sand','rocky'].includes(t.t)){planMove(tx,ty,{type:'till',tx,ty});return;}
- if(it&&it.tool==='can'&&t.t==='tilled'){planMove(tx,ty,{type:'water',tx,ty});return;}
- if(it&&it.type==='seed'&&t.t==='tilled'&&!o){planMove(tx,ty,{type:'plant',tx,ty,seed:it.id});return;}
- if(it&&it.type==='fert'&&t.t==='tilled'&&!t.fert){planMove(tx,ty,{type:'fert',tx,ty});return;}
- if(it&&it.type==='place'&&!o&&!['water','void','wall','deep'].includes(t.t)){planMove(tx,ty,{type:'place',tx,ty,id:it.id});return;}
- if(walk(tx,ty)){const p=bfs(Math.round(P.x),Math.round(P.y),[{x:tx,y:ty}]);if(p){P.path=p;P.pend=null;}}}
-function areaTiles(tool,tx,ty){const lv=G.toolLv[tool]||0,n=lv>=3?5:lv>=2?3:1,out=[];
- const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[P.dir];
- for(let i=0;i<n;i++)out.push({x:tx+d[0]*i,y:ty+d[1]*i});return out;}
-/* ==================================================================
-   ACTIONS
-   ================================================================== */
-function doAct(a){const t=T(a.tx,a.ty);
- switch(a.type){
- case 'till':{let n=0;
-  for(const c of areaTiles('hoe',a.tx,a.ty)){const tt=T(c.x,c.y);if(!tt)continue;
-   if(tt.o&&tt.o.k==='crop'&&tt.o.dead){tt.o=null;tt.t='tilled';burst(c.x,c.y,'#7a5a3a',8);n++;continue;}
-   if(tt.o||!['grass','dirt','sand','rocky'].includes(tt.t))continue;
-   tt.t='tilled';tt.wet=false;burst(c.x,c.y,'#7a5a3a',10);n++;}
-  if(n){useEnergy(2);SFX.till();xp('farming',2);}else SFX.err();break;}
- case 'dig':{t.o=null;useEnergy(4);SFX.till();burst(a.tx,a.ty,'#c8a86a',14);
-  const r=Math.random()+luck();
-  if(r>.72){const art=pick(ARTIFACTS);addItem(art,1);float(a.tx,a.ty,'+'+ITEMS[art].e+' โบราณวัตถุ!','#ffe08a');toast('🏺 ขุดพบ'+ITEMS[art].n+'!');}
-  else if(r>.45){addItem('geode',1);float(a.tx,a.ty,'+🪨','#fff');}
-  else if(r>.2){const c=pick(['stone','clay','fiber','sap']);addItem(c==='clay'?'stone':c,ri(1,3));float(a.tx,a.ty,'+ของเล็กน้อย','#ddd');}
-  else{addItem(pick(Object.keys(CROPS))+'_seed',1);float(a.tx,a.ty,'+🌱 เมล็ดผสม','#9f9');}
-  xp('foraging',9);break;}
- case 'water':{if(G.canWater<=0){toast('🚿 บัวหมดน้ำ!');SFX.err();break;}
-  let n=0;for(const c of areaTiles('can',a.tx,a.ty)){const tt=T(c.x,c.y);
-   if(!tt||tt.t!=='tilled'||tt.wet||G.canWater<=0)continue;tt.wet=true;G.canWater--;n++;
-   for(let i=0;i<8;i++)particle(c.x*TS+24+rnd(-16,16),c.y*TS+8,'#7ec8f0',{vy:rnd(40,110),g:120,life:.4,s:3});}
-  if(n){useEnergy(2);SFX.water();xp('farming',1);}else SFX.err();break;}
- case 'refill':G.canWater=canCap();SFX.water();float(a.tx,a.ty,'เติมน้ำเต็ม!','#7ec8f0');break;
- case 'plant':{const it=ITEMS[a.seed];if(!it||countItem(a.seed)<1){SFX.err();break;}
-  const cd=CROPS[it.crop];
-  if(G.loc!=='greenhouse'&&!cd.s.includes(SEASONS[G.season])){toast('🍂 ปลูกไม่ได้ในฤดูนี้');SFX.err();break;}
-  if(!t||t.t!=='tilled'||t.o){SFX.err();break;}
-  removeItem(a.seed,1);t.o={k:'crop',id:it.crop,age:0,ready:false,dead:false};
-  SFX.plant();burst(a.tx,a.ty,'#7ed957',8);useEnergy(1);xp('farming',2);break;}
- case 'fert':{const f=held();if(!f||t.t!=='tilled'||t.fert){SFX.err();break;}
-  removeItem(f.id,1);t.fert=f.id==='qfert'?'q':'speed';burst(a.tx,a.ty,'#b07ad9',8);SFX.pop();break;}
- case 'harvest':{const c=t.o;if(!c||c.k!=='crop'||!c.ready)break;const cd=CROPS[c.id];
-  let q=1+(chance(.08+G.skills.farming.lv*.02+luck())?1:0)+(t.fert==='q'&&chance(.3)?1:0);
-  if(perkOf('farming',10)==='greenthumb'&&chance(.15))q++;
-  if(c.id==='wheat')addItem('hay',1);
-  addItem(c.id,q);G.stats.harvest+=q;
-  float(a.tx,a.ty,'+'+q+' '+cd.e,'#fff');burst(a.tx,a.ty,cd.f,14,{life:.7});
-  SFX.harvest();xp('farming',8);
-  if(cd.re>0){c.age=cd.days-cd.re;c.ready=false;}else t.o=null;
-  questCheck(c.id,q);break;}
- case 'clear':if(t.o&&t.o.k==='weed'){if(chance(.6))addItem('fiber',1);if(chance(.12))addItem('sap',1);burst(a.tx,a.ty,'#5aa03a',8);}
-  else if(t.o&&t.o.k==='crop')burst(a.tx,a.ty,'#8a6a3a',8);
-  t.o=null;useEnergy(1);SFX.chop();xp('foraging',1);break;
- case 'pick':{const f=t.o;addItem(f.item,1);float(a.tx,a.ty,'+1 '+ITEMS[f.item].e,'#ffe9bd');
-  if(chance(G.skills.foraging.lv*.05+luck()))addItem(f.item,1);
-  if(perkOf('foraging',5)==='gatherer'&&chance(.25))addItem(f.item,1);
-  burst(a.tx,a.ty,'#c8e87a',8);t.o=null;SFX.pop();xp('foraging',7);questCheck(f.item,1);break;}
- case 'chop':{const o=t.o;o.hp-=1+Math.floor((G.toolLv.axe||0)/2);
-  burst(a.tx,a.ty,'#8a5a2b',8,{life:.5});SFX.chop();useEnergy(perkOf('foraging',10)==='lumberjack'?2:3);
-  if(o.hp<=0){let n=o.k==='stump'?2:ri(3,6);if(perkOf('foraging',5)==='forester'&&o.k!=='stump')n+=1;addItem('wood',n);G.stats.chop+=n;
-   float(a.tx,a.ty,'+'+n+' 🪵','#d8b070');
-   if(o.hard&&chance(.5))addItem('hardwood',ri(1,2));
-   if(chance(.4))addItem('fiber',ri(1,2));if(chance(.3))addItem('sap',ri(1,2));
-   if(chance(.12))addItem(pick(['berry','mushroom']),1);
-   if(o.palm&&chance(.4))addItem('coconut',1);
-   t.o=o.k==='tree'?{k:'stump',hp:2}:null;xp('foraging',12);questCheck('wood',n);}
-  else P.repeat=true;break;}
- case 'mine':{const o=t.o;o.hp-=1+Math.floor((G.toolLv.pick||0)/2);
-  burst(a.tx,a.ty,'#b8b0a0',10,{life:.45});SFX.mine();useEnergy(perkOf('mining',5)==='excavator'?2:3);
-  if(o.hp<=0)breakRock(a.tx,a.ty,o);else P.repeat=true;break;}
- case 'bomb':{removeItem('bomb',1);SFX.boss();shake=.5;
-  for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const tt=T(a.tx+i,a.ty+j);
-   if(tt&&tt.o&&tt.o.k==='rock')breakRock(a.tx+i,a.ty+j,tt.o);
-   burst(a.tx+i,a.ty+j,'#ffa030',8,{life:.6});}
-  G.mobs.forEach(mb=>{if(Math.abs(mb.x-a.tx)<2.5&&Math.abs(mb.y-a.ty)<2.5){mb.hp-=45;mb.hurt=.3;}});
-  G.mobs=G.mobs.filter(mb=>{if(mb.hp>0)return true;killMob(mb);return false;});break;}
- case 'pickup':{const id=t.o.k;addItem(id,1);t.o=null;SFX.pop();break;}
- case 'place':{if(t.o||!countItem(a.id)){SFX.err();break;}removeItem(a.id,1);
-  t.o=MACHINES[a.id]?{k:'machine',id:a.id,in:null,out:null,pending:null,left:0}
-   :a.id==='chest_item'?{k:'chest',home:1,items:[]}:{k:a.id};
-  SFX.pop();burst(a.tx,a.ty,'#9ad0ff',6);break;}
- case 'machine':{const o=t.o,M=MACHINES[o.id],it=held();
-  if(o.out){addItem(o.out,1);G.stats.art++;float(a.tx,a.ty,'+1 '+ITEMS[o.out].e,'#ffe8a0');
-   burst(a.tx,a.ty,'#ffd86a',12);SFX.harvest();xp('farming',10);questCheck(o.out,1);o.out=null;break;}
-  if(o.pending){toast('⏳ '+M.n+' เหลืออีก '+o.left+' วัน');SFX.pop();break;}
-  if(it&&it.tool==='pick'){addItem(o.id,1);t.o=null;SFX.pop();break;}
-  if(M.fn==='bee'&&!it){o.pending='honey';o.left=4;SFX.mach();float(a.tx,a.ty,'🐝 4 วัน','#ffd86a');break;}
-  if(!it){toast('ℹ️ '+M.n+': '+M.hint);SFX.pop();break;}
-  const out=machineOut(o.id,it.id);
-  if(!out){toast('❌ ใส่'+it.n+'ไม่ได้ — '+M.hint);SFX.err();break;}
-  if(M.fuel&&countItem(M.fuel)<1){toast('🔥 ต้องมี'+ITEMS[M.fuel].n+'เป็นเชื้อเพลิง');SFX.err();break;}
-  removeItem(it.id,1);if(M.fuel)removeItem(M.fuel,1);
-  o.in=it.id;o.pending=out;o.left=machineDays(o.id,it.id);
-  SFX.mach();burst(a.tx,a.ty,'#c0a0ff',10);float(a.tx,a.ty,ITEMS[out].e+' '+o.left+'ว.','#e8d0ff');break;}
- case 'chest':{const o=t.o;if(o.home){UI.chest(a.tx,a.ty);break;}
-  const d=o.depth||1;SFX.coin();burst(a.tx,a.ty,'#ffd86a',20);
-  const loot=[];const add=(id,q)=>{addItem(id,q);loot.push(ITEMS[id].e+ITEMS[id].n+'×'+q);};
-  add(pick(['gold','iron','copper','coal']),ri(3,8));
-  if(d>=10)add(pick(MINERALS),ri(1,2));
-  if(d>=20&&chance(.5))add('iridium',ri(1,3));
-  if(chance(.4))add(pick(['smallpotion','largepotion','bomb','energydrink']),ri(1,3));
-  if(d>=30&&chance(.2))add(pick(['steelsword','ironarmor','speedboots']),1);
-  G.money+=d*40;G.stats.earn+=d*40;
-  t.o=null;toast('🧰 หีบสมบัติ: '+loot.join(', ')+' +'+(d*40)+'ก.');break;}
- case 'elev':UI.elevator();break;
- case 'museum':UI.museum();break;
- case 'bar':UI.bar();break;
- case 'attack':{const mb=a.ref;if(!mb||mb.hp<=0)break;
-  const w=held();if(!w||w.tool!=='sword'){toast('🗡️ ต้องถืออาวุธ');SFX.err();break;}
-  let dmg=(w.dmg+G.skills.combat.lv*2)*(perkOf('combat',10)==='brute'?1.15:1);
-  const crit=chance(.12+luck()+(perkOf('combat',5)==='scout'?.12:0));
-  dmg=Math.round(dmg*(crit?2:1)*rnd(.85,1.2));
-  mb.hp-=dmg;mb.hurt=.3;SFX.sword();shake=.12;
-  burst(mb.x,mb.y,MOBS[mb.t].c,10);float(mb.x,mb.y,(crit?'CRIT ':'')+'-'+dmg,crit?'#ffd84a':'#ff8a8a');
-  useEnergy(1);
-  if(mb.hp<=0){killMob(mb);G.mobs=G.mobs.filter(x=>x!==mb);}else P.repeat=true;break;}
- case 'pet':{const an=G.animals.find(x=>x.id===a.id);if(!an)break;
-  if(an.product&&canCollect(an))collectAnimal(an);
-  else if(!G.petToday[an.id]){G.petToday[an.id]=1;an.fr=Math.min(1000,an.fr+18);
-   float(a.tx,a.ty,'❤️+','#ff8aa0');SFX.pop();burst(a.tx,a.ty,'#ff9ab0',6,{shape:'heart'});}
-  else{float(a.tx,a.ty,'♪','#fff');SFX.pop();}break;}
- case 'petpet':{if(!G.petToday.pet){G.petToday.pet=1;G.pet.fr=Math.min(1000,G.pet.fr+25);
-   toast('🐾 '+G.pet.name+' ดีใจมาก! (ดวงดีขึ้นวันนี้)');burst(a.tx,a.ty,'#ff9ab0',10,{shape:'heart'});
-   G.luck+=.03;SFX.pop();}else{float(a.tx,a.ty,'♪','#fff');SFX.pop();}break;}
- case 'child':toast('👶 '+G.child.name+': '+pick(['พ่อแม่จ๋า!','หิวแล้ว~','ไปเล่นกันเถอะ!','หนูรักพ่อแม่นะ 💕']));SFX.pop();break;
- case 'talk':doTalk(a);break;
- case 'enter':{const o=t.o;
-  if(o.k==='ladder'){goDepth(G.depth+1);break;}
-  if(o.k==='exitmine'){G.depth=0;G.loc='mountain';P.x=15;P.y=5;P.path=[];G.mobs=[];break;}
-  if(o.to==='mine'){goDepth(1);G.loc='mine';break;}
-  if(o.to==='shop'){UI.shop();break;}
-  if(o.to==='coopui'){UI.animalHouse('coop');break;}
-  if(o.to==='barnui'){UI.animalHouse('barn');break;}
-  if(o.to==='carpui'){UI.carp();break;}
-  if(o.to==='smithui'){UI.smith();break;}
-  if(o.to==='guildui'){UI.guild();break;}
-  if(o.to==='clinicui'){UI.clinic();break;}
-  G.loc=o.to;P.x=o.px;P.y=o.py;P.path=[];G.riding=false;SFX.pop();checkFest();break;}
- case 'bin':UI.bin();break;
- case 'board':UI.quests();break;
- case 'bed':UI.sleepConfirm();break;
- case 'stove':UI.cook();break;
- case 'tv':toast('📺 พรุ่งนี้: '+WNAME[G.tomorrow]+' · ดวงวันนี้: '+luckTxt());break;
- case 'fish':startFishing();break;
- case 'merchant':UI.merchant();break;}
- checkAch();updHUD();}
-function breakRock(tx,ty,o){const t=T(tx,ty);
- const drop=o.ore||'stone';let n=drop==='stone'?ri(1,3):ri(1,2);
- if(chance(G.skills.mining.lv*.05+luck()))n++;
- if(perkOf('mining',5)==='miner')n++;
- addItem(drop,n);G.stats.mine+=n;float(tx,ty,'+'+n+' '+ITEMS[drop].e,'#fff');
- if(chance(.15))addItem('stone',1);
- if(perkOf('mining',10)==='prospector'&&chance(.15)){const m=pick(MINERALS);addItem(m,1);float(tx,ty,'+'+ITEMS[m].e,'#c8a0ff');}
- t.o=null;xp('mining',drop==='stone'?6:14);questCheck(drop,n);
- if(o.mine){G.mineBroken++;
-  if(!G.ladderOut&&(chance(.13+luck())||G.mineBroken>G.mineRocks*.75)){t.o={k:'ladder'};G.ladderOut=true;toast('🪜 พบบันไดลงชั้นถัดไป!');}}}
-function killMob(mb){const M=MOBS[mb.t];G.stats.kills++;xp('combat',M.xp);
- burst(mb.x,mb.y,M.c,20,{life:.9});
- M.loot.forEach(l=>{if(chance(.6+luck()))addItem(l,ri(1,2));});
- if(M.boss){G.stats.boss++;G.money+=5000;G.stats.earn+=5000;confetti=3;SFX.wed();
-  toast('👑 ปราบราชาสไลม์สำเร็จ! +5,000 ก. + ของรางวัล');
-  addItem('iridium',ri(3,6));addItem(pick(['prismatic','diamond']),1);
-  if(!countItem('galaxysword')&&G.stats.boss>=3){addItem('galaxysword',1);toast('🌟 คุณได้รับ ดาบกาแล็กซี!');}}
- else SFX.pop();
- questCheck('kill',1);}
-function goDepth(d){G.depth=d;G.maxDepth=Math.max(G.maxDepth,d);
- G.maps.mine=genMine(d);G.loc='mine';P.x=10;P.y=10;P.path=[];G.riding=false;
- toast('⛏️ เหมืองชั้นที่ '+d+(d%20===0?' — ระวัง! บอสอยู่ที่นี่':''));SFX.pop();}
-function canCap(){return[40,55,70,100][G.toolLv.can||0];}
-/* ---------------- TALK / ROMANCE ---------------- */
-function isBirthday(id){const d=NPCDEF.find(x=>x.id===id);return d.bd&&d.bd.s===G.season&&d.bd.d===G.day;}
-function doTalk(a){const np=G.npcs.find(n=>n.id===a.id)||G.sp,d=NPCDEF.find(x=>x.id===a.id),it=held();
- if(!np||!d)return;
- if(it&&it.id==='bouquet'){
-  if(G.spouse){toast('💍 คุณแต่งงานแล้วนะ');SFX.err();return;}
-  if(!d.mar){toast('🙂 '+d.n+': ขอบใจนะ แต่ฉันขอเป็นเพื่อนที่ดีดีกว่า');return;}
-  if(G.dating){toast('💔 คุณมีคนคุยอยู่แล้ว');SFX.err();return;}
-  if(np.fr<800){toast('💐 ยังไม่พร้อม (ต้อง 8 หัวใจ — ตอนนี้ '+Math.floor(np.fr/100)+')');SFX.err();return;}
-  removeItem('bouquet',1);G.dating=np.id;np.fr=Math.min(1000,np.fr+60);
-  burst(a.tx,a.ty,'#ff7aa0',20,{shape:'heart',life:1.2});SFX.wed();
-  toast('💐 '+d.n+' ตอบตกลงเป็นแฟนคุณแล้ว!');return;}
- if(it&&it.id==='ring'){
-  if(G.spouse){SFX.err();return;}
-  if(G.dating!==np.id){toast('💍 ต้องเป็นแฟนกันก่อน');SFX.err();return;}
-  if(np.fr<1000){toast('💍 ต้อง 10 หัวใจเต็มก่อน');SFX.err();return;}
-  removeItem('ring',1);marry(np,d,a);return;}
- if(it&&!G.giftToday[np.id]&&it.type!=='tool'){
-  G.giftToday[np.id]=1;const liked=d.like.includes(it.id)||it.type==='art';
-  const bd=isBirthday(np.id);let amt=(liked?60:20)*(bd?3:1);
-  np.fr=Math.min(1000,np.fr+amt);removeItem(it.id,1);
-  toast((bd?'🎂 ':liked?'💗 ':'🙂 ')+d.n+': '+(bd?'วันเกิดฉันพอดี! ขอบคุณมากเลย!':liked?'ว้าว! ฉันชอบ'+it.n+'มาก!':'ขอบใจนะ')+' (+'+amt+')');
-  burst(a.tx,a.ty,'#ff9ab0',12);SFX.coin();return;}
- if(isBirthday(np.id)){toast('🎂 '+d.n+': วันนี้วันเกิดฉันเอง! (ให้ของขวัญได้ 3 เท่า)');SFX.pop();return;}
- toast('💬 '+d.n+': '+pick(G.spouse===np.id&&d.mr?d.mr:d.say));SFX.pop();}
-function marry(np,d,a){G.spouse=np.id;G.dating=null;np.fr=1000;G.marriedDays=0;
- G.maxEnergy+=30;G.energy=G.maxEnergy;
- G.sp={id:np.id,x:7,y:5,tx:7,ty:5,t:0,anim:0,fr:1000,loc:'house'};
- confetti=3.5;SFX.wed();
- toast('💍🎉 ขอแสดงความยินดี! คุณกับ'+d.n+'แต่งงานกันแล้ว!');
- setTimeout(()=>toast('💕 คู่ชีวิตย้ายเข้าบ้าน · ช่วยรดน้ำและให้ของขวัญ · พลังงาน +30'),2200);
- for(let i=0;i<60;i++)particle(rnd(0,W),rnd(0,H/2),'#ff7aa0',{shape:'heart',vy:rnd(-60,20),g:90,life:rnd(1,2)});}
-/* ---------------- ANIMALS ---------------- */
-const ANIMALS={
-chicken:{n:'ไก่',price:800,house:'coop',prod:'egg',days:1,tool:null},
-duck:{n:'เป็ด',price:1200,house:'coop',prod:'egg',days:2,tool:null},
-cow:{n:'วัว',price:1500,house:'barn',prod:'milk',days:1,tool:'pail'},
-goat:{n:'แพะ',price:2200,house:'barn',prod:'bigmilk',days:2,tool:'pail'},
-sheep:{n:'แกะ',price:2000,house:'barn',prod:'wool',days:3,tool:'shears'},
-pig:{n:'หมูหาทรัฟเฟิล',price:4500,house:'barn',prod:'truffle',days:1,tool:null}};
-function canCollect(an){const d=ANIMALS[an.type];return!d.tool||(held()&&held().tool===d.tool);}
-function collectAnimal(an){const d=ANIMALS[an.type];let id=d.prod;
- if(id==='egg'&&an.fr>600&&chance(.4))id='bigegg';
- addItem(id,1);an.product=false;an.cd=d.days;
- float(an.x,an.y,'+1 '+ITEMS[id].e,'#fff');SFX.harvest();xp('farming',5);questCheck(id,1);}
-function housed(h){return G.animals.filter(a=>ANIMALS[a.type].house===h).length;}
-function cap(h){return h==='coop'?G.coopLv*4:G.barnLv*4;}
-/* ---------------- QUESTS ---------------- */
-function newQuests(){G.quests=[];
- const pool=['wood','stone','fiber','mushroom','berry','egg','milk','carp','copper','hay','cheese','cloth','shell','iron','honey'];
- const sc=Object.keys(CROPS).filter(k=>CROPS[k].s.includes(SEASONS[G.season]));
- for(let i=0;i<2;i++){const id=chance(.4)&&sc.length?pick(sc):pick(pool);
-  const need=ri(3,10);G.quests.push({type:'collect',id,need,reward:Math.round(ITEMS[id].p*need*1.7+150),done:false});}
- G.quests.push({type:'kill',id:'kill',need:ri(4,10),reward:ri(600,1600),done:false});}
-function questCheck(id,q){G.quests.forEach(Q=>{if(!Q.done&&Q.id===id&&Q.type==='kill'){Q.got=(Q.got||0)+q;
-  if(Q.got>=Q.need)toast('📜 ภารกิจล่ามอนสเตอร์ครบแล้ว!');}});}
-/* ---------------- WEATHER / LUCK / FEST ---------------- */
-const WNAME={sunny:'☀️ แดดจ้า',rain:'🌧️ ฝนตก',storm:'⛈️ พายุ',snow:'❄️ หิมะ',wind:'🍃 ลมแรง'};
-function rollWeather(){const s=SEASONS[G.season];let w='sunny';const r=Math.random();
- if(s==='winter')w=r<.45?'snow':'sunny';
- else if(s==='spring')w=r<.32?'rain':r<.38?'wind':'sunny';
- else if(s==='summer')w=r<.20?'rain':r<.26?'storm':'sunny';
- else w=r<.28?'rain':r<.45?'wind':'sunny';
- G.tomorrow=w;}
-function rollLuck(){G.luck=rnd(-.08,.12);}
-function luckTxt(){const l=luck();return l>.09?'🍀 โชคดีมาก':l>.03?'😊 ค่อนข้างดี':l>-.02?'😐 ปกติ':'😬 ไม่ค่อยดี';}
-function todayFest(){return FEST.find(f=>f.s===G.season&&f.d===G.day);}
-function checkFest(){const f=todayFest();if(!f)return;
- if(G.loc===f.loc&&!G.festDone[f.n+G.year]){setTimeout(()=>UI.fest(f),400);}}
-/* ---------------- DAY CYCLE ---------------- */
-function nextDay(){
- const rain=['rain','storm'].includes(G.tomorrow);
- G.day++;G.stats.days++;
- if(G.day>28){G.day=1;G.season++;if(G.season>3){G.season=0;G.year++;}}
- const seasonChanged=G.day===1;
- G.weather=G.tomorrow;rollWeather();rollLuck();
- G.buff={spd:0,luck:0,def:0};
- if(chance(.4)){G.merchant={day:G.day,year:G.year,stock:pickMerchantStock()};}else G.merchant=null;
- const shipped=[...G.ship];let total=0;
- shipped.forEach(s=>{total+=sellPrice(s.id)*s.q;});
- G.money+=total;G.stats.earn+=total;G.ship=[];
- const notes=[];
- for(const L in G.maps){const m=G.maps[L];
-  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const t=m[y][x],o=t.o;
-   if(o&&o.k==='crop'){const cd=CROPS[o.id];
-    if(seasonChanged&&L!=='greenhouse'&&!cd.s.includes(SEASONS[G.season]))o.dead=true;
-    if(!o.dead&&(t.wet||(rain&&L!=='greenhouse'))){o.age+=(t.fert?2:1)*(perkOf('farming',10)==='agriculturist'?1.1:1);if(o.age>=cd.days){o.ready=true;o.age=cd.days;}}}
-   if(o&&o.k==='machine'&&o.pending){o.left--;if(o.left<=0){o.out=o.pending;o.pending=null;o.in=null;}}
-   t.wet=false;if(rain&&t.t==='tilled'&&L!=='greenhouse')t.wet=true;}
-  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const o=m[y][x].o;if(!o)continue;
-   if(o.k==='sprinkler'||o.k==='qsprinkler'||o.k==='iprinkler'){
-    const r=o.k==='sprinkler'?1:o.k==='qsprinkler'?2:3;
-    for(let j=-r;j<=r;j++)for(let i=-r;i<=r;i++){if(o.k==='sprinkler'&&Math.abs(i)+Math.abs(j)>1)continue;
-     const tt=m[y+j]&&m[y+j][x+i];if(tt&&tt.t==='tilled')tt.wet=true;}}}}
- if(G.spouse){G.marriedDays++;const d=NPCDEF.find(x=>x.id===G.spouse);
-  if(chance(.45)){let c=0;['farm','greenhouse'].forEach(L=>{const m=G.maps[L];if(!m)return;
-    for(let y=0;y<GH;y++)for(let x=0;x<GW;x++)if(m[y][x].t==='tilled'&&!m[y][x].wet){m[y][x].wet=true;c++;}});
-   if(c)notes.push('💕 '+d.n+' ช่วยรดน้ำให้ '+c+' ช่อง');}
-  if(chance(.35)){const g=pick(['friedegg','cookie','salad','pie','flower','coal','fert','smallpotion']);
-   addItem(g,1);notes.push('🎁 '+d.n+' ให้'+ITEMS[g].n+'เป็นของขวัญ');}
-  if(!G.child&&G.marriedDays>=14&&chance(.15)){
-   G.child={name:pick(['ข้าวปุ้น','น้ำหวาน','ใบเตย','ต้นกล้า']),x:9,y:6,tx:9,ty:6,t:0,anim:0,age:0};
-   notes.push('👶 ครอบครัวของคุณมีสมาชิกใหม่: '+G.child.name+'!');confetti=3;}
-  if(G.child)G.child.age++;}
- const fm=G.maps.farm;let eaten=0;
- for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const o=fm[y][x].o;
-  if(o&&o.k==='crop'&&!o.dead&&chance(.012)){let prot=false;
-   for(let j=-8;j<=8&&!prot;j++)for(let i=-8;i<=8;i++){const tt=fm[y+j]&&fm[y+j][x+i];
-    if(tt&&tt.o&&tt.o.k==='scarecrow'){prot=true;break;}}
-   if(!prot){fm[y][x].o=null;eaten++;}}}
- for(let i=0;i<ri(1,4);i++){const x=ri(1,19),y=ri(1,11),t=fm[y][x];if(!t.o&&t.t==='grass')t.o={k:'weed'};}
- for(let i=0;i<ri(1,3);i++){const x=ri(1,19),y=ri(1,11),t=fm[y][x];
-  if(!t.o&&t.t==='grass')t.o={k:chance(.5)?'rock':'tree',hp:3,ore:'stone',seed:hash(x,y)};}
- const mt=G.maps.mountain;
- for(let i=0;i<ri(3,7);i++){const x=ri(0,19),y=ri(0,11),t=mt[y][x];
-  if(!t.o&&t.t==='rocky')t.o={k:'rock',hp:3,ore:pick(['stone','stone','copper','iron','coal','geode'])};}
- for(let i=0;i<2;i++){const x=ri(0,19),y=ri(0,11),t=mt[y][x];if(!t.o&&t.t==='rocky'&&chance(.5))t.o={k:'digspot'};}
- const bh=G.maps.beach;
- for(let i=0;i<ri(2,5);i++){const x=ri(0,19),y=ri(2,5),t=bh[y][x];
-  if(!t.o&&t.t==='sand')t.o=chance(.3)?{k:'digspot'}:{k:'forage',item:pick(['shell','coral','seaweed','coconut'])};}
- spawnForage();
- let unfed=0;
- G.animals.forEach(a=>{if(countItem('hay')>0){removeItem('hay',1);a.fed=true;a.fr=Math.min(1000,a.fr+8);}
-  else{a.fed=false;a.fr=Math.max(0,a.fr-20);unfed++;}
-  a.cd=(a.cd||0)-1;if(a.fed&&a.cd<=0&&a.fr>50)a.product=true;});
- G.petToday={};G.giftToday={};
- if(G.quests.every(q=>q.done)||chance(.5))newQuests();
- G.energy=G.passed?Math.round(G.maxEnergy*.5):G.maxEnergy;
- G.hp=G.passed?Math.round(G.maxHp*.6):G.maxHp;
- G.time=360;G.canWater=canCap();G.deadTime=false;G.riding=false;
- let fee=0;if(G.passed){fee=Math.min(1000,Math.round(G.money*.1));G.money-=fee;}
- const bds=NPCDEF.filter(d=>d.bd&&d.bd.s===G.season&&d.bd.d===G.day);
- const f=todayFest();
- let html='<h2>🌙 สรุปวันที่ผ่านมา</h2>';
- if(G.passed)html+='<div class="row" style="background:#ffe0e0">😵 คุณหมดสติ! ค่ารักษา '+fee+' ก.</div>';
- if(shipped.length){html+='<h3>📦 ขายของ</h3>';
-  shipped.forEach(s=>{html+='<div class="row"><span>'+ITEMS[s.id].e+'</span><span class="nm">'+ITEMS[s.id].n+' ×'+s.q+'</span><b>'+(sellPrice(s.id)*s.q).toLocaleString()+' ก.</b></div>';});
-  html+='<div class="row" style="background:#fff0c8"><span class="nm"><b>รวมรายได้</b></span><b>'+total.toLocaleString()+' ก.</b></div>';}
- else html+='<div class="row">ไม่ได้ใส่ของในตู้ส่งของเลย 📦</div>';
- notes.forEach(n=>html+='<div class="row" style="background:#ffeef5">'+n+'</div>');
- if(eaten)html+='<div class="row" style="background:#ffe8d0">🐦 อีกาขโมยพืช '+eaten+' ต้น</div>';
- if(unfed)html+='<div class="row" style="background:#ffe8d0">🌿 สัตว์ '+unfed+' ตัวไม่ได้กินหญ้า</div>';
- if(G.merchant)html+='<div class="row" style="background:#fff0c8">🛒 <b>พ่อค้าเร่ลึกลับ</b>มาเยือนเมืองวันนี้! ของหายากรออยู่ใกล้ทางเข้าภูเขา</div>';
- bds.forEach(d=>html+='<div class="row" style="background:#fff3d2">🎂 วันนี้วันเกิด <b>'+d.n+'</b> — ให้ของขวัญได้ 3 เท่า!</div>');
- if(f)html+='<div class="row" style="background:#e8ffe8">'+f.e+' วันนี้มี <b>'+f.n+'</b> ที่'+(f.loc==='town'?'ในเมือง':'ชายหาด')+'!</div>';
- html+='<div class="row" style="background:#e8f3ff">📅 '+SE_TH[SEASONS[G.season]]+' วันที่ '+G.day+' ปีที่ '+G.year+' · '+WNAME[G.weather]+' · ดวง: '+luckTxt()+'</div>';
- html+='<div style="text-align:center;margin-top:10px"><button class="big" onclick="closeDayEnd()">☀️ เริ่มวันใหม่</button></div>';
- document.getElementById('deBox').innerHTML=html;
- document.getElementById('dayend').style.display='flex';
- G.passed=false;G.loc='house';P.x=6;P.y=4;P.path=[];P.act=null;P.pend=null;
- if(G.sp){G.sp.x=8;G.sp.y=5;G.sp.tx=8;G.sp.ty=5;}
- checkAch();saveGame(0);}
-function closeDayEnd(){document.getElementById('dayend').style.display='none';SFX.coin();updHUD();}
-function sleep(){nextDay();}
-function spawnForage(){const s=SEASONS[G.season];
- const table={spring:['leek','flower','berry','crocus'],summer:['berry','flower','coconut','mushroom'],
-  fall:['mushroom','berry','flower','truffle'],winter:['leek','mushroom','snowyam','crocus']}[s];
- [['forest',7],['farm',2],['mountain',3],['town',1]].forEach(([L,n])=>{const m=G.maps[L];if(!m)return;
-  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++)if(m[y][x].o&&m[y][x].o.k==='forage'&&chance(.5))m[y][x].o=null;
-  for(let i=0;i<n;i++){const x=ri(0,19),y=ri(0,11),t=m[y][x];
-   if(!t.o&&['grass','sand','path','rocky'].includes(t.t))t.o={k:'forage',item:pick(table)};}});}
-function checkAch(){ACH.forEach(a=>{if(!G.ach[a.id]&&a.c()){G.ach[a.id]=1;G.money+=a.r;G.stats.earn+=a.r;
- SFX.lvl();toast('🏆 ความสำเร็จ: '+a.n+' (+'+a.r.toLocaleString()+' ก.)');}});}
-/* ==================================================================
-   FISHING
-   ================================================================== */
-function startFishing(){if(G.energy<8){toast('⚡ พลังงานไม่พอ');SFX.err();return;}
- useEnergy(8);const tbl=FISHLOC[G.loc]||FISHLOC.town;
- let id=pick(tbl);
- if(chance(.03+G.skills.fishing.lv*.008+luck())&&(G.loc==='mountain'||G.loc==='forest'))id='legend';
- const f=FISH.find(x=>x.id===id);
- fishing={f,bar:.45,vel:0,fish:.5,fv:0,prog:.4,t:0,
-  size:.19+G.skills.fishing.lv*.013+luck()*.1+(perkOf('fishing',5)==='trapper'?.05:0),
-  treas:chance(.22+luck()+(perkOf('fishing',10)==='pirate'?.25:0)),tp:0,tgot:false};
- SFX.water();}
-function fishTap(){if(!fishing)return;fishing.vel=Math.max(fishing.vel-1.15,-3.2);}
-function updFishing(dt){const F=fishing;F.t+=dt;
- F.fv+=(Math.sin(F.t*(1.6+F.f.d*3))*.55+rnd(-.5,.5))*dt;F.fv*=.93;F.fish=cl(F.fish+F.fv*dt*1.6,0,1);
- F.vel+=1.75*dt;F.vel*=.9;F.bar=cl(F.bar+F.vel*dt,0,1-F.size);
- const inb=F.fish>=F.bar&&F.fish<=F.bar+F.size;
- F.prog+=(inb?.38:-.26)*dt;
- if(F.treas&&!F.tgot){const near=Math.abs(F.tp-F.bar-F.size/2)<F.size;if(near)F.tprog=(F.tprog||0)+dt*.5;
-  if((F.tprog||0)>=1){F.tgot=true;toast('🧰 เจอหีบสมบัติในน้ำ!');}}
- if(inb&&chance(dt*6))particle(700+rnd(-10,10),120+F.fish*300,'#ffe08a',{vy:rnd(-30,10),g:40,life:.5,s:3});
- if(F.prog>=1){addItem(F.f.id,1);G.stats.fish++;G.caught[F.f.id]=(G.caught[F.f.id]||0)+1;
-  xp('fishing',18+Math.round(F.f.d*22));toast('🎣 จับได้ '+F.f.n+' '+F.f.e);SFX.harvest();
-  if(F.tgot){const l=pick(['gold','geode','ancientcoin','pearl','amethyst','largepotion']);
-   addItem(l==='pearl'?'shell':l,ri(1,3));G.money+=400;toast('🧰 ในหีบ: '+ITEMS[l==='pearl'?'shell':l].n+' + 400 ก.');}
-  questCheck(F.f.id,1);checkAch();fishing=null;}
- else if(F.prog<=0){toast('🎣 ปลาหลุดไปแล้ว...');SFX.err();fishing=null;}
- if(F.treas)F.tp=(F.tp+dt*.12)%1;}
-/* ==================================================================
-   LOOP
-   ================================================================== */
-let last=0,perf=0;
-function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
- if(running){update(dt);render();}requestAnimationFrame(loop);}
-function npcSched(){const hr=Math.floor(G.time/60)%24;
- G.npcs.forEach(n=>{const d=NPCDEF.find(x=>x.id===n.id);
-  if(G.spouse===n.id){n.loc='house';return;}
-  let cur=d.sc[0];d.sc.forEach(s=>{if(hr>=s[0])cur=s;});
-  if(n.loc!==cur[1]){n.loc=cur[1];n.x=cur[2];n.y=cur[3];}
-  n.ax=cur[2];n.ay=cur[3];});}
-function update(dt){perf+=dt;if(confetti>0)confetti-=dt;if(shake>0)shake-=dt;
- const paused=modalOpen||document.getElementById('dayend').style.display==='flex';
- if(!modalOpen&&!fishing&&G.perkQueue&&G.perkQueue.length)openPerkChoice();
- if(fishing)updFishing(dt);
- if(!paused&&!fishing){
-  G.time+=dt*(10/3.2);
-  if(G.time>=1560&&!G.deadTime){G.deadTime=true;toast('😵 ตีสองแล้ว...');setTimeout(()=>passOut(),900);}
-  npcSched();
-  if(P.act){P.act.t+=dt;
-   if(!P.act.hit&&P.act.t>=P.act.dur*.55){P.act.hit=true;P.repeat=false;doAct(P.act);}
-   if(P.act.t>=P.act.dur){const a=P.act;P.act=null;
-    if(P.repeat&&G.energy>0){P.repeat=false;startAct({type:a.type,tx:a.tx,ty:a.ty,ref:a.ref,id:a.id,seed:a.seed});}}}
-  else if(P.path&&P.path.length){const n=P.path[0],dx=n.x-P.x,dy=n.y-P.y,d=Math.hypot(dx,dy);
-   if(d<.06){P.x=n.x;P.y=n.y;P.path.shift();
-    if(!P.path.length&&P.pend){const pa=P.pend;P.pend=null;startAct(pa);}}
-   else{const s=baseSpd()*dt;P.x+=dx/d*Math.min(s,d);P.y+=dy/d*Math.min(s,d);
-    P.dir=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up');P.anim+=dt*9;}}
-  else{let mx=0,my=0;
-   if(keys['w']||keys['arrowup'])my=-1;if(keys['s']||keys['arrowdown'])my=1;
-   if(keys['a']||keys['arrowleft'])mx=-1;if(keys['d']||keys['arrowright'])mx=1;
-   if(stick.active&&Math.hypot(stick.dx,stick.dy)>.25){mx=stick.dx;my=stick.dy;}
-   if(mx||my){const s=baseSpd()*dt,nx=P.x+mx*s,ny=P.y+my*s;
-    if(walk(Math.round(nx),Math.round(P.y)))P.x=nx;
-    if(walk(Math.round(P.x),Math.round(ny)))P.y=ny;
-    P.dir=Math.abs(mx)>Math.abs(my)?(mx>0?'right':'left'):(my>0?'down':'up');P.anim+=dt*9;P.pend=null;}
-   const ug=T(Math.round(P.x),Math.round(P.y));
-   if(ug&&ug.o&&['exit','exitmine','ladder'].includes(ug.o.k))startAct({type:'enter',tx:Math.round(P.x),ty:Math.round(P.y)});}
-  G.animals.forEach(a=>{if(a.loc!=='farm')return;a.t=(a.t||0)-dt;
-   if(a.t<=0){a.t=rnd(2,5);const nx=cl(Math.round(a.x)+ri(-1,1),1,18),ny=cl(Math.round(a.y)+ri(-1,1),1,10);
-    if(walk(nx,ny,'farm')){a.tx=nx;a.ty=ny;}}
-   const dx=a.tx-a.x,dy=a.ty-a.y,d=Math.hypot(dx,dy);
-   if(d>.05){a.x+=dx/d*Math.min(dt*.9,d);a.y+=dy/d*Math.min(dt*.9,d);a.anim=(a.anim||0)+dt*6;}});
-  G.npcs.forEach(n=>{if(G.spouse===n.id)return;n.t-=dt;
-   if(n.t<=0){n.t=rnd(2,6);const nx=cl((n.ax||8)+ri(-2,2),1,18),ny=cl((n.ay||6)+ri(-1,1),1,10);
-    if(walk(nx,ny,n.loc)){n.tx=nx;n.ty=ny;}}
-   const dx=(n.tx||n.x)-n.x,dy=(n.ty||n.y)-n.y,d=Math.hypot(dx,dy);
-   if(d>.05){n.x+=dx/d*Math.min(dt*1.25,d);n.y+=dy/d*Math.min(dt*1.25,d);n.anim=(n.anim||0)+dt*7;}});
-  if(G.sp&&G.loc==='house'){const s=G.sp;s.t-=dt;
-   if(s.t<=0){s.t=rnd(2,5);const nx=cl(Math.round(s.x)+ri(-2,2),2,12),ny=cl(Math.round(s.y)+ri(-1,1),3,8);
-    if(walk(nx,ny,'house')){s.tx=nx;s.ty=ny;}}
-   const dx=s.tx-s.x,dy=s.ty-s.y,d=Math.hypot(dx,dy);
-   if(d>.05){s.x+=dx/d*Math.min(dt*1.1,d);s.y+=dy/d*Math.min(dt*1.1,d);s.anim+=dt*7;}
-   if(chance(dt*.25))particle(s.x*TS+24,s.y*TS+4,'#ff8aa0',{shape:'heart',vy:-30,g:20,life:1});}
-  if(G.child&&G.loc==='house'){const c=G.child;c.t-=dt;
-   if(c.t<=0){c.t=rnd(1.5,4);const nx=cl(Math.round(c.x)+ri(-2,2),2,12),ny=cl(Math.round(c.y)+ri(-1,1),3,8);
-    if(walk(nx,ny,'house')){c.tx=nx;c.ty=ny;}}
-   const dx=c.tx-c.x,dy=c.ty-c.y,d=Math.hypot(dx,dy);
-   if(d>.05){c.x+=dx/d*Math.min(dt*1.5,d);c.y+=dy/d*Math.min(dt*1.5,d);c.anim=(c.anim||0)+dt*10;}}
-  if(G.pet){const p=G.pet;p.loc=G.loc==='house'?'house':'farm';
-   if(p.loc===G.loc){p.t-=dt;
-    if(p.t<=0){p.t=rnd(1.5,4);const nx=cl(Math.round(P.x)+ri(-3,3),1,18),ny=cl(Math.round(P.y)+ri(-3,3),1,10);
-     if(walk(nx,ny)){p.tx=nx;p.ty=ny;}}
-    const dx=(p.tx||p.x)-p.x,dy=(p.ty||p.y)-p.y,d=Math.hypot(dx,dy);
-    if(d>.05){p.x+=dx/d*Math.min(dt*2,d);p.y+=dy/d*Math.min(dt*2,d);p.anim=(p.anim||0)+dt*12;}}}
-  if(G.horse&&G.riding){G.horse.x=P.x;G.horse.y=P.y;}
-  if(G.loc==='mine')G.mobs.forEach(mb=>{const M=MOBS[mb.t];
-   mb.hurt=Math.max(0,mb.hurt-dt);mb.tm+=dt;mb.atk=Math.max(0,mb.atk-dt);
-   const dx=P.x-mb.x,dy=P.y-mb.y,d=Math.hypot(dx,dy);
-   if(d<8&&d>.6){const sp=dt*M.spd,nx=mb.x+dx/d*sp,ny=mb.y+dy/d*sp;
-    if(M.t==='bat'||walk(Math.round(nx),Math.round(mb.y)))mb.x=nx;
-    if(M.t==='bat'||walk(Math.round(mb.x),Math.round(ny)))mb.y=ny;}
-   if(d<(M.boss?1.2:.75)&&mb.atk<=0&&(!P.inv||P.inv<=0)){
-    const dmg=Math.max(1,mb.dmg-defense());G.hp-=dmg;P.inv=1;mb.atk=1;
-    SFX.hit();shake=.2;burst(P.x,P.y,'#ff6b6b',10);float(P.x,P.y,'-'+dmg+' ❤️','#ff8a8a');
-    if(G.hp<=0)passOut();}});
-  if(P.inv>0)P.inv-=dt;}
- for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.t+=dt;p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
-  if(p.t>=p.life)parts.splice(i,1);}
- for(let i=floats.length-1;i>=0;i--){const f=floats[i];f.t+=dt;f.y-=dt*22;if(f.t>=f.life)floats.splice(i,1);}
- updHUD();}
-/* ==================================================================
-   RENDER
-   ================================================================== */
-function sg(){return['#6cbf4b','#57b13f','#9aa83c','#d9e4ea'][G.season];}
-function sg2(){return['#63b344','#4fa438','#8d9b34','#cdd9e0'][G.season];}
-function render(){const L=G.loc,m=G.maps[L];if(!m)return;
- ctx.save();
- if(shake>0)ctx.translate(rnd(-4,4)*shake*3,rnd(-4,4)*shake*3);
- ctx.clearRect(-20,-20,W+40,H+40);
- for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const t=m[y][x],h=hash(x,y);let c;
-  switch(t.t){
-  case 'grass':c=h>.5?sg():sg2();break;
-  case 'dirt':c=h>.5?'#a9834f':'#9d7947';break;
-  case 'tilled':c=t.wet?(h>.5?'#6b4527':'#5e3c22'):(h>.5?'#a07546':'#946b3f');break;
-  case 'path':c=h>.5?'#c9b48f':'#c2ac85';break;
-  case 'sand':c=h>.5?'#e8d9a8':'#dfcf9a';break;
-  case 'rocky':c=h>.5?'#9aa094':'#92988d';break;
-  case 'water':c=h>.5?'#3f86c4':'#3a7cb8';break;
-  case 'pier':c=h>.5?'#a5763f':'#9c6e3a';break;
-  case 'floor':c=h>.5?'#c9a06a':'#c19a65';break;
-  case 'wood':c=h>.5?'#8a5a2b':'#81552a';break;
-  case 'ghfloor':c=h>.5?'#bfd8c0':'#b6d1b8';break;
-  case 'wall':c='#7a5a3a';break;
-  case 'mfloor':c=h>.5?'#5a5450':'#544e4a';break;
-  case 'deep':c='#1a1620';break;
-  case 'void':c='#0d0b09';break;
-  default:c='#6cbf4b';}
-  ctx.fillStyle=c;ctx.fillRect(x*TS,y*TS,TS,TS);
-  if(t.t==='water'){const w=Math.sin(perf*2+x*.7+y*.4)*3;ctx.fillStyle='rgba(255,255,255,.18)';
-   ctx.fillRect(x*TS+8+w,y*TS+14,16,3);ctx.fillRect(x*TS+22+w,y*TS+30,12,2);}
-  if(t.t==='pier'){ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(x*TS,y*TS+22,TS,3);}
-  if(t.t==='deep'){ctx.fillStyle='rgba(120,80,200,.15)';ctx.fillRect(x*TS+6,y*TS+6,TS-12,TS-12);}
-  if(t.t==='tilled'){ctx.fillStyle='rgba(0,0,0,.16)';for(let i=0;i<3;i++)ctx.fillRect(x*TS+3,y*TS+8+i*13,TS-6,3);
-   if(t.fert){ctx.fillStyle=t.fert==='q'?'rgba(80,200,140,.3)':'rgba(160,90,220,.3)';ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4);}
-   if(t.wet){ctx.fillStyle='rgba(30,80,160,.18)';ctx.fillRect(x*TS,y*TS,TS,TS);}}
-  if(t.t==='mfloor'&&h>.9){ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(x*TS+12,y*TS+16,8,6);}}
- if(L==='greenhouse'){ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=2;
-  for(let x=2;x<=17;x+=3){ctx.beginPath();ctx.moveTo(x*TS,TS);ctx.lineTo(x*TS,11*TS);ctx.stroke();}
-  ctx.fillStyle='rgba(200,255,220,.10)';ctx.fillRect(0,0,W,H);}
- if(hover&&!modalOpen&&!fishing){ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;
-  ctx.strokeRect(hover.x*TS+2,hover.y*TS+2,TS-4,TS-4);}
- const dl=[];
- for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const o=m[y][x].o;if(o&&o.k!=='block')dl.push({y,x,o});}
- dl.push({y:P.y,x:P.x,player:1});
- G.animals.filter(a=>a.loc===L).forEach(a=>dl.push({y:a.y,x:a.x,animal:a}));
- G.npcs.filter(n=>n.loc===L&&n.id!==G.spouse).forEach(n=>dl.push({y:n.y,x:n.x,npc:n}));
- if(L==='house'&&G.sp)dl.push({y:G.sp.y,x:G.sp.x,npc:G.sp,sp:1});
- if(L==='house'&&G.child)dl.push({y:G.child.y,x:G.child.x,child:G.child});
- if(G.pet&&G.pet.loc===L)dl.push({y:G.pet.y,x:G.pet.x,pet:G.pet});
- if(G.horse&&L==='farm'&&!G.riding)dl.push({y:G.horse.y,x:G.horse.x,horse:G.horse});
- if(L==='mine')G.mobs.forEach(s=>dl.push({y:s.y,x:s.x,mob:s}));
- if(L==='town'&&merchantActive())dl.push({y:MERCHANT_TILE.y,x:MERCHANT_TILE.x,merchant:1});
- dl.sort((a,b)=>a.y-b.y);
- dl.forEach(d=>{if(d.player)drawPlayer();
-  else if(d.animal)drawAnimal(d.animal);
-  else if(d.npc)drawNPC(d.npc,d.sp);
-  else if(d.child)drawChild(d.child);
-  else if(d.pet)drawPet(d.pet);
-  else if(d.horse)drawHorse(d.horse);
-  else if(d.mob)drawMob(d.mob);
-  else if(d.merchant)drawMerchant(d.x,d.y);
-  else drawObj(d.x,d.y,d.o,m[d.y][d.x]);});
- parts.forEach(p=>{ctx.globalAlpha=1-p.t/p.life;ctx.fillStyle=p.c;
-  if(p.shape==='heart'){ctx.font='14px serif';ctx.fillText('❤',p.x,p.y);}
-  else ctx.fillRect(p.x,p.y,p.s,p.s);ctx.globalAlpha=1;});
- floats.forEach(f=>{ctx.globalAlpha=cl(1-f.t/f.life,0,1);ctx.font='bold 15px Trebuchet MS';ctx.textAlign='center';
-  ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.strokeText(f.txt,f.x,f.y);
-  ctx.fillStyle=f.c;ctx.fillText(f.txt,f.x,f.y);ctx.globalAlpha=1;ctx.textAlign='left';});
- drawWeather();drawLight();
- if(confetti>0){ctx.font='26px serif';ctx.textAlign='center';ctx.fillStyle='#fff';
-  ctx.fillText('🎉 ยินดีด้วย! 🎉',W/2,70+Math.sin(perf*4)*4);ctx.textAlign='left';}
- ctx.restore();
- if(fishing)drawFishing();}
-function drawObj(x,y,o,tile){const px=x*TS,py=y*TS;
- switch(o.k){
- case 'tree':{const s=o.seed||.5;ctx.fillStyle='#6b4423';ctx.fillRect(px+20,py+24,8,22);
-  if(o.palm){ctx.fillStyle='#3a9a4a';for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(px+24+Math.cos(i*1.3)*14,py+16+Math.sin(i*1.3)*7,12,5,i*1.3,0,7);ctx.fill();}
-   ctx.fillStyle='#8a5a2b';ctx.beginPath();ctx.arc(px+24,py+20,4,0,7);ctx.fill();break;}
-  const cols=[['#2f8a3a','#3aa347'],['#2a7d33','#35993f'],['#c2761f','#e09b2c'],['#5a6b5a','#6f7f6f']][G.season];
-  if(G.season===3){ctx.fillStyle='#6b4423';ctx.beginPath();ctx.moveTo(px+24,py+30);ctx.lineTo(px+10,py+12);
-   ctx.lineTo(px+24,py+22);ctx.lineTo(px+38,py+12);ctx.closePath();ctx.fill();
-   ctx.fillStyle='rgba(255,255,255,.8)';ctx.beginPath();ctx.arc(px+24,py+16,9,0,7);ctx.fill();}
-  else{ctx.fillStyle=cols[0];ctx.beginPath();ctx.arc(px+24,py+22,17,0,7);ctx.fill();
-   ctx.fillStyle=cols[1];ctx.beginPath();ctx.arc(px+19+s*6,py+17,11,0,7);ctx.fill();}
-  if(o.hard){ctx.fillStyle='rgba(90,50,20,.5)';ctx.fillRect(px+18,py+30,12,14);}break;}
- case 'stump':ctx.fillStyle='#6b4423';ctx.fillRect(px+14,py+26,20,14);ctx.fillStyle='#8a5a2b';ctx.fillRect(px+14,py+24,20,5);break;
- case 'rock':{const c={stone:'#9a948c',copper:'#c47a3a',iron:'#c9c4bc',coal:'#4a4644',gold:'#e0b52c',
-   iridium:'#b06ad0',diamond:'#9fe8f0',geode:'#8a7f98'}[o.ore]||'#9a948c';
-  ctx.fillStyle='#6a645c';ctx.beginPath();ctx.ellipse(px+24,py+34,16,9,0,0,7);ctx.fill();
-  ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(px+9,py+36);ctx.lineTo(px+16,py+15);ctx.lineTo(px+32,py+13);ctx.lineTo(px+39,py+36);ctx.closePath();ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(px+18,py+18,7,7);break;}
- case 'weed':for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(px+24,py+40);
-  ctx.quadraticCurveTo(px+14+i*7,py+26,px+10+i*9,py+16);ctx.lineWidth=3;ctx.strokeStyle='#4e9a3a';ctx.stroke();}break;
- case 'crop':drawCrop(px,py,o);break;
- case 'forage':ctx.fillStyle='rgba(255,255,140,.25)';ctx.beginPath();ctx.arc(px+24,py+28,13,0,7);ctx.fill();
-  ctx.font='26px serif';ctx.textAlign='center';ctx.fillText(ITEMS[o.item].e,px+24,py+34);ctx.textAlign='left';break;
- case 'digspot':ctx.fillStyle='rgba(120,80,40,.55)';ctx.beginPath();ctx.ellipse(px+24,py+28,14,9,0,0,7);ctx.fill();
-  ctx.fillStyle='#e8d8a0';ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('✖',px+24,py+33);ctx.textAlign='left';break;
- case 'machine':drawMachine(px,py,o);break;
- case 'building':drawBuilding(px,py,o);break;
- case 'door':ctx.fillStyle='#8a5a2b';ctx.fillRect(px+10,py+30,28,12);ctx.fillStyle='#c9a06a';ctx.fillRect(px+13,py+32,22,8);
-  ctx.font='11px serif';ctx.textAlign='center';ctx.fillStyle='#4a2a10';ctx.fillText('เข้า',px+24,py+40);ctx.textAlign='left';break;
- case 'exit':ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(px+4,py+4,TS-8,TS-8);
-  ctx.font='24px serif';ctx.textAlign='center';
-  ctx.fillText({r:'➡️',l:'⬅️',u:'⬆️',d:'⬇️'}[o.dir]||'➡️',px+24,py+33);ctx.textAlign='left';break;
- case 'bin':ctx.fillStyle='#8a5a2b';ctx.fillRect(px+6,py+18,36,24);ctx.fillStyle='#b5834a';ctx.fillRect(px+6,py+14,36,8);
-  ctx.fillStyle='#4a2a10';ctx.fillRect(px+12,py+24,24,6);ctx.font='13px serif';ctx.fillText('📦',px+18,py+40);break;
- case 'board':ctx.fillStyle='#8a5a2b';ctx.fillRect(px+8,py+30,6,14);ctx.fillRect(px+34,py+30,6,14);
-  ctx.fillStyle='#c9a06a';ctx.fillRect(px+4,py+8,40,26);ctx.fillStyle='#fff8e0';ctx.fillRect(px+9,py+13,14,16);ctx.fillRect(px+26,py+13,12,12);
-  if(G.quests.some(q=>!q.done)){ctx.font='16px serif';ctx.fillText('❗',px+34,py+10);}break;
- case 'chest':ctx.fillStyle='#8a5a2b';ctx.fillRect(px+8,py+20,32,22);ctx.fillStyle='#d4a017';ctx.fillRect(px+8,py+18,32,7);
-  ctx.fillStyle='#6b4423';ctx.fillRect(px+22,py+24,4,8);
-  if(!o.home){const b=Math.sin(perf*3)*3;ctx.globalAlpha=.5;ctx.fillStyle='#ffe08a';
-   ctx.beginPath();ctx.arc(px+24,py+10-b,12,0,7);ctx.fill();ctx.globalAlpha=1;}break;
- case 'stand':{ctx.fillStyle='#8a5a2b';ctx.fillRect(px+10,py+22,28,20);ctx.fillStyle='rgba(180,230,255,.45)';
-  ctx.fillRect(px+12,py+8,24,20);ctx.strokeStyle='#c9a06a';ctx.lineWidth=2;ctx.strokeRect(px+12,py+8,24,20);break;}
- case 'bar':ctx.fillStyle='#6b4423';ctx.fillRect(px,py+18,TS,26);ctx.fillStyle='#8a5a2b';ctx.fillRect(px,py+14,TS,6);
-  ctx.font='14px serif';ctx.fillText('🍺',px+16,py+36);break;
- case 'sprinkler':ctx.fillStyle='#8a8f96';ctx.beginPath();ctx.arc(px+24,py+30,9,0,7);ctx.fill();
-  ctx.fillStyle='rgba(120,200,255,.35)';ctx.beginPath();ctx.arc(px+24,py+28,20+Math.sin(perf*3)*2,0,7);ctx.fill();break;
- case 'qsprinkler':ctx.fillStyle='#d4b13a';ctx.beginPath();ctx.arc(px+24,py+30,10,0,7);ctx.fill();
-  ctx.fillStyle='rgba(120,220,255,.35)';ctx.beginPath();ctx.arc(px+24,py+28,30+Math.sin(perf*3)*3,0,7);ctx.fill();break;
- case 'iprinkler':ctx.fillStyle='#b06ad0';ctx.beginPath();ctx.arc(px+24,py+30,11,0,7);ctx.fill();
-  ctx.fillStyle='rgba(180,120,255,.3)';ctx.beginPath();ctx.arc(px+24,py+28,42+Math.sin(perf*3)*4,0,7);ctx.fill();break;
- case 'scarecrow':ctx.fillStyle='#8a5a2b';ctx.fillRect(px+22,py+18,4,24);ctx.fillRect(px+12,py+24,24,4);
-  ctx.fillStyle='#e0c060';ctx.beginPath();ctx.arc(px+24,py+14,9,0,7);ctx.fill();
-  ctx.fillStyle='#4a2a10';ctx.fillRect(px+20,py+12,3,3);ctx.fillRect(px+26,py+12,3,3);
-  ctx.fillStyle='#c94b3a';ctx.fillRect(px+16,py+26,16,12);break;
- case 'torch':{ctx.fillStyle='#6b4423';ctx.fillRect(px+21,py+24,6,18);const f=Math.sin(perf*8)*2;
-  ctx.fillStyle='#ffb030';ctx.beginPath();ctx.arc(px+24,py+20+f,7,0,7);ctx.fill();
-  ctx.fillStyle='#ffe870';ctx.beginPath();ctx.arc(px+24,py+21+f,4,0,7);ctx.fill();break;}
- case 'ladder':ctx.fillStyle='#3a3430';ctx.fillRect(px+6,py+6,36,36);ctx.fillStyle='#b5834a';
-  ctx.fillRect(px+12,py+8,5,32);ctx.fillRect(px+31,py+8,5,32);
-  for(let i=0;i<4;i++)ctx.fillRect(px+12,py+12+i*8,24,4);break;
- case 'elevator':ctx.fillStyle='#4a4440';ctx.fillRect(px+4,py+4,40,40);ctx.fillStyle='#d4a017';
-  ctx.fillRect(px+8,py+8,32,32);ctx.fillStyle='#3a3430';ctx.font='20px serif';ctx.textAlign='center';
-  ctx.fillText('🛗',px+24,py+32);ctx.textAlign='left';break;
- case 'exitmine':ctx.fillStyle='#3a3430';ctx.fillRect(px+6,py+6,36,36);ctx.font='24px serif';ctx.textAlign='center';
-  ctx.fillText('🪜',px+24,py+34);ctx.textAlign='left';break;
- case 'bed':ctx.fillStyle='#8a5a2b';ctx.fillRect(px+4,py+4,88,88);ctx.fillStyle='#e8e0d0';ctx.fillRect(px+8,py+26,80,62);
-  ctx.fillStyle=G.spouse?'#e07a9a':'#d46a7a';ctx.fillRect(px+8,py+50,80,38);
-  ctx.fillStyle='#fff';ctx.fillRect(px+16,py+10,64,18);
-  if(G.spouse){ctx.fillStyle='#fff';ctx.fillRect(px+16,py+10,28,18);ctx.fillRect(px+52,py+10,28,18);}break;
- case 'stove':ctx.fillStyle='#7a7470';ctx.fillRect(px+4,py+10,40,34);ctx.fillStyle='#3a3430';ctx.fillRect(px+8,py+22,32,18);
-  ctx.fillStyle='#ffb030';ctx.fillRect(px+12,py+26,10,10);ctx.font='14px serif';ctx.fillText('🍳',px+26,py+20);break;
- case 'tv':ctx.fillStyle='#3a3430';ctx.fillRect(px+4,py+12,40,28);ctx.fillStyle='#6fb8e0';ctx.fillRect(px+8,py+16,32,20);
-  ctx.fillStyle='#fff';ctx.font='12px serif';ctx.fillText(WNAME[G.tomorrow].slice(0,2),px+16,py+30);break;
- case 'petbed':ctx.fillStyle='#c98a5a';ctx.beginPath();ctx.ellipse(px+24,py+30,16,10,0,0,7);ctx.fill();
-  ctx.fillStyle='#e8c8a0';ctx.beginPath();ctx.ellipse(px+24,py+30,11,6,0,0,7);ctx.fill();break;
- case 'statue':ctx.fillStyle='#b0aa9e';ctx.fillRect(px+14,py+30,20,14);ctx.beginPath();ctx.arc(px+24,py+20,10,0,7);ctx.fill();
-  ctx.fillStyle='#8a847a';ctx.fillRect(px+10,py+40,28,6);break;
- case 'fountain':ctx.fillStyle='#8a94a0';ctx.beginPath();ctx.arc(px+24,py+28,18,0,7);ctx.fill();
-  ctx.fillStyle='#4f96d0';ctx.beginPath();ctx.arc(px+24,py+28,13,0,7);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,.6)';ctx.fillRect(px+22,py+8+Math.sin(perf*4)*2,4,14);break;}}
-function drawMachine(px,py,o){const M=MACHINES[o.id];
- ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(px+24,py+42,15,5,0,0,7);ctx.fill();
- ctx.fillStyle='#8a5a2b';ctx.fillRect(px+7,py+12,34,30);ctx.fillStyle='#b5834a';ctx.fillRect(px+9,py+14,30,26);
- ctx.fillStyle='#6b4423';ctx.fillRect(px+7,py+8,34,6);
- ctx.font='20px serif';ctx.textAlign='center';ctx.fillText(M.e,px+24,py+34);ctx.textAlign='left';
- if(o.pending){const b=Math.sin(perf*4)*2;ctx.fillStyle='rgba(180,120,255,.5)';
-  ctx.beginPath();ctx.arc(px+24+b,py+6,5,0,7);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='bold 11px Trebuchet MS';ctx.textAlign='center';
-  ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=3;ctx.strokeText(o.left+'d',px+24,py+50);
-  ctx.fillText(o.left+'d',px+24,py+50);ctx.textAlign='left';}
- if(o.out){const b=Math.sin(perf*3)*3;ctx.globalAlpha=.5;ctx.fillStyle='#fff6a0';
-  ctx.beginPath();ctx.arc(px+24,py+2-b,13,0,7);ctx.fill();ctx.globalAlpha=1;
-  ctx.font='20px serif';ctx.textAlign='center';ctx.fillText(ITEMS[o.out].e,px+24,py+4-b);ctx.textAlign='left';}}
-function drawCrop(px,py,o){const cd=CROPS[o.id];
- if(o.dead){ctx.strokeStyle='#8a6a3a';ctx.lineWidth=3;
-  for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(px+24,py+40);ctx.lineTo(px+14+i*10,py+24);ctx.stroke();}return;}
- const st=cl(Math.floor(o.age/cd.days*4),0,3),ready=o.ready,h=[10,18,26,32][st];
- ctx.strokeStyle='#3f8f36';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px+24,py+42);ctx.lineTo(px+24,py+42-h);ctx.stroke();
- ctx.fillStyle='#4aa83f';
- for(let i=0;i<=st;i++){const sd=i%2?1:-1,ly=py+40-i*8;
-  ctx.beginPath();ctx.ellipse(px+24+sd*7,ly,7,4,sd*.5,0,7);ctx.fill();}
- if(ready||st===3){const n=ready?3:1;
-  for(let i=0;i<n;i++){ctx.fillStyle=ready?cd.f:cd.c;const ax=px+24+(i-1)*9,ay=py+40-h+(i===1?-4:2);
-   ctx.beginPath();ctx.arc(ax,ay,ready?6:4,0,7);ctx.fill();
-   if(ready){ctx.fillStyle='rgba(255,255,255,.4)';ctx.beginPath();ctx.arc(ax-2,ay-2,2,0,7);ctx.fill();}}
-  if(ready){ctx.globalAlpha=.25+Math.abs(Math.sin(perf*3))*.3;ctx.fillStyle='#fff6a0';
-   ctx.beginPath();ctx.arc(px+24,py+40-h,16,0,7);ctx.fill();ctx.globalAlpha=1;
-   ctx.font='13px serif';ctx.fillText('✨',px+32,py+14);}}}
-function drawBuilding(px,py,o){const w=o.w*TS,h=o.h*TS;
- const st={house:{w:'#e8d5b0',r:'#c0503f',n:'บ้าน'},coop:{w:'#e8d5b0',r:'#d68a3a',n:'เล้าไก่'},
-  barn:{w:'#d8a878',r:'#a63e3e',n:'โรงนา'},shop:{w:'#f0e0c0',r:'#4f8ac0',n:'ร้านค้า'},
-  museum:{w:'#efe6d0',r:'#8a7ac0',n:'พิพิธภัณฑ์'},saloon:{w:'#e0c8a0',r:'#b05a3a',n:'ร้านเหล้า'},
-  carp:{w:'#e6d0b8',r:'#6a8a4a',n:'ช่างไม้'},clinic:{w:'#f0f0f0',r:'#e05a6a',n:'คลินิก'},
-  guild:{w:'#d8c0a0',r:'#5a5a7a',n:'สมาคมนักผจญภัย'},smith:{w:'#c8b8a8',r:'#5a4a40',n:'ช่างตีเหล็ก'},
-  mineent:{w:'#6a645c',r:'#4a4440',n:'เหมือง'},greenhouse:{w:'#cfe8d4',r:'#7fc9a8',n:'เรือนกระจก'}}[o.kind]||{w:'#e8d5b0',r:'#c0503f',n:''};
- ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(px+6,py+h-8,w-12,10);
- ctx.fillStyle=st.w;ctx.fillRect(px+4,py+h*.38,w-8,h*.62);
- ctx.fillStyle=st.r;ctx.beginPath();ctx.moveTo(px,py+h*.42);ctx.lineTo(px+w/2,py+2);ctx.lineTo(px+w,py+h*.42);ctx.closePath();ctx.fill();
- if(o.kind==='greenhouse'){ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;
-  for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(px+w*i/4,py+h*.42);ctx.lineTo(px+w/2,py+2);ctx.stroke();}
-  ctx.fillStyle='rgba(180,255,220,.35)';ctx.fillRect(px+4,py+h*.38,w-8,h*.62);}
- ctx.fillStyle='rgba(0,0,0,.15)';ctx.fillRect(px+4,py+h*.38,w-8,5);
- ctx.fillStyle='#6b4423';ctx.fillRect(px+w/2-14,py+h-34,28,34);
- ctx.fillStyle='#8a5a2b';ctx.fillRect(px+w/2-11,py+h-30,22,30);
- ctx.fillStyle='#ffd870';ctx.beginPath();ctx.arc(px+w/2+6,py+h-16,2.5,0,7);ctx.fill();
- ctx.fillStyle=G.time>1080?'#ffd870':'#9fd0e8';ctx.fillRect(px+10,py+h*.5,16,14);
- if(w>150)ctx.fillRect(px+w-26,py+h*.5,16,14);
- if(st.n){ctx.font='bold 11.5px Trebuchet MS';ctx.textAlign='center';ctx.fillStyle='#fff';
-  ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=3;ctx.strokeText(st.n,px+w/2,py+h*.34);
-  ctx.fillText(st.n,px+w/2,py+h*.34);ctx.textAlign='left';}}
-function drawPlayer(){const px=P.x*TS,py=P.y*TS,walking=(P.path&&P.path.length)||false;
- if(G.riding){drawHorse({x:P.x,y:P.y},1);}
- const bob=walking?Math.abs(Math.sin(P.anim))*3:0,off=G.riding?-12:0;
- const a=P.act;let sw=0,tool=null;
- if(a){sw=Math.sin(cl(a.t/a.dur,0,1)*Math.PI);
-  tool={till:'hoe',water:'can',chop:'axe',mine:'pick',fish:'rod',attack:'sword',dig:'hoe'}[a.type]||null;}
- ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(px+24,py+42,12,5,0,0,7);ctx.fill();
- ctx.fillStyle='#3a5a8a';const lo=walking?Math.sin(P.anim)*4:0;
- ctx.fillRect(px+17,py+32-bob+off,6,10+lo);ctx.fillRect(px+25,py+32-bob+off,6,10-lo);
- ctx.fillStyle=G.equip.armor?'#8a8f96':'#4a9ad4';ctx.fillRect(px+15,py+18-bob+off,18,16);
- if(G.equip.armor){ctx.fillStyle='#c0c6ce';ctx.fillRect(px+17,py+20-bob+off,14,5);}
- ctx.fillStyle='#3a7ab0';ctx.fillRect(px+15,py+30-bob+off,18,4);
- if(a&&tool){ctx.save();ctx.translate(px+24,py+22-bob+off);ctx.scale(P.dir==='left'?-1:1,1);ctx.rotate(-1.1+sw*1.9);
-  ctx.fillStyle='#f0c8a0';ctx.fillRect(4,-3,7,12);ctx.fillStyle='#8a5a2b';ctx.fillRect(7,-2,4,24);
-  if(tool==='hoe'){ctx.fillStyle='#b0b6be';ctx.fillRect(5,20,12,5);}
-  if(tool==='axe'){ctx.fillStyle='#d0d6de';ctx.beginPath();ctx.moveTo(9,20);ctx.lineTo(20,16);ctx.lineTo(20,26);ctx.closePath();ctx.fill();}
-  if(tool==='pick'){ctx.fillStyle='#c0c6ce';ctx.fillRect(0,19,20,4);}
-  if(tool==='can'){ctx.fillStyle='#6aa8d8';ctx.fillRect(4,14,14,12);ctx.fillRect(16,10,10,4);}
-  if(tool==='rod'){ctx.fillStyle='#6b4423';ctx.fillRect(7,-18,3,26);}
-  if(tool==='sword'){const h=held();ctx.fillStyle=h&&h.id==='galaxysword'?'#b48aff':h&&h.id==='obsidianblade'?'#4a3a5a':'#e0e6ee';
-   ctx.fillRect(6,-24,5,28);}
-  ctx.restore();}
- else{ctx.fillStyle='#f0c8a0';ctx.fillRect(px+11,py+20-bob+off,6,11);ctx.fillRect(px+31,py+20-bob+off,6,11);}
- ctx.fillStyle='#f0c8a0';ctx.beginPath();ctx.arc(px+24,py+13-bob+off,9,0,7);ctx.fill();
- ctx.fillStyle='#6b4423';ctx.beginPath();ctx.arc(px+24,py+9-bob+off,9,Math.PI,0);ctx.fill();
- ctx.fillStyle='#d4a017';ctx.fillRect(px+12,py+5-bob+off,24,4);
- ctx.beginPath();ctx.ellipse(px+24,py+5-bob+off,13,4,0,0,7);ctx.fill();
- ctx.fillStyle='#2a2a2a';
- if(P.dir!=='up'){const ex=P.dir==='left'?-3:P.dir==='right'?3:0;
-  ctx.fillRect(px+20+ex,py+12-bob+off,2,3);ctx.fillRect(px+26+ex,py+12-bob+off,2,3);}
- if(G.spouse){ctx.font='11px serif';ctx.fillText('💍',px+34,py+30-bob+off);}
- if(P.inv>0&&Math.floor(perf*10)%2){ctx.fillStyle='rgba(255,60,60,.35)';ctx.fillRect(px+8,py,32,44);}}
-function drawAnimal(a){const px=a.x*TS,py=a.y*TS,b=Math.abs(Math.sin(a.anim||0))*2;
- ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(px+24,py+40,12,4,0,0,7);ctx.fill();
- const col={chicken:'#fff',duck:'#f0e0a0',cow:'#fff',goat:'#e0d8c8',sheep:'#f4f0e8',pig:'#f0a8b0'}[a.type];
- if(a.type==='chicken'||a.type==='duck'){ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(px+24,py+30-b,12,10,0,0,7);ctx.fill();
-  ctx.beginPath();ctx.arc(px+30,py+20-b,7,0,7);ctx.fill();
-  ctx.fillStyle=a.type==='duck'?'#3a8a4a':'#e04a3a';ctx.fillRect(px+28,py+12-b,6,4);
-  ctx.fillStyle='#f0a030';ctx.beginPath();ctx.moveTo(px+36,py+20-b);ctx.lineTo(px+43,py+22-b);ctx.lineTo(px+36,py+24-b);ctx.fill();
-  ctx.fillStyle='#2a2a2a';ctx.fillRect(px+32,py+18-b,2,2);}
- else{ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(px+22,py+28-b,16,12,0,0,7);ctx.fill();
-  if(a.type==='cow'){ctx.fillStyle='#3a3430';ctx.beginPath();ctx.ellipse(px+16,py+24-b,6,5,0,0,7);ctx.fill();}
-  ctx.fillStyle=col;ctx.beginPath();ctx.arc(px+36,py+24-b,8,0,7);ctx.fill();
-  if(a.type==='goat'){ctx.fillStyle='#8a7a6a';ctx.fillRect(px+34,py+14-b,3,7);ctx.fillRect(px+39,py+14-b,3,7);}
-  if(a.type==='pig'){ctx.fillStyle='#e08a98';ctx.beginPath();ctx.arc(px+44,py+25-b,4,0,7);ctx.fill();}
-  ctx.fillStyle='#2a2a2a';ctx.fillRect(px+36,py+20-b,2,2);}
- if(a.product){ctx.font='18px serif';ctx.fillText(ITEMS[ANIMALS[a.type].prod].e,px+16,py+6+Math.sin(perf*3)*2);}
- ctx.font='10px Trebuchet MS';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2;
- ctx.strokeText(a.name,px+24,py+48);ctx.fillText(a.name,px+24,py+48);ctx.textAlign='left';}
-function drawMerchant(x,y){const px=x*TS,py=y*TS,b=Math.abs(Math.sin(perf*2.4))*3;
- ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(px+24,py+42,15,4,0,0,7);ctx.fill();
- ctx.font='34px serif';ctx.textAlign='center';ctx.fillText('🛒',px+24,py+34-b);
- ctx.font='16px serif';ctx.fillText('❗',px+24,py+10-b);ctx.textAlign='left';}
-function drawNPC(n,sp){const d=NPCDEF.find(x=>x.id===n.id);if(!d)return;
- const px=n.x*TS,py=n.y*TS,b=Math.abs(Math.sin(n.anim||0))*3;
- ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(px+24,py+42,11,4,0,0,7);ctx.fill();
- ctx.fillStyle='#3a3a4a';ctx.fillRect(px+18,py+32-b,5,10);ctx.fillRect(px+25,py+32-b,5,10);
- ctx.fillStyle=d.c;ctx.fillRect(px+15,py+18-b,18,16);
- ctx.fillStyle='#f0c8a0';ctx.fillRect(px+11,py+20-b,5,11);ctx.fillRect(px+32,py+20-b,5,11);
- ctx.beginPath();ctx.arc(px+24,py+13-b,9,0,7);ctx.fill();
- ctx.fillStyle='#3a2a1a';ctx.beginPath();ctx.arc(px+24,py+9-b,9,Math.PI,0);ctx.fill();
- ctx.fillStyle='#2a2a2a';ctx.fillRect(px+20,py+12-b,2,3);ctx.fillRect(px+26,py+12-b,2,3);
- ctx.font='10px Trebuchet MS';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2;
- const nm=(G.spouse===n.id?'💍 ':'')+d.n+(G.dating===n.id?' 💐':'')+(isBirthday(n.id)?' 🎂':'');
- ctx.strokeText(nm,px+24,py+52);ctx.fillText(nm,px+24,py+52);
- const hp=Math.floor((n.fr||0)/100);
- if(hp){ctx.fillStyle='#ff6b8a';ctx.fillText('❤×'+hp,px+24,py+2);}ctx.textAlign='left';}
-function drawChild(c){const px=c.x*TS,py=c.y*TS,b=Math.abs(Math.sin(c.anim||0))*3;
- ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(px+24,py+40,7,3,0,0,7);ctx.fill();
- ctx.fillStyle='#f5b0c0';ctx.fillRect(px+19,py+28-b,10,10);
- ctx.fillStyle='#f0c8a0';ctx.beginPath();ctx.arc(px+24,py+23-b,7,0,7);ctx.fill();
- ctx.fillStyle='#6b4423';ctx.beginPath();ctx.arc(px+24,py+20-b,7,Math.PI,0);ctx.fill();
- ctx.fillStyle='#2a2a2a';ctx.fillRect(px+21,py+23-b,2,2);ctx.fillRect(px+26,py+23-b,2,2);
- ctx.font='10px Trebuchet MS';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2;
- ctx.strokeText('👶 '+c.name,px+24,py+48);ctx.fillText('👶 '+c.name,px+24,py+48);ctx.textAlign='left';}
-function drawPet(p){const px=p.x*TS,py=p.y*TS,b=Math.abs(Math.sin(p.anim||0))*2;
- ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(px+24,py+40,10,3,0,0,7);ctx.fill();
- const c=p.type==='dog'?'#c9955a':'#7a7a80';
- ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(px+22,py+32-b,11,7,0,0,7);ctx.fill();
- ctx.beginPath();ctx.arc(px+32,py+27-b,6,0,7);ctx.fill();
- ctx.fillStyle=c;if(p.type==='cat'){ctx.beginPath();ctx.moveTo(px+29,py+22-b);ctx.lineTo(px+30,py+17-b);ctx.lineTo(px+33,py+22-b);ctx.fill();}
- else{ctx.beginPath();ctx.ellipse(px+30,py+22-b,3,5,0,0,7);ctx.fill();}
- ctx.fillStyle='#2a2a2a';ctx.fillRect(px+34,py+26-b,2,2);
- ctx.strokeStyle=c;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(px+12,py+30-b);
- ctx.lineTo(px+6,py+24-b+Math.sin(perf*8)*3);ctx.stroke();
- ctx.font='10px Trebuchet MS';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2;
- ctx.strokeText(p.name,px+24,py+48);ctx.fillText(p.name,px+24,py+48);ctx.textAlign='left';}
-function drawHorse(h,ride){const px=h.x*TS,py=h.y*TS;
- ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(px+24,py+44,16,5,0,0,7);ctx.fill();
- ctx.fillStyle='#8a5a3a';ctx.fillRect(px+10,py+26,30,14);
- ctx.fillRect(px+12,py+38,5,8);ctx.fillRect(px+32,py+38,5,8);
- ctx.beginPath();ctx.arc(px+42,py+24,8,0,7);ctx.fill();
- ctx.fillStyle='#5a3a20';ctx.fillRect(px+30,py+16,10,10);
- ctx.fillStyle='#2a2a2a';ctx.fillRect(px+45,py+22,2,2);
- if(!ride){ctx.font='10px Trebuchet MS';ctx.textAlign='center';ctx.fillStyle='#fff';
-  ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2;ctx.strokeText('🐴 คลิกเพื่อขี่',px+24,py+54);
-  ctx.fillText('🐴 คลิกเพื่อขี่',px+24,py+54);ctx.textAlign='left';}}
-function drawMob(s){const M=MOBS[s.t],px=s.x*TS,py=s.y*TS,sq=Math.sin(s.tm*4)*3,sc=M.boss?1.7:1;
- ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(px+24,py+40,13*sc,4,0,0,7);ctx.fill();
- ctx.fillStyle=s.hurt>0?'#ffb0b0':M.c;
- if(s.t==='bat'){const fl=Math.sin(perf*14)*6;
-  ctx.beginPath();ctx.arc(px+24,py+26,9,0,7);ctx.fill();
-  ctx.beginPath();ctx.moveTo(px+18,py+24);ctx.lineTo(px+4,py+18+fl);ctx.lineTo(px+18,py+30);ctx.fill();
-  ctx.beginPath();ctx.moveTo(px+30,py+24);ctx.lineTo(px+44,py+18-fl);ctx.lineTo(px+30,py+30);ctx.fill();}
- else if(s.t==='bone'){ctx.fillRect(px+16,py+18,16,20);ctx.beginPath();ctx.arc(px+24,py+14,9,0,7);ctx.fill();
-  ctx.fillStyle='#2a2a2a';ctx.fillRect(px+20,py+12,3,4);ctx.fillRect(px+26,py+12,3,4);}
- else if(s.t==='golem'){ctx.fillRect(px+10,py+16,28,26);ctx.fillStyle='#6a645c';ctx.fillRect(px+14,py+20,8,8);ctx.fillRect(px+26,py+20,8,8);}
- else if(s.t==='shadow'){ctx.globalAlpha=.85;ctx.beginPath();ctx.ellipse(px+24,py+28,13,16,0,0,7);ctx.fill();ctx.globalAlpha=1;
-  ctx.fillStyle='#ff5a5a';ctx.fillRect(px+18,py+22,4,4);ctx.fillRect(px+27,py+22,4,4);}
- else{ctx.beginPath();ctx.ellipse(px+24,py+30,(14+sq)*sc,(14-sq)*sc,0,Math.PI,0);
-  ctx.rect(px+24-(14+sq)*sc,py+30,(28+sq*2)*sc,10*sc);ctx.fill();
-  ctx.fillStyle='#1a3a1a';ctx.fillRect(px+18,py+26,4,5);ctx.fillRect(px+27,py+26,4,5);
-  if(M.boss){ctx.fillStyle='#ffd84a';ctx.font='20px serif';ctx.textAlign='center';ctx.fillText('👑',px+24,py+6);ctx.textAlign='left';}}
- const bw=M.boss?60:32;
- ctx.fillStyle='#8a2a2a';ctx.fillRect(px+24-bw/2,py+2,bw,4);
- ctx.fillStyle=M.boss?'#ff6a4a':'#4ae04a';ctx.fillRect(px+24-bw/2,py+2,bw*cl(s.hp/s.max,0,1),4);}
-let wp=[];
-function drawWeather(){if(['mine','house','museum','saloon'].includes(G.loc)){return;}
- if(G.loc==='greenhouse'){if(['rain','storm','snow'].includes(G.weather)){ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,0,W,H);}return;}
- const w=G.weather;
- if(w==='rain'||w==='storm'){if(wp.length<(w==='storm'?260:150))for(let i=0;i<4;i++)wp.push({x:rnd(-100,W),y:rnd(-40,H),v:rnd(600,900)});
-  ctx.strokeStyle='rgba(180,220,255,.55)';ctx.lineWidth=1.6;ctx.beginPath();
-  wp.forEach(p=>{p.y+=p.v/60;p.x+=3;if(p.y>H){p.y=-10;p.x=rnd(-100,W);}ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-4,p.y-12);});
-  ctx.stroke();ctx.fillStyle='rgba(30,50,90,.22)';ctx.fillRect(0,0,W,H);
-  if(w==='storm'&&chance(.004)){ctx.fillStyle='rgba(255,255,255,.65)';ctx.fillRect(0,0,W,H);snd(80,.4,'sawtooth',.05,-40);}}
- else if(w==='snow'){if(wp.length<130)for(let i=0;i<3;i++)wp.push({x:rnd(0,W),y:rnd(-40,H),v:rnd(40,90),s:rnd(2,4),p:rnd(0,7)});
-  ctx.fillStyle='rgba(255,255,255,.85)';
-  wp.forEach(p=>{p.y+=p.v/60;p.x+=Math.sin(perf+p.p)*.6;if(p.y>H){p.y=-10;p.x=rnd(0,W);}ctx.fillRect(p.x,p.y,p.s,p.s);});}
- else if(w==='wind'){if(wp.length<40)for(let i=0;i<2;i++)wp.push({x:rnd(0,W),y:rnd(0,H),v:rnd(160,260),p:rnd(0,7)});
-  ctx.fillStyle='rgba(180,220,140,.6)';ctx.font='13px serif';
-  wp.forEach(p=>{p.x+=p.v/60;p.y+=Math.sin(perf*3+p.p)*.9;if(p.x>W){p.x=-10;p.y=rnd(0,H);}ctx.fillText('🍃',p.x,p.y);});}
- else wp=[];}
-function drawLight(){
- if(G.loc==='mine'){const dk=cl(.35+G.depth*.006,0,.72);ctx.fillStyle='rgba(0,0,10,'+dk+')';ctx.fillRect(0,0,W,H);
-  const g=ctx.createRadialGradient(P.x*TS+24,P.y*TS+24,20,P.x*TS+24,P.y*TS+24,190);
-  g.addColorStop(0,'rgba(255,220,150,.35)');g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);return;}
- if(['house','museum','saloon'].includes(G.loc))return;
- const t=G.time;let a=0;
- if(t>1020&&t<=1200)a=(t-1020)/180*.30;
- else if(t>1200&&t<=1320)a=.30+(t-1200)/120*.25;
- else if(t>1320)a=cl(.55+(t-1320)/240*.12,0,.68);
- if(t>1020&&t<1140){ctx.fillStyle='rgba(255,140,60,'+((t-1020)/120*.18)+')';ctx.fillRect(0,0,W,H);}
- if(a>0){ctx.fillStyle='rgba(10,10,40,'+(G.loc==='greenhouse'?a*.6:a)+')';ctx.fillRect(0,0,W,H);}}
-function drawFishing(){const F=fishing,bx=700,by=110,bw=44,bh=300;
- ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,H);
- ctx.fillStyle='#e8d5b0';ctx.fillRect(bx-70,by-46,190,bh+92);
- ctx.fillStyle='#8a5a2b';ctx.fillRect(bx-66,by-42,182,bh+84);
- ctx.fillStyle='#2f6f9f';ctx.fillRect(bx,by,bw,bh);
- ctx.fillStyle='rgba(120,230,120,.8)';ctx.fillRect(bx+2,by+F.bar*bh,bw-4,F.size*bh);
- ctx.font='26px serif';ctx.textAlign='center';ctx.fillText(F.f.e,bx+bw/2,by+F.fish*bh+10);
- if(F.treas&&!F.tgot){ctx.font='20px serif';ctx.fillText('🧰',bx+bw/2,by+F.tp*bh+8);}
- ctx.fillStyle='#4a3a2a';ctx.fillRect(bx+bw+14,by,18,bh);
- ctx.fillStyle='#7ed957';ctx.fillRect(bx+bw+14,by+bh*(1-F.prog),18,bh*F.prog);
- ctx.fillStyle='#fff';ctx.font='bold 16px Trebuchet MS';ctx.fillText('🎣 แตะรัวๆ!',bx+bw/2,by-56);
- ctx.font='12px Trebuchet MS';ctx.fillText('ให้ปลาอยู่ในแถบเขียว',bx+bw/2,by+bh+30);ctx.textAlign='left';}
-/* ==================================================================
-   HUD & UI
-   ================================================================== */
-function fmtTime(){let h=Math.floor(G.time/60),m=Math.floor(G.time%60/10)*10;
- const ap=h>=12&&h<24?'PM':'AM';let d=(h%24)%12;if(d===0)d=12;
- return d+':'+String(m).padStart(2,'0')+' '+ap;}
-function updHUD(){if(!G)return;
- document.getElementById('hDate').textContent=SE_TH[SEASONS[G.season]]+' '+G.day+' (ปี '+G.year+')';
- document.getElementById('hTime').textContent=fmtTime();
- document.getElementById('hW').textContent=WNAME[G.weather];
- document.getElementById('hE').textContent=Math.round(G.energy)+'/'+G.maxEnergy;
- const be=document.getElementById('bE');be.style.width=(G.energy/G.maxEnergy*100)+'%';
- be.style.background=G.energy/G.maxEnergy<.25?'#ff9b3a':'#7ed957';
- document.getElementById('hH').textContent=Math.round(G.hp)+'/'+G.maxHp;
- document.getElementById('bH').style.width=(G.hp/G.maxHp*100)+'%';
- document.getElementById('hMoney').textContent=G.money.toLocaleString();
- const it=held();
- let ex='📍'+({farm:'ฟาร์ม',town:'เมือง',forest:'ป่า',beach:'ชายหาด',mountain:'ภูเขา',
-  mine:'เหมือง ชั้น '+G.depth,house:'บ้าน',greenhouse:'เรือนกระจก',museum:'พิพิธภัณฑ์',saloon:'ร้านเหล้า'})[G.loc];
- if(it&&it.tool==='can')ex+=' 💧'+G.canWater+'/'+canCap();
- if(it&&it.tool==='sword')ex+=' ⚔️'+it.dmg;
- ex+=' 🛡️'+defense()+' '+luckTxt();
- if(G.spouse)ex+=' 💍'+NPCDEF.find(x=>x.id===G.spouse).n;
- document.getElementById('hExtra').textContent=ex;
- drawHotbar();}
-function drawHotbar(){let h='';
- for(let i=0;i<12;i++){const s=G.inv[i];
-  h+='<div class="slot'+(i===G.sel?' sel':'')+'" onclick="G.sel='+i+';updHUD();SFX.pop()" oncontextmenu="useSlot('+i+');return false">';
-  h+='<span class="k">'+(i<9?i+1:i===9?'0':'')+'</span>';
-  if(s){h+=ITEMS[s.id].e;if(ITEMS[s.id].type!=='tool'&&s.q>1)h+='<span class="q">'+s.q+'</span>';
-   const t=ITEMS[s.id].tool;if(t&&G.toolLv[t])h+='<span class="lv">+'+G.toolLv[t]+'</span>';}
-  h+='</div>';}
- document.getElementById('hotbar').innerHTML=h;}
-const EAT={berry:25,mushroom:40,leek:35,milk:80,bigmilk:110,egg:45,coconut:50,cheese:100,beer:50,
- honey:70,snowyam:60,crocus:30,seaweed:30,truffle:100,mead:90};
-function useSlot(i){const s=G.inv[i];if(!s)return;const it=ITEMS[s.id];
- if(it.type==='food'){G.energy=Math.min(G.maxEnergy,G.energy+it.en);G.hp=Math.min(G.maxHp,G.hp+it.hp);
-  if(it.buff)for(const k in it.buff)G.buff[k]=Math.max(G.buff[k],it.buff[k]);
-  removeItem(s.id,1);SFX.harvest();float(P.x,P.y,'+'+it.en+' ⚡','#7ed957');
-  toast('😋 '+it.n+' +'+it.en+' พลังงาน'+(it.buff?' (ได้บัฟ!)':''));}
- else if(it.type==='potion'){if(it.hp)G.hp=Math.min(G.maxHp,G.hp+it.hp);
-  if(it.en)G.energy=Math.min(G.maxEnergy,G.energy+it.en);
-  removeItem(s.id,1);SFX.harvest();toast('🧪 ใช้'+it.n);}
- else if(it.type==='armor'||it.type==='boots'){const sl=it.type;
-  if(G.equip[sl]===it.id){addItem(it.id,1);G.equip[sl]=null;toast('ถอด'+it.n);}
-  else{if(G.equip[sl])addItem(G.equip[sl],1);G.equip[sl]=it.id;removeItem(it.id,1);toast('👕 สวมใส่'+it.n);}
-  SFX.pop();}
- else if(EAT[s.id]){const en=EAT[s.id];G.energy=Math.min(G.maxEnergy,G.energy+en);removeItem(s.id,1);
-  SFX.harvest();float(P.x,P.y,'+'+en+' ⚡','#7ed957');}
- else G.sel=i;
- updHUD();}
-function openPanel(h){document.getElementById('panel').innerHTML=h;document.getElementById('modal').style.display='flex';modalOpen=true;}
-function closePanel(){if(perkChoiceOpen)return;document.getElementById('modal').style.display='none';modalOpen=false;updHUD();}
-function row(e,n,d,price,fn,btn,dis){
- return '<div class="row"><span style="font-size:19px;width:24px">'+e+'</span><span class="nm"><b>'+n+'</b>'+
- (d?'<br><span class="tag">'+d+'</span>':'')+'</span>'+(price?'<b style="color:#a8760f">'+price.toLocaleString()+'ก.</b>':'')+
- (fn?'<button onclick="'+fn+'" '+((dis||price>G.money)?'disabled':'')+'>'+btn+'</button>':'')+'</div>';}
-const UI={};
-UI.help=function(){openPanel('<button class="close" onclick="closePanel()">ปิด</button><h2>❓ วิธีเล่น</h2>'+
-'<div class="row"><span class="nm"><b>พื้นฐาน:</b> คลิก/แตะที่ช่องใดก็ได้ ตัวละครจะเดินไปแล้วทำงานตามเครื่องมือที่ถือ</span></div>'+
-'<div class="row"><span class="nm"><b>ทำฟาร์ม:</b> ⛏️จอบพรวน → 🌱เมล็ดปลูก → 🚿รดน้ำทุกวัน → ✨เรืองแสงแล้วเก็บ</span></div>'+
-'<div class="row"><span class="nm"><b>มือถือ:</b> ปุ่ม 📱 เปิดจอย · ปุ่ม ✋ = ใช้เครื่องมือช่องหน้า · ◀▶ เปลี่ยนไอเทม · 🎒 กระเป๋า</span></div>'+
-'<div class="row"><span class="nm"><b>แผนที่:</b> ฟาร์ม↔ป่า(ซ้าย) · ฟาร์ม↔เมือง(ขวา) · เมือง↔ภูเขา(ขวา) · เมือง↔ชายหาด(ล่าง) · เหมืองอยู่บนภูเขา</span></div>'+
-'<div class="row"><span class="nm"><b>เหมือง:</b> ทุบหินหาบันได · ทุก 5 ชั้นมีลิฟต์ · ทุก 20 ชั้นมีบอส 👑 · ต้องมีอาวุธ+เกราะ (ซื้อที่สมาคมนักผจญภัย)</span></div>'+
-'<div class="row"><span class="nm"><b>แปรรูป:</b> คราฟต์เครื่อง → วางลงพื้น → ถือวัตถุดิบคลิกเครื่อง → รอ → คลิกเก็บ (ไวน์ราคา ×3)</span></div>'+
-'<div class="row"><span class="nm"><b>ความสัมพันธ์:</b> ให้ของขวัญวันละ 1 ชิ้น · วันเกิดได้ 3 เท่า · 8❤️ให้💐 · 10❤️ให้💍 · แต่งงานแล้วมีลูกได้</span></div>'+
-'<div class="row"><span class="nm"><b>พิพิธภัณฑ์:</b> บริจาคแร่/โบราณวัตถุ/ปลา รับรางวัลตามจำนวน · ขุด ✖ บนพื้นทรายด้วยจอบเพื่อหาของโบราณ</span></div>'+
-'<div class="row"><span class="nm">⭐ <b>ความสามารถพิเศษ:</b> ทุกทักษะเมื่อถึง Lv.5 และ Lv.10 จะได้เลือกความสามารถถาวร 1 ใน 2 แบบ เลือกแล้วเปลี่ยนไม่ได้!</span></div>'+
-'<div class="row"><span class="nm">🛒 <b>พ่อค้าเร่:</b> บางวันจะมีพ่อค้าเร่มาขายของหายากใกล้ทางเข้าภูเขาในเมือง — มาแล้วหายไปทันที</span></div>'+
-'<div class="row"><span class="nm">⚠️ พลังงานหมดหรือเลยตีสอง = หมดสติ เสียเงิน 10%</span></div>');};
-UI.inventory=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🎒 กระเป๋า</h2>';
- h+='<div class="row">👕 เกราะ: <b>'+(G.equip.armor?ITEMS[G.equip.armor].e+ITEMS[G.equip.armor].n:'ไม่มี')+
-  '</b> · 👟 รองเท้า: <b>'+(G.equip.boots?ITEMS[G.equip.boots].e+ITEMS[G.equip.boots].n:'ไม่มี')+'</b> · 🛡️ ป้องกันรวม '+defense()+'</div>';
- h+='<div class="tag">คลิกไอเทมเพื่อดู/ใช้ แล้วคลิกอีกช่องเพื่อสลับตำแหน่ง</div><div class="grid" style="margin-top:6px">';
- for(let i=0;i<48;i++){const s=G.inv[i];
-  h+='<div class="slot" onclick="invClick('+i+')" style="width:100%;height:42px;font-size:19px">'+
-  (s?ITEMS[s.id].e+(s.q>1&&ITEMS[s.id].type!=='tool'?'<span class="q">'+s.q+'</span>':''):'')+'</div>';}
- h+='</div><div id="invInfo" class="row" style="margin-top:8px">เลือกไอเทมเพื่อดูรายละเอียด</div>';openPanel(h);};
-let swapFrom=null;
-function invClick(i){const s=G.inv[i];
- if(swapFrom===null&&s){swapFrom=i;const it=ITEMS[s.id];
-  let d=it.type==='tool'?('เครื่องมือ Lv.'+(G.toolLv[it.tool]||0)+(it.dmg?' · ดาเมจ '+it.dmg:'')):
-   (it.def?'ป้องกัน +'+it.def:it.spd?'ความเร็ว +'+it.spd:'ราคาขาย '+it.p+' ก. · มี '+s.q+' ชิ้น');
-  document.getElementById('invInfo').innerHTML='<span style="font-size:21px">'+it.e+'</span><span class="nm"><b>'+it.n+'</b><br><span class="tag">'+d+'</span></span>'+
-  ((it.type==='food'||it.type==='potion'||EAT[it.id])?'<button onclick="useSlot('+i+');swapFrom=null;UI.inventory()">ใช้/กิน</button>':'')+
-  ((it.type==='armor'||it.type==='boots')?'<button onclick="useSlot('+i+');swapFrom=null;UI.inventory()">สวมใส่</button>':'')+
-  '<button onclick="swapFrom=null;UI.inventory()">ยกเลิก</button>';return;}
- if(swapFrom!==null){const t=G.inv[swapFrom];G.inv[swapFrom]=G.inv[i];G.inv[i]=t;swapFrom=null;SFX.pop();UI.inventory();}}
-UI.shop=function(tab){tab=tab||'seed';const s=SEASONS[G.season];
- let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🏪 ร้านค้า — 💰'+G.money.toLocaleString()+'</h2>';
- h+='<div class="tabs">'+[['seed','🌱เมล็ด'],['item','📦ของใช้'],['animal','🐄สัตว์'],['love','💐ของขวัญ'],['sell','💸ขาย']]
-  .map(([k,n])=>'<span class="tb'+(tab===k?' on':'')+'" onclick="UI.shop(\''+k+'\')">'+n+'</span>').join('')+'</div>';
- if(tab==='seed'){h+='<div class="tag">เมล็ดของ'+SE_TH[s]+' (เรือนกระจกปลูกได้ทุกฤดู)</div>';
-  Object.keys(CROPS).filter(k=>CROPS[k].s.includes(s)).forEach(k=>{const c=CROPS[k];
-   h+=row(c.e,'เมล็ด'+c.n,'โต '+c.days+' วัน'+(c.re?' · เก็บซ้ำ '+c.re+' วัน':'')+' · ผลขาย '+c.sell,c.seed,'buy(\''+k+'_seed\','+c.seed+',1)','ซื้อ');
-   h+=row('','ยกชุด ×10','',c.seed*10,'buy(\''+k+'_seed\','+c.seed+',10)','×10');});}
- else if(tab==='item'){[['hay',50],['fert',100],['qfert',300],['sprinkler',500],['qsprinkler',1200],['scarecrow',300],
-   ['torch',80],['coal',150],['copper',200],['smallpotion',200],['energydrink',400],['bomb',300],['chest_item',200]]
-  .forEach(([id,p])=>h+=row(ITEMS[id].e,ITEMS[id].n,'',p,'buy(\''+id+'\','+p+',1)','ซื้อ'));}
- else if(tab==='animal'){h+='<div class="tag">เล้าไก่ '+housed('coop')+'/'+cap('coop')+' · โรงนา '+housed('barn')+'/'+cap('barn')+' (ขยายที่ช่างไม้)</div>';
-  for(const k in ANIMALS){const a=ANIMALS[k];
-   h+=row({chicken:'🐔',duck:'🦆',cow:'🐄',goat:'🐐',sheep:'🐑',pig:'🐖'}[k],a.n,'ให้'+ITEMS[a.prod].n+'ทุก '+a.days+' วัน'+(a.tool?' (ใช้'+ITEMS[a.tool].n+')':''),a.price,'buyAnimal(\''+k+'\')','ซื้อ');}
-  h+='<h3>🐾 สัตว์เลี้ยง (เพิ่มดวง)</h3>';
-  if(!G.pet){h+=row('🐶','สุนัข','ลูบทุกวันเพิ่มดวง',3000,'buyPet(\'dog\')','รับเลี้ยง');
-   h+=row('🐱','แมว','ลูบทุกวันเพิ่มดวง',3000,'buyPet(\'cat\')','รับเลี้ยง');}
-  else h+='<div class="row">🐾 คุณมี '+G.pet.name+' อยู่แล้ว</div>';}
- else if(tab==='love'){h+='<div class="tag">💐 = ขอเป็นแฟน (8❤️) · 💍 = ขอแต่งงาน (แฟน + 10❤️)</div>';
-  h+=row('💐','ช่อดอกไม้','ถือแล้วคลิกคนที่ชอบ',800,'buy(\'bouquet\',800,1)','ซื้อ');
-  h+=row('💍','แหวนหอยมุก','ถือแล้วคลิกแฟนของคุณ',5000,'buy(\'ring\',5000,1)','ซื้อ');
-  h+='<h3>สถานะหัวใจ</h3>';
-  G.npcs.forEach(n=>{const d=NPCDEF.find(x=>x.id===n.id);
-   h+='<div class="row"><span class="nm"><b>'+d.n+'</b> <span class="tag">'+d.job+' · ชอบ: '+d.like.slice(0,4).map(i=>ITEMS[i].e).join('')+
-   ' · เกิด '+SE_TH[SEASONS[d.bd.s]]+' '+d.bd.d+'</span></span><b style="color:#e0567a">'+
-   (G.spouse===n.id?'💍':G.dating===n.id?'💐':'')+'❤×'+Math.floor(n.fr/100)+'</b></div>';});}
- else{h+='<div class="tag">ขายทันทีได้ 80% (ตู้ส่งของได้เต็มราคา)</div>';
-  G.inv.forEach((s2,i)=>{if(!s2||ITEMS[s2.id].type==='tool')return;
-   h+=row(ITEMS[s2.id].e,ITEMS[s2.id].n+' ×'+s2.q,'',0,'sellSlot('+i+')','ขาย1('+Math.round(sellPrice(s2.id)*.8)+')');});}
- openPanel(h);};
-function buy(id,price,q){const c=price*q;if(G.money<c){SFX.err();toast('💰 เงินไม่พอ');return;}
- G.money-=c;addItem(id,q);SFX.coin();toast('🛒 ซื้อ'+ITEMS[id].n+' ×'+q);
- UI.shop(ITEMS[id].type==='seed'?'seed':ITEMS[id].type==='gift'?'love':'item');}
-function buyAnimal(k){const a=ANIMALS[k];if(G.money<a.price){SFX.err();toast('💰 เงินไม่พอ');return;}
- if(housed(a.house)>=cap(a.house)){SFX.err();toast('🏠 เต็มแล้ว (ขยายที่ช่างไม้)');return;}
- G.money-=a.price;
- G.animals.push({id:'a'+Date.now()+ri(0,999),type:k,name:pick(['ดาว','หมี','ข้าว','ฟ้า','มุก','โมจิ','ขนุน','ปุยฝ้าย']),
-  x:ri(13,17),y:9,tx:15,ty:9,fr:100,fed:true,product:false,cd:1,loc:'farm'});
- SFX.coin();toast('🎉 ยินดีต้อนรับสมาชิกใหม่!');UI.shop('animal');}
-function buyPet(t){if(G.money<3000){SFX.err();return;}G.money-=3000;
- G.pet={type:t,name:pick(['โมจิ','ข้าวปั้น','ตังเม','ขนมปัง']),x:10,y:8,tx:10,ty:8,t:0,fr:100,loc:'farm',anim:0};
- SFX.coin();toast('🐾 ยินดีต้อนรับ '+G.pet.name+'!');UI.shop('animal');}
-function sellSlot(i){const s=G.inv[i];if(!s)return;const p=Math.round(sellPrice(s.id)*.8);
- G.money+=p;G.stats.earn+=p;removeItem(s.id,1);SFX.coin();UI.shop('sell');}
-UI.carp=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🔨 ช่างไม้</h2>';
- h+='<div class="tag">ไม้ '+countItem('wood')+' · หิน '+countItem('stone')+' · ไม้เนื้อแข็ง '+countItem('hardwood')+'</div>';
- if(!G.greenhouse)h+='<div class="row"><span style="font-size:19px">🏡</span><span class="nm"><b>เรือนกระจก</b><br><span class="tag">ปลูกได้ทุกฤดู พืชไม่ตาย · ไม้×100 หิน×50</span></span><b style="color:#a8760f">10,000ก.</b><button onclick="build(\'gh\')" '+((G.money>=10000&&countItem('wood')>=100&&countItem('stone')>=50)?'':'disabled')+'>สร้าง</button></div>';
- else h+='<div class="row">🏡 <span class="nm">เรือนกระจกสร้างแล้ว (ทางเข้าด้านบนฟาร์ม)</span></div>';
- if(!G.stable)h+='<div class="row"><span style="font-size:19px">🐴</span><span class="nm"><b>คอกม้า</b><br><span class="tag">ได้ม้าเดินเร็วขึ้นเกือบ 2 เท่า · ไม้×80 เหล็ก×5</span></span><b style="color:#a8760f">6,000ก.</b><button onclick="build(\'st\')" '+((G.money>=6000&&countItem('wood')>=80&&countItem('iron')>=5)?'':'disabled')+'>สร้าง</button></div>';
- else h+='<div class="row">🐴 <span class="nm">คอกม้าสร้างแล้ว (ม้ารออยู่ที่ฟาร์ม)</span></div>';
- if(G.coopLv<3)h+='<div class="row"><span style="font-size:19px">🐔</span><span class="nm"><b>ขยายเล้าไก่ Lv.'+(G.coopLv+1)+'</b><br><span class="tag">จุได้ '+((G.coopLv+1)*4)+' ตัว · ไม้×60 หิน×30</span></span><b style="color:#a8760f">'+(G.coopLv*4000).toLocaleString()+'ก.</b><button onclick="build(\'coop\')" '+((G.money>=G.coopLv*4000&&countItem('wood')>=60&&countItem('stone')>=30)?'':'disabled')+'>ขยาย</button></div>';
- if(G.barnLv<3)h+='<div class="row"><span style="font-size:19px">🐄</span><span class="nm"><b>ขยายโรงนา Lv.'+(G.barnLv+1)+'</b><br><span class="tag">จุได้ '+((G.barnLv+1)*4)+' ตัว · ไม้×80 หิน×40</span></span><b style="color:#a8760f">'+(G.barnLv*5000).toLocaleString()+'ก.</b><button onclick="build(\'barn\')" '+((G.money>=G.barnLv*5000&&countItem('wood')>=80&&countItem('stone')>=40)?'':'disabled')+'>ขยาย</button></div>';
- if(G.houseLv<3)h+='<div class="row"><span style="font-size:19px">🏠</span><span class="nm"><b>ต่อเติมบ้าน Lv.'+(G.houseLv+1)+'</b><br><span class="tag">พลังงานสูงสุด +40 · ไม้×150</span></span><b style="color:#a8760f">'+(G.houseLv*8000).toLocaleString()+'ก.</b><button onclick="build(\'house\')" '+((G.money>=G.houseLv*8000&&countItem('wood')>=150)?'':'disabled')+'>ต่อเติม</button></div>';
- openPanel(h);};
-function build(t){
- if(t==='gh'){G.money-=10000;removeItem('wood',100);removeItem('stone',50);
-  const m=G.maps.farm;for(let y=0;y<=3;y++)for(let x=6;x<=9;x++){m[y][x].o=null;m[y][x].t='grass';}
-  bld(m,6,0,4,3,'greenhouse');m[3][7].o={k:'door',to:'greenhouse',px:9,py:9};
-  G.maps.greenhouse=genGreenhouse();G.greenhouse=true;toast('🏡 สร้างเรือนกระจกสำเร็จ!');}
- if(t==='st'){G.money-=6000;removeItem('wood',80);removeItem('iron',5);G.stable=true;
-  G.horse={x:11,y:8};toast('🐴 ได้ม้าแล้ว! คลิกที่ม้าเพื่อขึ้นขี่');}
- if(t==='coop'){G.money-=G.coopLv*4000;removeItem('wood',60);removeItem('stone',30);G.coopLv++;toast('🐔 ขยายเล้าไก่แล้ว');}
- if(t==='barn'){G.money-=G.barnLv*5000;removeItem('wood',80);removeItem('stone',40);G.barnLv++;toast('🐄 ขยายโรงนาแล้ว');}
- if(t==='house'){G.money-=G.houseLv*8000;removeItem('wood',150);G.houseLv++;G.maxEnergy+=40;G.energy=G.maxEnergy;toast('🏠 บ้านใหญ่ขึ้น! พลังงาน +40');}
- SFX.lvl();checkAch();UI.carp();}
-UI.smith=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>⚒️ ช่างตีเหล็ก</h2>';
- const nm={hoe:'จอบ',can:'บัวรดน้ำ',axe:'ขวาน',pick:'อีเต้อ'},mats=[['copper',5,2000],['iron',5,5000],['gold',5,12000]];
- h+='<h3>อัปเกรดเครื่องมือ</h3>';
- for(const t in G.toolLv){const lv=G.toolLv[t];
-  if(lv>=3){h+='<div class="row done"><span style="font-size:19px">'+ITEMS[t].e+'</span><span class="nm"><b>'+nm[t]+' (ทองคำ)</b><br><span class="tag">สูงสุดแล้ว ✨</span></span></div>';continue;}
-  const[m,c,co]=mats[lv];
-  h+=row(ITEMS[t].e,nm[t]+' Lv.'+(lv+1),ITEMS[m].n+'×'+c+' (มี '+countItem(m)+') · '+(t==='can'?'จุน้ำมากขึ้น':'ทำงานกว้างขึ้น'),co,
-   'upTool(\''+t+'\',\''+m+'\','+c+','+co+')','อัปเกรด',countItem(m)<c);}
- h+='<h3>🪨 ทุบก้อนหินลึกลับ (25 ก./ก้อน)</h3>';
- h+=row('🪨','ทุบ 1 ก้อน','มีอยู่ '+countItem('geode')+' ก้อน',25,'crack()','ทุบ',countItem('geode')<1);
- h+='<h3>💠 หลอมแท่งโลหะ (ต้องมีเตาถลุงแร่)</h3><div class="tag">คราฟต์เตาถลุงแร่แล้ววางที่ฟาร์ม ใส่แร่ + ถ่านหิน</div>';
- openPanel(h);};
-function upTool(t,m,c,co){if(G.money<co||countItem(m)<c){SFX.err();return;}
- G.money-=co;removeItem(m,c);G.toolLv[t]++;if(t==='can')G.canWater=canCap();
- SFX.lvl();toast('🔧 อัปเกรด'+ITEMS[t].n+' Lv.'+G.toolLv[t]);UI.smith();}
-function crack(){if(countItem('geode')<1||G.money<25){SFX.err();return;}
- removeItem('geode',1);G.money-=25;
- const r=Math.random()+luck();let out=r>.95?'prismatic':r>.85?'diamond':pick(MINERALS.slice(0,6));
- if(r<.35)out=pick(['copper','iron','coal','stone']);
- addItem(out,1);SFX.coin();toast('💥 ในก้อนหินมี: '+ITEMS[out].e+ITEMS[out].n+'!');UI.smith();}
-UI.guild=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>⚔️ สมาคมนักผจญภัย</h2>';
- h+='<div class="row">🗡️ ฆ่ามอนสเตอร์แล้ว <b>'+G.stats.kills+'</b> ตัว · ปราบบอส <b>'+G.stats.boss+'</b> ครั้ง · ชั้นลึกสุด <b>'+G.maxDepth+'</b></div>';
- h+='<h3>อาวุธ</h3>';
- [['steelsword',900],['obsidianblade',4500]].forEach(([id,p])=>h+=row(ITEMS[id].e,ITEMS[id].n,'ดาเมจ '+ITEMS[id].dmg,p,'buy(\''+id+'\','+p+',1)','ซื้อ'));
- if(G.stats.boss>=3)h+='<div class="row done">🌟 ดาบกาแล็กซี — ปลดล็อกจากการปราบบอส 3 ครั้ง</div>';
- else h+='<div class="row"><span class="nm">🌟 ดาบกาแล็กซี <span class="tag">ปราบบอสให้ครบ 3 ครั้งเพื่อรับ (ตอนนี้ '+G.stats.boss+'/3)</span></span></div>';
- h+='<h3>เกราะ &amp; รองเท้า</h3>';
- [['leathervest',600],['ironarmor',3000],['obsidianarmor',12000],['leatherboots',500],['speedboots',3500]]
-  .forEach(([id,p])=>h+=row(ITEMS[id].e,ITEMS[id].n,ITEMS[id].def?'ป้องกัน +'+ITEMS[id].def:'ความเร็ว +'+ITEMS[id].spd,p,'buy(\''+id+'\','+p+',1)','ซื้อ'));
- h+='<h3>ยาและของใช้</h3>';
- [['smallpotion',200],['largepotion',500],['bomb',300]].forEach(([id,p])=>h+=row(ITEMS[id].e,ITEMS[id].n,'',p,'buy(\''+id+'\','+p+',1)','ซื้อ'));
- h+='<h3>รับซื้อของจากมอนสเตอร์ (ราคาเต็ม)</h3>';
- ['slimeball','batwing','bone','essence','goldslime'].forEach(id=>{const c=countItem(id);if(c)
-  h+=row(ITEMS[id].e,ITEMS[id].n+' ×'+c,'',0,'sellAll(\''+id+'\')','ขายหมด ('+(ITEMS[id].p*c).toLocaleString()+')');});
- openPanel(h);};
-function sellAll(id){const c=countItem(id);if(!c)return;G.money+=ITEMS[id].p*c;G.stats.earn+=ITEMS[id].p*c;
- removeItem(id,c);SFX.coin();UI.guild();}
-UI.clinic=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🏥 คลินิก</h2>';
- h+=row('❤️','รักษาพลังชีวิตเต็ม','ตอนนี้ '+Math.round(G.hp)+'/'+G.maxHp,300,'heal(0)','รักษา');
- h+=row('⚡','ฟื้นฟูพลังงานเต็ม','ตอนนี้ '+Math.round(G.energy)+'/'+G.maxEnergy,600,'heal(1)','ฟื้นฟู');
- h+=row('🧴','ยาฟื้นฟู','ฟื้น 50 HP',200,'buy(\'smallpotion\',200,1)','ซื้อ');
- h+=row('🍶','ยาฟื้นฟูใหญ่','ฟื้น 130 HP',500,'buy(\'largepotion\',500,1)','ซื้อ');
- openPanel(h);};
-function heal(t){const c=t?600:300;if(G.money<c){SFX.err();return;}G.money-=c;
- if(t)G.energy=G.maxEnergy;else G.hp=G.maxHp;SFX.harvest();toast('💊 ฟื้นฟูเรียบร้อย');UI.clinic();}
-UI.bar=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🍺 ร้านเหล้าหุบเขา</h2>';
- h+='<div class="tag">อาหารพร้อมเสิร์ฟ — ฟื้นพลังงานเร็วทันใจ</div>';
- [['beer',300],['friedegg',200],['pizza',900],['seafoodsoup',1100],['minerscoffee',600],['energydrink',400]]
-  .forEach(([id,p])=>h+=row(ITEMS[id].e,ITEMS[id].n,(ITEMS[id].en?'⚡+'+ITEMS[id].en:'')+(ITEMS[id].buff?' · มีบัฟ!':''),p,'buy(\''+id+'\','+p+',1)','ซื้อ'));
- openPanel(h);};
-UI.merchant=function(){if(!merchantActive()){closePanel();return;}
- let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🛒 พ่อค้าเร่ลึกลับ</h2>';
- h+='<div class="tag">สินค้าหายาก มาเยือนแค่วันนี้เท่านั้น มาอีกทีไม่รู้เมื่อไหร่ อย่าพลาด!</div>';
- G.merchant.stock.forEach((st,i)=>h+=row(ITEMS[st.id].e,ITEMS[st.id].n,'เหลือ '+st.left+' ชิ้น',st.price,'buyMerchant('+i+')','ซื้อ',st.left<1));
- openPanel(h);};
-function buyMerchant(i){const st=G.merchant&&G.merchant.stock[i];if(!st||st.left<1||G.money<st.price){SFX.err();return;}
- G.money-=st.price;addItem(st.id,1);st.left--;SFX.coin();toast('🛒 ซื้อ'+ITEMS[st.id].n+'จากพ่อค้าเร่');UI.merchant();}
-UI.bin=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>📦 ตู้ส่งของ</h2>';
- h+='<div class="row" style="background:#fff0c8"><span class="nm"><b>มูลค่าในตู้</b></span><b>'+
-  G.ship.reduce((a,s)=>a+sellPrice(s.id)*s.q,0).toLocaleString()+' ก.</b></div>';
- G.ship.forEach(s=>h+='<div class="row"><span>'+ITEMS[s.id].e+'</span><span class="nm">'+ITEMS[s.id].n+' ×'+s.q+'</span></div>');
- h+='<h3>เลือกของใส่ตู้</h3>';
- G.inv.forEach((s,i)=>{if(!s||ITEMS[s.id].type==='tool')return;
-  h+=row(ITEMS[s.id].e,ITEMS[s.id].n+' ×'+s.q,sellPrice(s.id)+' ก./ชิ้น',0,'ship('+i+')','ใส่ทั้งหมด');});
- openPanel(h);};
-function ship(i){const s=G.inv[i];if(!s)return;const ex=G.ship.find(x=>x.id===s.id);
- if(ex)ex.q+=s.q;else G.ship.push({id:s.id,q:s.q});G.inv[i]=null;SFX.pop();UI.bin();}
-UI.chest=function(x,y){const o=T(x,y).o;let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🧰 หีบเก็บของ</h2>';
- h+='<div class="tag">เก็บของไว้ได้ไม่จำกัด (กดเพื่อย้ายของ)</div><h3>ในหีบ</h3>';
- (o.items||[]).forEach((s,i)=>h+=row(ITEMS[s.id].e,ITEMS[s.id].n+' ×'+s.q,'',0,'takeChest('+x+','+y+','+i+')','เอาออก'));
- if(!(o.items||[]).length)h+='<div class="row">ว่างเปล่า</div>';
- h+='<h3>กระเป๋า</h3>';
- G.inv.forEach((s,i)=>{if(!s||ITEMS[s.id].type==='tool')return;
-  h+=row(ITEMS[s.id].e,ITEMS[s.id].n+' ×'+s.q,'',0,'putChest('+x+','+y+','+i+')','เก็บเข้า');});
- openPanel(h);};
-function putChest(x,y,i){const o=T(x,y).o,s=G.inv[i];if(!s)return;o.items=o.items||[];
- const ex=o.items.find(t=>t.id===s.id);if(ex)ex.q+=s.q;else o.items.push({id:s.id,q:s.q});
- G.inv[i]=null;SFX.pop();UI.chest(x,y);}
-function takeChest(x,y,i){const o=T(x,y).o,s=o.items[i];if(!s)return;addItem(s.id,s.q);
- o.items.splice(i,1);SFX.pop();UI.chest(x,y);}
-UI.craft=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🔨 คราฟต์</h2><h3>อุปกรณ์</h3>';
- for(const k in CRAFT)if(!CRAFT[k].machine)h+=craftRow(k,CRAFT[k]);
- h+='<h3>⚙️ เครื่องแปรรูป (วางลงพื้น)</h3>';
- for(const k in CRAFT)if(CRAFT[k].machine)h+=craftRow(k,CRAFT[k]);
- openPanel(h);};
-function craftRow(k,c){const it=ITEMS[k];let ok=true,need=[];
- for(const m in c.rec){const hv=countItem(m);if(hv<c.rec[m])ok=false;need.push(ITEMS[m].e+ITEMS[m].n+' '+hv+'/'+c.rec[m]);}
- for(const s in c.lv)if(G.skills[s].lv<c.lv[s]){ok=false;need.push('ต้อง'+SKN[s]+' Lv.'+c.lv[s]);}
- const hint=MACHINES[k]?'<br><span class="tag" style="color:#7a4a9a">'+MACHINES[k].hint+'</span>':'';
- return '<div class="row'+(ok?'':'')+'"><span style="font-size:19px">'+it.e+'</span><span class="nm"><b>'+it.n+'</b><br><span class="tag">'+need.join(' · ')+'</span>'+hint+'</span>'+
- '<button onclick="craft(\''+k+'\')" '+(ok?'':'disabled')+'>สร้าง</button></div>';}
-function craft(k){const c=CRAFT[k];
- for(const m in c.rec)if(countItem(m)<c.rec[m]){SFX.err();return;}
- for(const s in c.lv)if(G.skills[s].lv<c.lv[s]){SFX.err();return;}
- for(const m in c.rec)removeItem(m,c.rec[m]);
- addItem(k,k==='hay'?2:1);SFX.lvl();toast('🔨 สร้าง'+ITEMS[k].n+'สำเร็จ!');UI.craft();}
-UI.cook=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🍳 ครัว</h2>';
- for(const k in FOODS){const f=FOODS[k];let ok=true,need=[];
-  for(const m in f.rec){const hv=countItem(m);if(hv<f.rec[m])ok=false;need.push(ITEMS[m].e+ITEMS[m].n+' '+hv+'/'+f.rec[m]);}
-  h+='<div class="row"><span style="font-size:19px">'+f.e+'</span><span class="nm"><b>'+f.n+'</b> <span class="tag">⚡+'+f.en+' ❤️+'+f.hp+
-   (f.buff?' · บัฟ '+Object.keys(f.buff).map(b=>({spd:'ความเร็ว',luck:'ดวง',def:'ป้องกัน'})[b]).join(','):'')+' · ขาย '+f.p+'</span><br><span class="tag">'+need.join(' · ')+
-   '</span></span><button onclick="cook(\''+k+'\')" '+(ok?'':'disabled')+'>ปรุง</button></div>';}
- openPanel(h);};
-function cook(k){const f=FOODS[k];
- for(const m in f.rec)if(countItem(m)<f.rec[m]){SFX.err();return;}
- for(const m in f.rec)removeItem(m,f.rec[m]);
- addItem(k,1);SFX.harvest();toast('🍳 ปรุง'+f.n+'สำเร็จ!');UI.cook();}
-UI.skills=function(){const nm={farming:['🌾 เกษตรกรรม','ลดพลังงาน · ราคาพืชสูงขึ้น · ผลผลิตพิเศษ'],
- mining:['⛏️ เหมืองแร่','ได้แร่เพิ่ม'],foraging:['🍄 เก็บของป่า','ของป่าเพิ่มเท่าตัว'],
- fishing:['🎣 ตกปลา','แถบกว้างขึ้น · เจอปลาหายาก'],combat:['⚔️ การต่อสู้','ดาเมจ +2/เลเวล · ป้องกันเพิ่ม']};
- let h='<button class="close" onclick="closePanel()">ปิด</button><h2>⭐ ทักษะ &amp; ความสามารถพิเศษ</h2>';
- for(const k in G.skills){const s=G.skills[k],need=100+s.lv*150;
-  h+='<div class="row"><span class="nm"><b>'+nm[k][0]+' — Lv.'+s.lv+'</b><br><span class="tag">'+nm[k][1]+'</span>'+
-  '<div class="bar" style="margin-top:3px"><i style="width:'+(s.lv>=10?100:s.xp/need*100)+'%;background:#f0a83a"></i></div></span><b>'+
-  (s.lv>=10?'MAX':s.xp+'/'+need)+'</b></div>';
-  [5,10].forEach(tier=>{const chosen=G.perks[k+tier];
-   if(chosen){const o=PERKS[k][tier].find(x=>x.id===chosen);
-    h+='<div class="row done" style="margin-left:12px"><span class="nm">'+o.n+'<br><span class="tag">'+o.d+'</span></span></div>';}
-   else h+='<div class="row" style="margin-left:12px;opacity:.65"><span class="nm">🔒 ความสามารถพิเศษ Lv.'+tier+' — ปลดล็อกเมื่อถึงเลเวล '+tier+'</span></div>';});}
- h+='<h3>💗 ความสัมพันธ์</h3>';
- if(G.spouse){const d=NPCDEF.find(x=>x.id===G.spouse);
-  h+='<div class="row done"><span class="nm">💍 <b>แต่งงานกับ '+d.n+'</b> <span class="tag">แต่งมาแล้ว '+G.marriedDays+' วัน</span></span></div>';}
- if(G.child)h+='<div class="row done"><span class="nm">👶 <b>'+G.child.name+'</b> <span class="tag">อายุ '+G.child.age+' วัน</span></span></div>';
- G.npcs.forEach(n=>{const d=NPCDEF.find(x=>x.id===n.id);
-  h+='<div class="row"><span class="nm"><b>'+d.n+'</b> <span class="tag">'+d.job+' · ชอบ '+d.like.slice(0,4).map(i=>ITEMS[i].e).join('')+'</span></span><b style="color:#e0567a">❤×'+Math.floor(n.fr/100)+'</b></div>';});
- openPanel(h);};
-UI.journal=function(tab){tab=tab||'quest';
- let h='<button class="close" onclick="closePanel()">ปิด</button><h2>📔 สมุดบันทึก</h2>';
- h+='<div class="tabs">'+[['quest','📜ภารกิจ'],['coll','🏛️คอลเลกชัน'],['ach','🏆ความสำเร็จ'],['cal','📅ปฏิทิน'],['stat','📊สถิติ']]
-  .map(([k,n])=>'<span class="tb'+(tab===k?' on':'')+'" onclick="UI.journal(\''+k+'\')">'+n+'</span>').join('')+'</div>';
- if(tab==='quest'){h+='<div class="tag">ส่งภารกิจที่กระดานในเมือง</div>';
-  G.quests.forEach((q,i)=>{if(q.type==='kill'){
-   h+='<div class="row'+(q.done?' done':'')+'"><span style="font-size:19px">⚔️</span><span class="nm"><b>กำจัดมอนสเตอร์ '+q.need+' ตัว</b><br><span class="tag">คืบหน้า '+(q.got||0)+'/'+q.need+' · รางวัล '+q.reward.toLocaleString()+' ก.</span></span>'+
-   (q.done?'<b>✅</b>':'<button onclick="turnIn('+i+')" '+((q.got||0)>=q.need?'':'disabled')+'>ส่ง</button>')+'</div>';}
-   else{const hv=countItem(q.id);
-   h+='<div class="row'+(q.done?' done':'')+'"><span style="font-size:19px">'+ITEMS[q.id].e+'</span><span class="nm"><b>รวบรวม '+ITEMS[q.id].n+' ×'+q.need+'</b><br><span class="tag">มี '+hv+'/'+q.need+' · รางวัล '+q.reward.toLocaleString()+' ก.</span></span>'+
-   (q.done?'<b>✅</b>':'<button onclick="turnIn('+i+')" '+(hv>=q.need?'':'disabled')+'>ส่ง</button>')+'</div>';}});}
- else if(tab==='coll'){const all=[...MINERALS,...ARTIFACTS,...FISH.filter(f=>f.id!=='trash'&&f.id!=='boot').map(f=>f.id)];
-  h+='<div class="row" style="background:#fff0c8">บริจาคแล้ว <b>'+Object.keys(G.donated).length+'/'+all.length+'</b> ชิ้น · บริจาคที่ตู้ในพิพิธภัณฑ์</div>';
-  h+='<h3>💎 แร่</h3><div class="grid">'+MINERALS.map(m=>'<div class="slot" style="width:100%;height:40px;'+(G.donated[m]?'background:#d9f3d0':'')+'" title="'+ITEMS[m].n+'">'+ITEMS[m].e+'</div>').join('')+'</div>';
-  h+='<h3>🏺 โบราณวัตถุ</h3><div class="grid">'+ARTIFACTS.map(m=>'<div class="slot" style="width:100%;height:40px;'+(G.donated[m]?'background:#d9f3d0':'')+'" title="'+ITEMS[m].n+'">'+ITEMS[m].e+'</div>').join('')+'</div>';
-  h+='<h3>🐟 ปลา</h3><div class="grid">'+FISH.filter(f=>f.id!=='trash'&&f.id!=='boot').map(f=>'<div class="slot" style="width:100%;height:40px;'+(G.donated[f.id]?'background:#d9f3d0':'')+'" title="'+f.n+'">'+f.e+'</div>').join('')+'</div>';}
- else if(tab==='ach'){ACH.forEach(a=>h+='<div class="row'+(G.ach[a.id]?' done':'')+'"><span style="font-size:18px">'+(G.ach[a.id]?'🏆':'🔒')+'</span><span class="nm"><b>'+a.n+'</b><br><span class="tag">'+a.d+'</span></span><b style="color:#a8760f">'+a.r.toLocaleString()+'ก.</b></div>');}
- else if(tab==='cal'){h+='<div class="row">📅 '+SE_TH[SEASONS[G.season]]+' วันที่ '+G.day+' ปีที่ '+G.year+'</div><h3>🎂 วันเกิด</h3>';
-  NPCDEF.forEach(d=>h+='<div class="row'+(d.bd.s===G.season&&d.bd.d===G.day?' done':'')+'"><span class="nm"><b>'+d.n+'</b> <span class="tag">'+d.job+'</span></span><b>'+SE_TH[SEASONS[d.bd.s]]+' '+d.bd.d+'</b></div>');
-  h+='<h3>🎪 เทศกาล</h3>';
-  FEST.forEach(f=>h+='<div class="row'+(f.s===G.season&&f.d===G.day?' done':'')+'"><span style="font-size:19px">'+f.e+'</span><span class="nm"><b>'+f.n+'</b><br><span class="tag">'+f.desc+'</span></span><b>'+SE_TH[SEASONS[f.s]]+' '+f.d+'</b></div>');}
- else{const st=G.stats;
-  [['เก็บเกี่ยวพืช',st.harvest],['จับปลา',st.fish],['ขุดแร่',st.mine],['ตัดไม้',st.chop],['ของแปรรูป',st.art],
-   ['มอนสเตอร์ที่กำจัด',st.kills],['บอสที่ปราบ',st.boss],['ชั้นเหมืองลึกสุด',G.maxDepth],
-   ['รายได้สะสม',st.earn.toLocaleString()+' ก.'],['เล่นมาแล้ว',st.days+' วัน']]
-  .forEach(([n,v])=>h+='<div class="row"><span class="nm">'+n+'</span><b>'+v+'</b></div>');}
- openPanel(h);};
-function turnIn(i){const q=G.quests[i];
- if(G.loc!=='town'){toast('🏘️ ต้องไปส่งที่กระดานในเมือง');SFX.err();return;}
- if(q.type==='kill'){if((q.got||0)<q.need){SFX.err();return;}}
- else{if(countItem(q.id)<q.need){SFX.err();return;}removeItem(q.id,q.need);}
- G.money+=q.reward;G.stats.earn+=q.reward;q.done=true;
- G.npcs.forEach(n=>n.fr=Math.min(1000,n.fr+15));
- SFX.coin();toast('🎉 ภารกิจสำเร็จ! +'+q.reward.toLocaleString()+' ก.');checkAch();UI.journal('quest');}
-UI.museum=function(){const all=[...MINERALS,...ARTIFACTS,...FISH.filter(f=>f.id!=='trash'&&f.id!=='boot').map(f=>f.id)];
- const cnt=Object.keys(G.donated).length;
- let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🏛️ พิพิธภัณฑ์หุบเขา</h2>';
- h+='<div class="row" style="background:#fff0c8">บริจาคแล้ว <b>'+cnt+'/'+all.length+'</b> ชิ้น · รางวัลถัดไปที่ '+
-  [5,15,30,45,60].find(x=>x>cnt)+' ชิ้น</div>';
- h+='<div class="tag">รางวัล: 5=สปริงเกลอร์×2 · 15=แหวน? ไม่ใช่ เงิน 5,000 · 30=สปริงเกลอร์อิริเดียม · 45=ดาบออบซิเดียน · 60=ผลึกปริซึม×3</div>';
- h+='<h3>บริจาคได้</h3>';let any=false;
- all.forEach(id=>{if(G.donated[id]||countItem(id)<1)return;any=true;
-  h+=row(ITEMS[id].e,ITEMS[id].n,'มี '+countItem(id)+' ชิ้น',0,'donate(\''+id+'\')','บริจาค');});
- if(!any)h+='<div class="row">ยังไม่มีของใหม่ให้บริจาค — ลองขุดจุด ✖ บนพื้นทราย ทุบก้อนหินลึกลับ และตกปลาชนิดใหม่</div>';
- openPanel(h);};
-function donate(id){if(G.donated[id]||countItem(id)<1){SFX.err();return;}
- removeItem(id,1);G.donated[id]=1;SFX.lvl();const c=Object.keys(G.donated).length;
- toast('🏛️ บริจาค'+ITEMS[id].n+' ('+c+' ชิ้น)');
- const rw={5:()=>{addItem('sprinkler',2);toast('🎁 รางวัล: สปริงเกลอร์ ×2');},
-  15:()=>{G.money+=5000;toast('🎁 รางวัล: 5,000 ก.');},
-  30:()=>{addItem('iprinkler',1);toast('🎁 รางวัล: สปริงเกลอร์อิริเดียม!');},
-  45:()=>{addItem('obsidianblade',1);toast('🎁 รางวัล: ดาบออบซิเดียน!');},
-  60:()=>{addItem('prismatic',3);toast('🎁 รางวัล: ผลึกปริซึม ×3!');}}[c];
- if(rw)rw();checkAch();UI.museum();}
-UI.elevator=function(){let h='<button class="close" onclick="closePanel()">ปิด</button><h2>🛗 ลิฟต์เหมือง</h2>';
- h+='<div class="tag">ชั้นที่เคยไปถึง: '+G.maxDepth+'</div><div class="grid">';
- for(let d=5;d<=Math.max(5,Math.floor(G.maxDepth/5)*5);d+=5)
-  h+='<div class="slot" style="width:100%;height:40px;font-size:13px;font-weight:bold" onclick="closePanel();goDepth('+d+')">'+d+'</div>';
- h+='</div><div class="row" style="margin-top:8px"><button onclick="closePanel();G.depth=0;G.loc=\'mountain\';P.x=15;P.y=5;G.mobs=[]">🪜 ออกจากเหมือง</button></div>';
- openPanel(h);};
-UI.animalHouse=function(h2){const list=G.animals.filter(a=>ANIMALS[a.type].house===h2);
- let h='<button class="close" onclick="closePanel()">ปิด</button><h2>'+(h2==='coop'?'🐔 เล้าไก่':'🐄 โรงนา')+' ('+list.length+'/'+cap(h2)+')</h2>';
- h+='<div class="row">🌿 หญ้าแห้ง: <b>'+countItem('hay')+'</b> (กินวันละ 1 ต่อตัว — คราฟต์จากข้าวสาลี)</div>';
- if(!list.length)h+='<div class="row">ยังไม่มีสัตว์ — ซื้อที่ร้านค้าในเมือง</div>';
- list.forEach(a=>h+='<div class="row"><span style="font-size:19px">'+{chicken:'🐔',duck:'🦆',cow:'🐄',goat:'🐐',sheep:'🐑',pig:'🐖'}[a.type]+
-  '</span><span class="nm"><b>'+a.name+'</b> <span class="tag">'+ANIMALS[a.type].n+'</span><br><span class="tag">❤×'+Math.floor(a.fr/100)+
-  ' · '+(a.fed?'อิ่ม':'หิว!')+' · '+(a.product?'มีผลผลิต ✨':'ยังไม่มี')+'</span></span></div>');
- openPanel(h);};
-UI.map=function(){openPanel('<button class="close" onclick="closePanel()">ปิด</button><h2>🗺️ แผนที่หุบเขา</h2>'+
- '<div class="row">🏡 <span class="nm"><b>ฟาร์ม</b> — บ้าน เล้าไก่ โรงนา ตู้ส่งของ'+(G.greenhouse?' · เรือนกระจก':'')+(G.stable?' · ม้า':'')+'</span></div>'+
- '<div class="row">🌲 <span class="nm"><b>ป่า</b> (ซ้ายของฟาร์ม) — ตัดไม้ ของป่า ทะเลสาบตกปลา</span></div>'+
- '<div class="row">🏘️ <span class="nm"><b>เมือง</b> (ขวาของฟาร์ม) — ร้านค้า พิพิธภัณฑ์ ร้านเหล้า ช่างไม้ คลินิก สมาคมนักผจญภัย กระดานภารกิจ</span></div>'+
- '<div class="row">🏖️ <span class="nm"><b>ชายหาด</b> (ล่างของเมือง) — ปลาทะเล เปลือกหอย จุดขุดโบราณวัตถุ</span></div>'+
- '<div class="row">⛰️ <span class="nm"><b>ภูเขา</b> (ขวาของเมือง) — ช่างตีเหล็ก ทะเลสาบ ทางเข้าเหมือง แร่เกิดใหม่ทุกวัน</span></div>'+
- '<div class="row">⛏️ <span class="nm"><b>เหมือง</b> — 100 ชั้น · ลิฟต์ทุก 5 ชั้น · บอสทุก 20 ชั้น · ยิ่งลึกยิ่งได้แร่ดี</span></div>');};
-UI.fest=function(f){G.festDone[f.n+G.year]=1;
- openPanel('<h2>'+f.e+' '+f.n+'</h2><div class="row">'+f.desc+'</div>'+
- '<div class="row">ชาวเมืองทุกคนมารวมตัวกัน — เข้าร่วมเพื่อเพิ่มมิตรภาพและรับของที่ระลึก</div>'+
- '<div style="text-align:center;margin-top:10px"><button class="big" onclick="joinFest(\''+f.gift+'\')">🎉 เข้าร่วมงาน</button></div>');};
-function joinFest(g){closePanel();G.npcs.forEach(n=>n.fr=Math.min(1000,n.fr+40));
- addItem(g,3);G.money+=1000;G.buff.luck=Math.max(G.buff.luck,.08);confetti=3;SFX.wed();
- toast('🎉 สนุกมาก! มิตรภาพ +40 ทุกคน · ได้ '+ITEMS[g].n+' ×3 · +1,000 ก. · ดวงดีทั้งวัน');}
-UI.sleepConfirm=function(){openPanel('<h2>🛏️ เข้านอน?</h2><div class="row">เวลา '+fmtTime()+' · ของในตู้ส่งของจะถูกขายตอนเช้า</div>'+
- (G.spouse?'<div class="row" style="background:#ffeef5">💕 '+NPCDEF.find(x=>x.id===G.spouse).n+' รออยู่</div>':'')+
- '<div style="text-align:center;margin-top:10px"><button class="big" onclick="closePanel();sleep()">😴 นอน</button> '+
- '<button class="big" style="background:#ddd" onclick="closePanel()">ยัง</button></div>');};
-/* ==================================================================
-   INPUT (mouse + touch + joystick)
-   ================================================================== */
-let hover=null,keys={},stick={active:false,dx:0,dy:0,id:null};
-function toTile(e){const r=cv.getBoundingClientRect();
- const x=(e.clientX-r.left)*(cv.width/r.width),y=(e.clientY-r.top)*(cv.height/r.height);
- return{x:Math.floor(x/TS),y:Math.floor(y/TS)};}
-cv.addEventListener('pointermove',e=>{hover=toTile(e);});
-cv.addEventListener('pointerleave',()=>hover=null);
-cv.addEventListener('pointerdown',e=>{if(!running)return;ac();
- if(fishing){e.preventDefault();fishTap();return;}
- const t=toTile(e);clickTile(t.x,t.y);});
-cv.addEventListener('contextmenu',e=>e.preventDefault());
-window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(!running)return;
- if(k>='1'&&k<='9'){G.sel=parseInt(k)-1;SFX.pop();updHUD();}
- if(k==='0'){G.sel=9;updHUD();}
- if(k==='escape')closePanel();
- if(modalOpen)return;
- if(k==='i')UI.inventory();if(k==='c')UI.craft();if(k==='k')UI.skills();
- if(k==='j')UI.journal();if(k==='m')UI.map();if(k==='h')UI.help();
- if(k===' '){e.preventDefault();const f=facingTile();clickTile(f.x,f.y);}});
-window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
-const stEl=document.getElementById('stick'),knob=document.getElementById('knob');
-function stickMove(e){const r=stEl.getBoundingClientRect();
- let dx=(e.clientX-(r.left+r.width/2))/(r.width/2),dy=(e.clientY-(r.top+r.height/2))/(r.height/2);
- const m=Math.hypot(dx,dy);if(m>1){dx/=m;dy/=m;}
- stick.dx=dx;stick.dy=dy;knob.style.transform='translate('+dx*26+'px,'+dy*26+'px)';}
-stEl.addEventListener('pointerdown',e=>{e.preventDefault();stick.active=true;stick.id=e.pointerId;
- try{stEl.setPointerCapture(e.pointerId);}catch(_){}stickMove(e);});
-stEl.addEventListener('pointermove',e=>{if(stick.active&&e.pointerId===stick.id)stickMove(e);});
-['pointerup','pointercancel','pointerleave'].forEach(ev=>stEl.addEventListener(ev,()=>{
- stick.active=false;stick.dx=0;stick.dy=0;knob.style.transform='translate(0,0)';}));
-const bA=document.getElementById('bA');
-bA.addEventListener('pointerdown',e=>{e.preventDefault();ac();
- if(fishing){fishTap();return;}
- const f=facingTile();clickTile(f.x,f.y);});
-document.getElementById('bB').addEventListener('pointerdown',e=>{e.preventDefault();UI.inventory();});
-document.getElementById('bPrev').addEventListener('pointerdown',e=>{e.preventDefault();G.sel=(G.sel+11)%12;SFX.pop();updHUD();});
-document.getElementById('bNext').addEventListener('pointerdown',e=>{e.preventDefault();G.sel=(G.sel+1)%12;SFX.pop();updHUD();});
-function toggleMobile(){const m=document.getElementById('mob');
- m.style.display=m.style.display==='block'?'none':'block';}
-function fit(){const s=Math.min(window.innerWidth/960,window.innerHeight/576);
- document.getElementById('wrap').style.transform='scale('+s+')';}
-window.addEventListener('resize',fit);fit();
-if('ontouchstart' in window)document.getElementById('mob').style.display='block';
-/* ==================================================================
-   SAVE / LOAD
-   ================================================================== */
-function saveGame(manual){try{G.px=P.x;G.py=P.y;localStorage.setItem(SAVEKEY,JSON.stringify(G));
- if(manual){toast('💾 บันทึกเกมแล้ว');SFX.pop();}}catch(e){toast('❌ บันทึกไม่สำเร็จ');}}
-function loadGame(){try{const d=localStorage.getItem(SAVEKEY);if(!d)return false;
- G=JSON.parse(d);P={x:G.px||8,y:G.py||6,dir:'down',path:[],act:null,pend:null,anim:0,inv:0};
- if(!G.buff)G.buff={spd:0,luck:0,def:0};if(!G.mobs)G.mobs=[];
- if(G.loc==='mine'&&!G.maps.mine){G.maps.mine=genMine(G.depth||1);}
- if(G.spouse&&!G.sp)G.sp={id:G.spouse,x:8,y:5,tx:8,ty:5,t:0,anim:0,fr:1000,loc:'house'};
- if(!G.perks)G.perks={};if(!G.perkQueue)G.perkQueue=[];if(G.merchant===undefined)G.merchant=null;
- Object.keys(G.skills).forEach(checkPerkUnlock);
- return true;}catch(e){return false;}}
-function startGame(load){ac();if(load){if(!loadGame())newGame();}else newGame();
- document.getElementById('title').style.display='none';running=true;updHUD();
- toast('🌅 ยินดีต้อนรับสู่ Harvest Hollow!');
- setTimeout(()=>toast('💡 ถือจอบ (ช่อง 1) แล้วคลิกพื้นหญ้าเพื่อพรวนดิน'),2400);
- setTimeout(()=>toast('🗺️ ออกจากฟาร์มทางขวาไปเมือง · ทางซ้ายไปป่า'),5000);}
-if(localStorage.getItem(SAVEKEY))document.getElementById('btnLoad').style.display='block';
-requestAnimationFrame(loop);
+
+/* ============ SOUND (tiny retro beeps, no audio files) ============ */
+let audioCtx = null;
+function beep(freq=440, dur=0.09, type='square'){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.value = 0.05;
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+    osc.stop(audioCtx.currentTime+dur+0.02);
+  }catch(e){ /* audio not available, ignore */ }
+}
+
+/* ============ TIME OF DAY (real, for ambience) ============ */
+function applyTimeOfDay(){
+  const h = new Date().getHours();
+  const isNight = (h >= 19 || h < 6);
+  document.body.setAttribute('data-time', isNight ? 'night' : 'day');
+}
+function buildStars(){
+  const box = $('stars');
+  for(let i=0;i<40;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*70+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    box.appendChild(s);
+  }
+}
+
+/* ============ SAVE / LOAD ============ */
+function saveGame(){
+  if(!state) return;
+  localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+}
+function loadGame(){
+  const raw = localStorage.getItem(SAVE_KEY);
+  if(!raw) return null;
+  try { return JSON.parse(raw); } catch(e){ return null; }
+}
+function wipeGame(){
+  localStorage.removeItem(SAVE_KEY);
+  state = null;
+}
+
+/* ============ HATCH NEW PET ============ */
+function hatchPet(speciesId, name){
+  const now = Date.now();
+  state = {
+    species: speciesId,
+    name: name || speciesById(speciesId).name,
+    hatchTime: now,
+    lastUpdate: now,
+    hunger: 90, happy: 90, energy: 90, hygiene: 100, health: 100,
+    isSick: false,
+    resting: false,
+    stage: 'baby',
+    branch: null,
+    counters: { feed:0, play:0, pet:0, rest:0, neglectMin:0 },
+    happySum: 0, happySamples: 0,
+    alive: true,
+  };
+  saveGame();
+  beep(760,.12);
+  showScreen('main');
+  renderAll();
+}
+
+/* ============ CORE SIMULATION ============ */
+function advance(minutes){
+  if(minutes<=0 || !state.alive) return;
+
+  // จัดการข้อมูล save เก่าที่ไม่มีค่า hygiene / isSick
+  if(state.hygiene === undefined) state.hygiene = 100;
+  if(state.isSick === undefined) state.isSick = false;
+
+  if(state.resting){
+    state.hunger = clamp(state.hunger - REST_DECAY.hunger*minutes);
+    state.happy  = clamp(state.happy  - REST_DECAY.happy*minutes);
+    state.hygiene= clamp(state.hygiene - REST_DECAY.hygiene*minutes);
+    state.energy = clamp(state.energy + REST_DECAY.energyGain*minutes);
+    if(state.energy>=100) state.resting=false;
+  } else {
+    state.hunger = clamp(state.hunger - DECAY.hunger*minutes);
+    state.happy  = clamp(state.happy  - DECAY.happy*minutes);
+    state.hygiene= clamp(state.hygiene - DECAY.hygiene*minutes);
+    state.energy = clamp(state.energy - DECAY.energy*minutes);
+  }
+
+  // ระบบป่วย (คำนวณความน่าจะเป็นตามระยะเวลา)
+  if(!state.isSick) {
+    const pRate = state.hygiene < 30 ? 0.02 : 0.0005; 
+    const prob = 1 - Math.pow(1 - pRate, minutes);
+    if(Math.random() < prob) {
+      state.isSick = true;
+      if(state.hygiene < 30) setLog(`🤒 ${state.name} ป่วยเพราะตัวสกปรกมาก!`);
+    }
+  }
+
+  let bad = (state.hunger<15?1:0)+(state.happy<15?1:0)+(state.energy<10?1:0);
+  if(state.isSick) bad += 2; // ถ้าป่วยเลือดจะลดเร็วขึ้นมาก
+
+  if(bad>0){
+    state.health = clamp(state.health - bad*2*minutes);
+    state.counters.neglectMin += minutes;
+  } else {
+    state.health = clamp(state.health + 1*minutes);
+  }
+
+  state.happySum += state.happy*minutes;
+  state.happySamples += minutes;
+
+  if(state.health<=0){
+    state.alive = false;
+  }
+}
+
+function ageMinutes(){
+  return (Date.now() - state.hatchTime) / 60000;
+}
+
+function pickBranch(){
+  const c = state.counters;
+  const avgHappy = state.happySamples>0 ? (state.happySum/state.happySamples) : 50;
+  const scores = {
+    joy: avgHappy,
+    vigor: c.play*6,
+    glutton: c.feed*6,
+    feral: c.neglectMin*3,
+  };
+  let best = 'joy', bestScore = -1;
+  for(const k of ['joy','vigor','glutton','feral']){
+    if(scores[k] > bestScore){ bestScore = scores[k]; best = k; }
+  }
+  return best;
+}
+
+function checkEvolution(){
+  const age = ageMinutes();
+  let target = 'baby';
+  for(const s of STAGE_ORDER){ if(age >= STAGE_MIN[s]) target = s; }
+
+  if(target !== state.stage){
+    const fromIdx = STAGE_ORDER.indexOf(state.stage);
+    const toIdx = STAGE_ORDER.indexOf(target);
+    if(toIdx > fromIdx){
+      state.stage = target;
+      beep(880,.15);
+      if(target==='teen' && !state.branch){
+        state.branch = pickBranch();
+        setLog(`✨ ${state.name} เข้าสู่วัยรุ่น และเลือกเส้นทาง "${BRANCHES[state.branch].label}"!`);
+      } else {
+        setLog(`🎉 ${state.name} เติบโตเป็น ${STAGE_LABEL[target]} แล้ว!`);
+      }
+    }
+  }
+}
+
+/* ============ ACTIONS ============ */
+function doFeed(){
+  if(!state.alive) return;
+  state.hunger = clamp(state.hunger + 22);
+  state.happy = clamp(state.happy + 4);
+  state.counters.feed++;
+  beep(520,.08);
+  setLog(`🍖 ${state.name} กินอาหารอย่างมีความสุข`);
+  saveAndRender();
+}
+function doPet(){
+  if(!state.alive) return;
+  state.happy = clamp(state.happy + 8);
+  state.counters.pet++;
+  beep(660,.07);
+  setLog(`🤍 ${state.name} รู้สึกอบอุ่นใจ`);
+  saveAndRender();
+}
+function doBath(){
+  if(!state.alive) return;
+  state.hygiene = 100;
+  beep(700,.1);
+  setLog(`🫧 อาบน้ำให้ ${state.name} จนหอมฉุยสะอาดเอี่ยม!`);
+  saveAndRender();
+}
+function doHeal(){
+  if(!state.alive) return;
+  if(state.isSick) {
+    state.isSick = false;
+    beep(800,.15);
+    setLog(`💊 ป้อนยาให้ ${state.name} หายป่วยแล้ว!`);
+  } else {
+    setLog(`ฉีดยากันไว้... แต่ ${state.name} ไม่ได้ป่วยนะ`);
+  }
+  saveAndRender();
+}
+function doRest(){
+  if(!state.alive) return;
+  state.resting = !state.resting;
+  state.counters.rest++;
+  beep(state.resting?300:340,.09);
+  setLog(state.resting ? `💤 ${state.name} กำลังพักผ่อน...` : `${state.name} ตื่นแล้ว!`);
+  saveAndRender();
+}
+
+function tryStartPlay(){
+  if(!state.alive) return;
+  if(state.resting){ setLog('เพื่อนกำลังนอนอยู่ รอให้ตื่นก่อนนะ 💤'); return; }
+  if(state.energy < 10){ setLog('เพื่อนเหนื่อยเกินกว่าจะเล่น ให้พักผ่อนก่อนนะ'); return; }
+  if(state.isSick){ setLog('เพื่อนกำลังป่วยหนักเกินกว่าจะเล่นได้นะ 🤒'); return; }
+  openMinigame();
+}
+function applyPlayResult(score){
+  if(!state.alive) return;
+  const happyGain = 6 + score*3;
+  state.happy = clamp(state.happy + happyGain);
+  state.energy = clamp(state.energy - 12);
+  state.hunger = clamp(state.hunger - 4);
+  state.hygiene = clamp(state.hygiene - 8);
+  state.counters.play++;
+  setLog(`🎾 เล่นมินิเกมกับ ${state.name}! ได้คะแนน ${score}/9`);
+  saveAndRender();
+}
+
+function saveAndRender(){
+  checkEvolution();
+  if(!state.alive){ saveGame(); beep(180,.3,'sawtooth'); showScreen('over'); return; }
+  saveGame();
+  renderAll();
+}
+
+/* ============ PIXEL SPRITE ENGINE ============ */
+let pixelCells = [];
+function ensurePixelGrid(){
+  const grid = $('pixelGrid');
+  if(grid.childElementCount===169) return;
+  grid.innerHTML='';
+  pixelCells = [];
+  for(let i=0;i<169;i++){
+    const c = document.createElement('div');
+    c.className='pixel-cell';
+    grid.appendChild(c);
+    pixelCells.push(c);
+  }
+}
+function buildBodyMatrix(radius){
+  const m = [];
+  for(let y=0;y<13;y++){
+    const row=[];
+    for(let x=0;x<13;x++){
+      const dx=x-6, dy=y-6;
+      row.push((dx*dx+dy*dy<=radius*radius)?1:0);
+    }
+    m.push(row);
+  }
+  return m;
+}
+function setPx(m,x,y,v){ if(y>=0&&y<13&&x>=0&&x<13) m[y][x]=v; }
+
+function computeMood(){
+  if(state.resting) return 'sleeping';
+  if(state.isSick) return 'sad'; // หน้าเศร้าเมื่อป่วย
+  if(state.happy<20 || state.hunger<20) return 'sad';
+  if(state.happy>70 && state.hunger>50) return 'happy';
+  return 'neutral';
+}
+
+function buildSprite(stage, branch, mood){
+  let radius;
+  if(stage==='baby') radius=3.2;
+  else if(stage==='child') radius=3.7;
+  else if(stage==='teen') radius=4.1;
+  else radius = (branch==='glutton') ? 5.0 : 4.5;
+
+  const m = buildBodyMatrix(radius);
+  const top = 6-Math.ceil(radius);
+  const bottom = 6+Math.ceil(radius);
+
+  if(stage!=='baby'){ setPx(m,4,top,1); setPx(m,8,top,1); }
+  if(stage==='teen' || stage==='adult'){
+    setPx(m,4,Math.min(bottom+1,12),1);
+    setPx(m,8,Math.min(bottom+1,12),1);
+  }
+
+  if(stage==='adult'){
+    if(branch==='joy'){
+      setPx(m,Math.max(6-Math.ceil(radius)-1,0),4,1);
+      setPx(m,Math.max(6-Math.ceil(radius)-2,0),3,1);
+      setPx(m,Math.min(6+Math.ceil(radius)+1,12),4,1);
+      setPx(m,Math.min(6+Math.ceil(radius)+2,12),3,1);
+    } else if(branch==='vigor'){
+      setPx(m,6,Math.max(top-1,0),1);
+      setPx(m,6,Math.max(top-2,0),1);
+      setPx(m,5,Math.max(top-1,0),1);
+      setPx(m,7,Math.max(top-1,0),1);
+    } else if(branch==='glutton'){
+      for(let x=4;x<=8;x++){ if(x!==6) setPx(m,x,7,0); }
+    } else if(branch==='feral'){
+      setPx(m,3,3,1); setPx(m,9,3,1);
+      setPx(m,2,7,1); setPx(m,10,7,1);
+      setPx(m,5,Math.max(top-1,0),1); setPx(m,7,Math.max(top-1,0),1);
+    }
+  }
+
+  // face
+  if(mood==='sleeping'){
+    setPx(m,4,5,0); setPx(m,5,5,0); setPx(m,7,5,0); setPx(m,8,5,0);
+    setPx(m,6,7,0);
+  } else {
+    setPx(m,5,5,0); setPx(m,7,5,0);
+    if(mood==='happy'){ setPx(m,5,7,0); setPx(m,6,8,0); setPx(m,7,7,0); }
+    else if(mood==='sad'){ setPx(m,5,8,0); setPx(m,6,7,0); setPx(m,7,8,0); }
+    else { setPx(m,6,7,0); }
+  }
+  return m;
+}
+function shade(hex, percent){
+  const f = parseInt(hex.slice(1),16);
+  const t = percent<0?0:255, p = Math.abs(percent)/100;
+  const R=f>>16, G=(f>>8)&0x00FF, B=f&0x0000FF;
+  const rr = Math.round((t-R)*p)+R, gg = Math.round((t-G)*p)+G, bb = Math.round((t-B)*p)+B;
+  return '#'+(0x1000000+rr*0x10000+gg*0x100+bb).toString(16).slice(1);
+}
+
+function renderSprite(){
+  ensurePixelGrid();
+  const sp = speciesById(state.species);
+  const mood = computeMood();
+  const matrix = buildSprite(state.stage, state.branch, mood);
+  const onColor = (state.stage==='adult' && state.branch==='feral') ? shade(sp.color,-30) : sp.color;
+  
+  // Animation Logic: ยุบตัว/ยืดตัว ทุกๆ 1 วินาที (ไม่ทำงานตอนนอน)
+  const animFrame = state.resting ? 0 : (frameCycle % 2);
+  const yOffset = animFrame === 1 ? 1 : 0; 
+
+  for(let y=0;y<13;y++){
+    for(let x=0;x<13;x++){
+      let sourceY = y - yOffset;
+      let val = 0;
+      if(sourceY >= 0 && sourceY < 13) val = matrix[sourceY][x];
+      pixelCells[y*13+x].style.background = val ? onColor : 'transparent';
+    }
+  }
+
+  // เดินส่ายไปมา ซ้าย-ขวา
+  const walkPhase = Math.floor(frameCycle / 2) % 4; // 0, 1, 2, 3
+  const walkOffsets = [0, 1, 0, -1];
+  const walkPos = state.resting ? 0 : walkOffsets[walkPhase];
+
+  $('pixelGrid').style.transform = `scale(${STAGE_SCALE[state.stage]}) translateX(${walkPos * 3}px)`;
+  $('lcdZzz').style.display = state.resting ? 'block' : 'none';
+}
+
+/* ============ RENDER ============ */
+function renderAll(){
+  if(!state) return;
+  const sp = speciesById(state.species);
+
+  $('petNameLabel').textContent = state.name;
+  $('petStageLabel').textContent = STAGE_LABEL[state.stage] + (state.branch ? ' · ' + BRANCHES[state.branch].badge : '');
+
+  const age = ageMinutes();
+  const d = Math.floor(age/1440), h = Math.floor((age%1440)/60), m = Math.floor(age%60);
+  $('ageLine').textContent = d>0 ? `อายุ: ${d} วัน ${h} ชม.` : `อายุ: ${h} ชม. ${m} นาที`;
+
+  setBar('hunger', state.hunger);
+  setBar('happy', state.happy);
+  setBar('energy', state.energy);
+  setBar('health', state.health);
+  setBar('hygiene', state.hygiene);
+
+  $('deviceShell').style.background = sp.color;
+  renderSprite();
+
+  const isAlert = state.hunger<20 || state.happy<20 || (state.energy<15 && !state.resting);
+  const alertEl = $('lcdAlert');
+  alertEl.classList.toggle('show', isAlert);
+  
+  $('lcdSick').classList.toggle('show', state.isSick);
+
+  if(isAlert && !alertPlayed){ beep(200,.12,'triangle'); alertPlayed = true; }
+  else if(!isAlert){ alertPlayed = false; }
+
+  $('btnPlay').disabled = state.resting;
+  $('btnRest').classList.toggle('active-toggle', state.resting);
+}
+
+function setBar(key, value){
+  const pct = Math.round(clamp(value));
+  $('bar-'+key).style.width = pct+'%';
+  $('pct-'+key).textContent = pct+'%';
+  $('bar-'+key).style.filter = (pct<20) ? 'grayscale(.15) brightness(.85)' : 'none';
+}
+
+/* ============ SCREENS ============ */
+function showScreen(name){
+  $('screen-select').style.display = name==='select' ? 'block' : 'none';
+  $('screen-main').style.display   = name==='main'   ? 'block' : 'none';
+  $('screen-over').style.display   = name==='over'   ? 'block' : 'none';
+  if(name==='over'){
+    $('overText').textContent = `${state.name} จากไปด้วยการดูแลที่ขาดตกไปหน่อย... แต่ยังมีไข่ใหม่รออยู่เสมอ 🥚`;
+  }
+}
+
+/* ============ SPECIES SELECT UI ============ */
+let selectedSpecies = null;
+function buildSpeciesGrid(){
+  const grid = $('speciesGrid');
+  grid.innerHTML = '';
+  SPECIES.forEach(sp=>{
+    const card = document.createElement('div');
+    card.className='species-card';
+    card.innerHTML = `
+      <div class="species-emoji" style="background:${sp.color}">${sp.emoji}</div>
+      <div class="species-name">${sp.name}</div>
+      <div class="species-tag">${sp.tag}</div>
+    `;
+    card.addEventListener('click', ()=>{
+      grid.querySelectorAll('.species-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedSpecies = sp.id;
+      $('hatchBtn').disabled = false;
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ============ EVOLUTION TREE MODAL ============ */
+function treeRow(emoji, title, sub, current){
+  return `<div class="tree-row">
+    <div class="tree-emoji">${emoji}</div>
+    <div>
+      <div class="${current?'tree-current':''}">${title}</div>
+      <div style="color:var(--ink-soft);font-size:.75rem;">${sub}</div>
+    </div>
+  </div>`;
+}
+function openTree(){
+  const body = $('treeBody');
+  const sp = speciesById(state.species);
+  let rows = '';
+  rows += treeRow(sp.emoji, `Baby ${sp.name}`, '0 นาที', state.stage==='baby');
+  rows += treeRow(sp.emoji, `Child ${sp.name}`, `${STAGE_MIN.child} นาที+`, state.stage==='child');
+  rows += treeRow(sp.emoji, `Teen ${sp.name}`, `${STAGE_MIN.teen} นาที+ · เลือกเส้นทางตามการดูแล`, state.stage==='teen');
+
+  let adultRows = '';
+  Object.keys(BRANCHES).forEach(key=>{
+    const b = BRANCHES[key];
+    const isCurrent = state.stage==='adult' && state.branch===key;
+    const isChosen = state.branch===key;
+    adultRows += `
+      <div class="tree-row">
+        <div class="tree-emoji">${b.badge}</div>
+        <div>
+          <div class="${isCurrent?'tree-current':''}">${sp.name} ${b.suffix} — ${b.label}</div>
+          <div style="color:var(--ink-soft);font-size:.75rem;">${b.desc}${isChosen && state.stage!=='adult' ? ' (เส้นทางที่กำลังมุ่งไป)' : ''}</div>
+        </div>
+      </div>`;
+  });
+
+  body.innerHTML = rows + `<div style="margin:8px 0 4px;font-weight:800;">Adult (${STAGE_MIN.adult} นาที+)</div>` + adultRows;
+  $('treeOverlay').classList.add('show');
+}
+
+/* ============ MINI-GAME (timing tap) ============ */
+let mgState = null;
+function openMinigame(){
+  mgState = { round:1, totalScore:0, running:true, startTime: performance.now(), speed: 1.4, rafId:null };
+  $('minigameOverlay').classList.add('show');
+  $('gameRoundInfo').textContent = `รอบ ${mgState.round} / 3`;
+  runMarkerLoop();
+}
+function markerPercent(elapsedSec, speed){
+  return (Math.sin(elapsedSec*speed)+1)/2*100;
+}
+function runMarkerLoop(){
+  function frame(now){
+    if(!mgState || !mgState.running) return;
+    const elapsed = (now - mgState.startTime)/1000;
+    const pos = markerPercent(elapsed, mgState.speed);
+    $('gameMarker').style.left = `calc(${pos}% - 7px)`;
+    mgState.rafId = requestAnimationFrame(frame);
+  }
+  mgState.rafId = requestAnimationFrame(frame);
+}
+function tapMinigame(){
+  if(!mgState || !mgState.running) return;
+  const elapsed = (performance.now() - mgState.startTime)/1000;
+  const pos = markerPercent(elapsed, mgState.speed);
+  const dist = Math.abs(pos-50);
+  let pts=0, msg='';
+  if(dist<=3){ pts=3; msg='เพอร์เฟกต์! 🌟'; }
+  else if(dist<=10){ pts=2; msg='ดีมาก! 👍'; }
+  else if(dist<=20){ pts=1; msg='พอใช้ 🙂'; }
+  else { pts=0; msg='พลาด! 😅'; }
+  mgState.totalScore += pts;
+  beep(pts>=2?880:220, .08);
+  $('gameRoundInfo').textContent = msg;
+
+  mgState.round++;
+  if(mgState.round>3){
+    mgState.running=false;
+    cancelAnimationFrame(mgState.rafId);
+    setTimeout(()=>{
+      $('minigameOverlay').classList.remove('show');
+      applyPlayResult(mgState.totalScore);
+      mgState = null;
+    }, 550);
+  } else {
+    mgState.speed += 0.5;
+    mgState.startTime = performance.now();
+    setTimeout(()=>{ if(mgState && mgState.running) $('gameRoundInfo').textContent = `รอบ ${mgState.round} / 3`; }, 500);
+  }
+}
+function skipMinigame(){
+  if(!mgState) return;
+  const remaining = 3 - mgState.round + 1;
+  mgState.totalScore += remaining; // 1 pt participation per remaining round
+  mgState.running = false;
+  if(mgState.rafId) cancelAnimationFrame(mgState.rafId);
+  $('minigameOverlay').classList.remove('show');
+  applyPlayResult(mgState.totalScore);
+  mgState = null;
+}
+
+/* ============ MAIN LOOP ============ */
+function tick(){
+  if(!state || !state.alive) return;
+  const now = Date.now();
+  const minutes = (now - state.lastUpdate)/60000;
+  state.lastUpdate = now;
+  advance(minutes);
+  checkEvolution();
+  applyTimeOfDay();
+  frameCycle++;
+  if(!state.alive){ saveGame(); beep(180,.3,'sawtooth'); showScreen('over'); return; }
+  saveGame();
+  renderAll();
+}
+
+function boot(){
+  applyTimeOfDay();
+  buildStars();
+  buildSpeciesGrid();
+
+  const loaded = loadGame();
+  if(loaded){
+    state = loaded;
+    const now = Date.now();
+    const offlineMinutes = (now - state.lastUpdate)/60000;
+    state.lastUpdate = now;
+    advance(offlineMinutes);
+    checkEvolution();
+    if(!state.alive){ showScreen('over'); }
+    else { showScreen('main'); renderAll(); }
+  } else {
+    showScreen('select');
+  }
+
+  setInterval(tick, 1000);
+}
+
+/* ============ EVENTS ============ */
+$('hatchBtn').addEventListener('click', ()=>{
+  if(!selectedSpecies) return;
+  const name = $('petNameInput').value.trim();
+  hatchPet(selectedSpecies, name);
+});
+$('btnFeed').addEventListener('click', doFeed);
+$('btnPlay').addEventListener('click', tryStartPlay);
+$('btnPet').addEventListener('click', doPet);
+$('btnBath').addEventListener('click', doBath);
+$('btnHeal').addEventListener('click', doHeal);
+$('btnRest').addEventListener('click', doRest);
+$('treeBtn').addEventListener('click', openTree);
+$('treeCloseBtn').addEventListener('click', ()=> $('treeOverlay').classList.remove('show'));
+$('gameTapBtn').addEventListener('click', tapMinigame);
+$('gameTrack').addEventListener('click', tapMinigame);
+$('gameSkipBtn').addEventListener('click', skipMinigame);
+$('resetBtn').addEventListener('click', ()=>{
+  if(confirm('เริ่มเกมใหม่? เพื่อนตัวปัจจุบันจะถูกลบ')){
+    wipeGame();
+    selectedSpecies = null;
+    $('hatchBtn').disabled = true;
+    $('petNameInput').value='';
+    document.querySelectorAll('.species-card').forEach(c=>c.classList.remove('selected'));
+    showScreen('select');
+  }
+});
+$('restartBtn').addEventListener('click', ()=>{
+  wipeGame();
+  selectedSpecies = null;
+  $('hatchBtn').disabled = true;
+  $('petNameInput').value='';
+  document.querySelectorAll('.species-card').forEach(c=>c.classList.remove('selected'));
+  showScreen('select');
+});
+
+boot();
 </script>
 </body>
 </html>
